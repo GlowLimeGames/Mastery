@@ -4,13 +4,22 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    public PlayerController playerOne;
+    public PlayerController playerTwo;
+
+    private void Update()
+    {
+        //Input reading goes here
+    }
+
+    private void FixedUpdate()
+    {
+        //Movement / Combat Functionality goes here
+    }
+
+    private void LateUpdate()
+    {
+        //Do something after Movement / Combat here
+    }
+
 }
