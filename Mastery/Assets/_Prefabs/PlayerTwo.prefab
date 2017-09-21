@@ -99,7 +99,7 @@ GameObject:
   - component: {fileID: 114301380614472454}
   m_Layer: 0
   m_Name: Right Arm
-  m_TagString: Sword
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -570,8 +570,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4581bed730e102a4c95cd47d7df225b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  state: 0
-  anim: {fileID: 0}
 --- !u!114 &114623965753455104
 MonoBehaviour:
   m_ObjectHideFlags: 1
