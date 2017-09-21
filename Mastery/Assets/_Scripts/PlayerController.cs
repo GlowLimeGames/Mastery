@@ -14,10 +14,14 @@ public class PlayerController : MonoBehaviour {
         INVULNERABLE
     }
 
+    public CharacterState state;
+
+    // TODO: Use an event listener for attacks
+
     public Animator anim;
 
 	// Use this for initialization
 	void Start () {
-		
+        state = CharacterState.IDLE;
 	}
 }
