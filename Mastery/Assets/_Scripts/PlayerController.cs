@@ -15,13 +15,20 @@ public class PlayerController : MonoBehaviour {
     }
 
     public CharacterState state;
-
-    // TODO: Use an event listener for attacks
-
     public Animator anim;
 
 	// Use this for initialization
-	void Start () {
+	private void Start () {
         state = CharacterState.IDLE;
 	}
+
+    private void Update()
+    {
+        // Set state to IDLE when other animations are finished
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
+        {
+            state = CharacterState.IDLE;
+        }
+    }
+
 }
