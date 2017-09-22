@@ -536,7 +536,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1737846912426802, guid: 44e2126e47637ce49a1dfe8f25246b8e, type: 2}
       propertyPath: m_TagString
-      value: Untagged
+      value: Sword
       objectReference: {fileID: 0}
     - target: {fileID: 1810223307402340, guid: 44e2126e47637ce49a1dfe8f25246b8e, type: 2}
       propertyPath: m_TagString
