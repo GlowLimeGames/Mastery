@@ -12,42 +12,76 @@ public class GameController : MonoBehaviour {
         CollisionBehavior.AttackResolution += Attack; // Subscribe to the AttackResolution event
     }
 
+    private float startTime;
+
+    // Time to distinguish a press from a hold, for light/heavy and parry/guard
+    // (Different numbers for those two categories?)
+    private float holdTime = 0.15f;
+
+    // Make sure only one action is taken per button press
+    private bool actionThisPress = false;
+
     private void Update()
     {
         //Input reading goes here
-        if (Input.GetKeyDown("f"))
+        bool oneAttackDown = Input.GetKeyDown("f");
+        bool oneAttackHeld = Input.GetKey("f");
+        bool oneAttackUp = Input.GetKeyUp("f");
+
+        bool oneDefendDown = Input.GetKeyDown("g");
+        bool oneDefendHeld = Input.GetKey("g");
+        bool oneDefendUp = Input.GetKeyUp("g");
+
+        // Attack inputs
+        if (oneAttackDown)
         {
-            playerOne.state = PlayerController.CharacterState.ATTACKING;
-            playerOne.anim.Play("Light Attack");
+            startTime = Time.time;
+            actionThisPress = false;
+        }
+        if (oneAttackHeld)
+        {
+            if (Time.time >= (startTime + holdTime) && !actionThisPress)
+            {
+                playerOne.state = PlayerController.CharacterState.HEAVY_ATTACKING;
+                playerOne.anim.Play("Heavy Attack");
+
+                actionThisPress = true;
+            }
+        }
+        if (oneAttackUp)
+        {
+            if (Time.time < (startTime + holdTime))
+            {
+                playerOne.state = PlayerController.CharacterState.LIGHT_ATTACKING;
+                playerOne.anim.Play("Light Attack");
+
+                actionThisPress = true;
+            }
         }
 
-        if (Input.GetKeyDown("g"))
+        // Defend inputs
+        if (oneDefendDown)
         {
-            playerOne.state = PlayerController.CharacterState.ATTACKING;
-            playerOne.anim.Play("Heavy Attack");
+            startTime = Time.time;
+            actionThisPress = false;
         }
-        if (Input.GetKeyDown("h"))
+        if (oneDefendHeld)
         {
-            playerOne.state = PlayerController.CharacterState.GUARDING;
-            playerOne.anim.Play("Guard");
+            if (Time.time >= (startTime + holdTime) && !actionThisPress)
+            {
+                playerOne.state = PlayerController.CharacterState.GUARDING;
+                playerOne.anim.Play("Guard");
+            }
+        }
+        if (oneDefendUp)
+        {
+            if (Time.time < (startTime + holdTime))
+            {
+                playerOne.state = PlayerController.CharacterState.PARRYING;
+                playerOne.anim.Play("Parry");
+            }
         }
 
-        if (Input.GetKeyDown("j"))
-        {
-            playerTwo.state = PlayerController.CharacterState.ATTACKING;
-            playerTwo.anim.Play("Light Attack");
-        }
-
-        if (Input.GetKeyDown("k"))
-        {
-            playerTwo.state = PlayerController.CharacterState.ATTACKING;
-            playerTwo.anim.Play("Heavy Attack");
-        }
-        if (Input.GetKeyDown("l"))
-        {
-            playerTwo.state = PlayerController.CharacterState.GUARDING;
-            playerTwo.anim.Play("Guard");
-        }
     }
 
     private void FixedUpdate()
@@ -62,7 +96,6 @@ public class GameController : MonoBehaviour {
 
     public void Attack(GameObject attacker, GameObject defender)
     {
-        //print(attacker + " attacked " + defender);
 
         PlayerController attackerController;
         PlayerController defenderController;
@@ -80,7 +113,7 @@ public class GameController : MonoBehaviour {
 
         if (defenderController.state == PlayerController.CharacterState.IDLE)
         {
-            defender.SetActive(false);
+            defenderController.HP -= 1;
         }
             
     }

@@ -8,11 +8,15 @@ public class PlayerController : MonoBehaviour {
     public enum CharacterState
     {
         IDLE,
-        ATTACKING,
+        LIGHT_ATTACKING,
+        HEAVY_ATTACKING,
+        PARRYING,
         GUARDING,
         VULNERABLE,
         INVULNERABLE
     }
+
+    public int HP;
 
     public CharacterState state;
     public Animator anim;
