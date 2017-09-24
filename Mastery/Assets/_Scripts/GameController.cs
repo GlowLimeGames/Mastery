@@ -24,6 +24,8 @@ public class GameController : MonoBehaviour {
     private void Update()
     {
         //Input reading goes here
+
+        // Player One input reading
         bool oneAttackDown = Input.GetKeyDown("f");
         bool oneAttackHeld = Input.GetKey("f");
         bool oneAttackUp = Input.GetKeyUp("f");
@@ -53,6 +55,7 @@ public class GameController : MonoBehaviour {
             if (Time.time < (startTime + holdTime))
             {
                 playerOne.state = PlayerController.CharacterState.LIGHT_ATTACKING;
+                print("State switched to LIGHT_ATTACKING");
                 playerOne.anim.Play("Light Attack");
 
                 actionThisPress = true;
@@ -92,6 +95,16 @@ public class GameController : MonoBehaviour {
     private void LateUpdate()
     {
         //Do something after Movement / Combat here
+
+        if (playerOne.HP <= 0)
+        {
+            playerOne.state = PlayerController.CharacterState.VULNERABLE;
+        }
+
+        if (playerTwo.HP <= 0)
+        {
+            playerTwo.state = PlayerController.CharacterState.VULNERABLE;
+        }
     }
 
     public void Attack(GameObject attacker, GameObject defender)
@@ -99,7 +112,7 @@ public class GameController : MonoBehaviour {
 
         PlayerController attackerController;
         PlayerController defenderController;
-
+        
         if (attacker == playerOne.gameObject)
         {
             attackerController = playerOne;
@@ -110,10 +123,69 @@ public class GameController : MonoBehaviour {
             defenderController = playerOne;
         }
 
-
-        if (defenderController.state == PlayerController.CharacterState.IDLE)
+        print(attackerController +  " (" + attackerController.state + ") attacks " + defenderController + " (" + defenderController.state + ")");
+        if (attackerController.state == PlayerController.CharacterState.LIGHT_ATTACKING)
         {
-            defenderController.HP -= 1;
+            switch (defenderController.state)
+            {
+                case PlayerController.CharacterState.PARRYING:
+                    // Attacker gets turned around
+                    break;
+                case PlayerController.CharacterState.GUARDING:
+                    // Attacker gets knocked back
+                    break;
+                case PlayerController.CharacterState.LIGHT_ATTACKING:
+                    // Both are knocked back
+                    break;
+                case PlayerController.CharacterState.HEAVY_ATTACKING:
+                    // Disables attacker's attack button for X seconds
+                    break;
+                case PlayerController.CharacterState.INVULNERABLE:
+                    // Do nothing presumably?
+                    break;
+                case PlayerController.CharacterState.VULNERABLE:
+                    // Kills defender
+                    defender.SetActive(false);
+                    break;
+                case PlayerController.CharacterState.IDLE:
+                    // Successful hit.
+                    // To avoid duplicate hits, setting animation to idle.
+                    // TODO should play a successful attack animation, maybe just reverse the animation?
+                    attackerController.anim.Play("Idle");
+           
+                    defenderController.HP -= 1;
+                    break;
+            }
+        }
+        if (attackerController.state == PlayerController.CharacterState.HEAVY_ATTACKING)
+        {
+            switch (defenderController.state)
+            {
+                case PlayerController.CharacterState.PARRYING:
+                    // Disables attacker's attack button for X seconds
+                    break;
+                case PlayerController.CharacterState.GUARDING:
+                    // Defender gets knocked back
+                    break;
+                case PlayerController.CharacterState.LIGHT_ATTACKING:
+                    defenderController.HP -= 1;
+                    break;
+                case PlayerController.CharacterState.HEAVY_ATTACKING:
+                    // Disables attacker's attack button for X seconds
+                    break;
+                case PlayerController.CharacterState.INVULNERABLE:
+                    // Do nothing presumably?
+                    break;
+                case PlayerController.CharacterState.VULNERABLE:
+                    // Kills defender
+                    defender.SetActive(false);
+                    break;
+                case PlayerController.CharacterState.IDLE:
+                    attackerController.anim.Play("Idle");
+                    defenderController.HP -= 2;
+                    break;
+
+            }
         }
             
     }

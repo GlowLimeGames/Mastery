@@ -24,14 +24,26 @@ public class PlayerController : MonoBehaviour {
 	// Use this for initialization
 	private void Start () {
         state = CharacterState.IDLE;
+        HP = 2;
 	}
 
     private void Update()
     {
-        // Set state to IDLE when other animations are finished
+        // Update state based on animations.
+        // There should be a better way to do this...
         if (anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
         {
             state = CharacterState.IDLE;
+        }
+
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Light Attack"))
+        {
+            state = CharacterState.LIGHT_ATTACKING;
+        }
+
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Heavy Attack"))
+        {
+            state = CharacterState.HEAVY_ATTACKING;
         }
     }
 
