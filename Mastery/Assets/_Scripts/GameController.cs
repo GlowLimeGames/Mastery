@@ -21,14 +21,6 @@ public class GameController : MonoBehaviour {
     // Length of disarm
     private static float disarmTime = 3.0f;
 
-    // Make sure only one action is taken per button press
-    private bool playerOne.actionThisPress = false;
-    private bool playerTwo.actionThisPress = false;
-
-    //private float p1StartTime;
-    //private float p2StartTime;
-
-
     private void Update()
     {
         //Input reading goes here
