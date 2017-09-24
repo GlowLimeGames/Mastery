@@ -14,22 +14,19 @@ public class GameController : MonoBehaviour {
         CollisionBehavior.AttackResolution += Attack; // Subscribe to the AttackResolution event
     }
 
-    private float p1StartTime;
-    private float p2StartTime;
-
-    private float p1DisarmStartTime;
-    private float p2DisarmStartTime;
-
     // Time to distinguish a press from a hold, for light/heavy and parry/guard
     // (Different numbers for those two categories?)
-    private float holdTime = 0.15f;
+    private static float holdTime = 0.15f;
 
     // Length of disarm
-    private float disarmTime = 1.0f;
+    private static float disarmTime = 3.0f;
 
     // Make sure only one action is taken per button press
-    private bool p1ActionThisPress = false;
-    private bool p2ActionThisPress = false;
+    private bool playerOne.actionThisPress = false;
+    private bool playerTwo.actionThisPress = false;
+
+    //private float p1StartTime;
+    //private float p2StartTime;
 
 
     private void Update()
@@ -57,50 +54,61 @@ public class GameController : MonoBehaviour {
         // Attack inputs
         if (oneAttackDown)
         {
-            p1StartTime = Time.time;
-            p1ActionThisPress = false;
+            if (Time.time >= (playerOne.disarmStartTime + disarmTime))
+            {
+                playerOne.pressStartTime = Time.time;
+                playerOne.actionThisPress = false;
+            } else
+            {
+                // TODO: Play some sort of "whoops, I'm disarmed" animation
+            }
+
         }
         if (oneAttackHeld)
         {
-            if (Time.time >= (p1StartTime + holdTime) && !p1ActionThisPress)
+            if (Time.time >= (playerOne.pressStartTime + holdTime) && !playerOne.actionThisPress)
             {
-                playerOne.state = PlayerController.CharacterState.HEAVY_ATTACKING;
+                playerOne.state = PlayerController.CharacterState.ATTACKING;
+                playerOne.action = PlayerController.CharacterAction.HEAVY_ATTACKING;
                 playerOne.anim.Play("Heavy Attack");
 
-                p1ActionThisPress = true;
+                playerOne.actionThisPress = true;
             }
         }
         if (oneAttackUp)
         {
-            if (Time.time < (p1StartTime + holdTime))
+            if (Time.time < (playerOne.pressStartTime + holdTime))
             {
-                playerOne.state = PlayerController.CharacterState.LIGHT_ATTACKING;
-                print("State switched to LIGHT_ATTACKING");
+                playerOne.state = PlayerController.CharacterState.ATTACKING;
+                playerOne.action = PlayerController.CharacterAction.LIGHT_ATTACKING;
                 playerOne.anim.Play("Light Attack");
 
-                p1ActionThisPress = true;
+                playerOne.actionThisPress = true;
             }
         }
+
 
         // Defend inputs
         if (oneDefendDown)
         {
-            p1StartTime = Time.time;
-            p1ActionThisPress = false;
+            playerOne.pressStartTime = Time.time;
+            playerOne.actionThisPress = false;
         }
         if (oneDefendHeld)
         {
-            if (Time.time >= (p1StartTime + holdTime) && !p1ActionThisPress)
+            if (Time.time >= (playerOne.pressStartTime + holdTime) && !playerOne.actionThisPress)
             {
                 playerOne.state = PlayerController.CharacterState.GUARDING;
+                playerOne.action = PlayerController.CharacterAction.GUARDING;
                 playerOne.anim.Play("Guard");
             }
         }
         if (oneDefendUp)
         {
-            if (Time.time < (p1StartTime + holdTime))
+            if (Time.time < (playerOne.pressStartTime + holdTime))
             {
-                playerOne.state = PlayerController.CharacterState.PARRYING;
+                playerOne.state = PlayerController.CharacterState.GUARDING;
+                playerOne.action = PlayerController.CharacterAction.PARRYING;
                 playerOne.anim.Play("Parry");
             }
         }
@@ -108,49 +116,60 @@ public class GameController : MonoBehaviour {
         // P2 Attack inputs
         if (twoAttackDown)
         {
-            p2StartTime = Time.time;
-            p2ActionThisPress = false;
+            if (Time.time >= (playerTwo.disarmStartTime + disarmTime))
+            {
+                playerTwo.pressStartTime = Time.time;
+                playerTwo.actionThisPress = false;
+            } else
+            {
+                // TODO Disarmed animation
+            }
+
         }
         if (twoAttackHeld)
         {
-            if (Time.time >= (p2StartTime + holdTime) && !p2ActionThisPress)
+            if (Time.time >= (playerTwo.pressStartTime + holdTime) && !playerTwo.actionThisPress)
             {
-                playerTwo.state = PlayerController.CharacterState.HEAVY_ATTACKING;
+                playerTwo.state = PlayerController.CharacterState.ATTACKING;
+                playerTwo.action = PlayerController.CharacterAction.HEAVY_ATTACKING;
                 playerTwo.anim.Play("Heavy Attack");
 
-                p2ActionThisPress = true;
+                playerTwo.actionThisPress = true;
             }
         }
         if (twoAttackUp)
         {
-            if (Time.time < (p2StartTime + holdTime))
+            if (Time.time < (playerTwo.pressStartTime + holdTime))
             {
-                playerTwo.state = PlayerController.CharacterState.LIGHT_ATTACKING;
+                playerTwo.state = PlayerController.CharacterState.ATTACKING;
+                playerTwo.action = PlayerController.CharacterAction.LIGHT_ATTACKING;
                 playerTwo.anim.Play("Light Attack");
 
-                p2ActionThisPress = true;
+                playerTwo.actionThisPress = true;
             }
         }
 
         // Defend inputs
         if (twoDefendDown)
         {
-            p2StartTime = Time.time;
-            p2ActionThisPress = false;
+            playerTwo.pressStartTime = Time.time;
+            playerTwo.actionThisPress = false;
         }
-        if (oneDefendHeld)
+        if (twoDefendHeld)
         {
-            if (Time.time >= (p2StartTime + holdTime) && !p2ActionThisPress)
+            if (Time.time >= (playerTwo.pressStartTime + holdTime) && !playerTwo.actionThisPress)
             {
                 playerTwo.state = PlayerController.CharacterState.GUARDING;
+                playerTwo.action = PlayerController.CharacterAction.GUARDING;
                 playerTwo.anim.Play("Guard");
             }
         }
         if (twoDefendUp)
         {
-            if (Time.time < (p2StartTime + holdTime))
+            if (Time.time < (playerTwo.pressStartTime + holdTime))
             {
-                playerTwo.state = PlayerController.CharacterState.PARRYING;
+                playerTwo.state = PlayerController.CharacterState.GUARDING;
+                playerTwo.action = PlayerController.CharacterAction.PARRYING;
                 playerTwo.anim.Play("Parry");
             }
         }
@@ -160,6 +179,7 @@ public class GameController : MonoBehaviour {
     private void FixedUpdate()
     {
         //Movement / Combat Functionality goes here
+
     }
 
     private void LateUpdate()
@@ -194,93 +214,110 @@ public class GameController : MonoBehaviour {
         }
 
         print(attackerController +  " (" + attackerController.state + ") attacks " + defenderController + " (" + defenderController.state + ")");
-        if (attackerController.state == PlayerController.CharacterState.LIGHT_ATTACKING)
+        if (attackerController.action == PlayerController.CharacterAction.LIGHT_ATTACKING)
         {
-            switch (defenderController.state)
+            switch (defenderController.action)
             {
-                case PlayerController.CharacterState.PARRYING:
+                case PlayerController.CharacterAction.PARRYING:
                     // Attacker gets turned around
+                    // TODO: Not implemented, will after movement is added
                     break;
-                case PlayerController.CharacterState.GUARDING:
+                case PlayerController.CharacterAction.GUARDING:
                     // Attacker gets knocked back
-
+                    Knockback(attackerController);
                     break;
-                case PlayerController.CharacterState.LIGHT_ATTACKING:
+                case PlayerController.CharacterAction.LIGHT_ATTACKING:
                     // Both are knocked back
-                    // Idle for now, maybe we need a knockback state?
+                    // Idle for now, but should be a knockback animation in the future
                     attackerController.anim.Play("Idle");
                     defenderController.anim.Play("Idle");
-                    //Knockback(attackerController);
-                    //Knockback(defenderController);
+                    Knockback(attackerController);
+                    Knockback(defenderController);
                     break;
-                case PlayerController.CharacterState.HEAVY_ATTACKING:
+                case PlayerController.CharacterAction.HEAVY_ATTACKING:
                     // Disables attacker's attack button for X seconds
+                    Disarm(attackerController);
                     break;
-                case PlayerController.CharacterState.INVULNERABLE:
-                    // Do nothing presumably?
-                    break;
-                case PlayerController.CharacterState.VULNERABLE:
-                    // Kills defender
-                    defender.SetActive(false);
-                    break;
-                case PlayerController.CharacterState.IDLE:
-                    // Successful hit.
-                    // To avoid duplicate hits, setting animation to idle.
-                    // TODO should play a successful attack animation, maybe just reverse the animation?
-                    attackerController.anim.Play("Idle");
-           
-                    defenderController.HP -= 1;
+                case PlayerController.CharacterAction.IDLE:
+                    switch (defenderController.state)
+                    {
+                        case PlayerController.CharacterState.VULNERABLE:
+                            // Kills defender
+                            defender.SetActive(false);
+                            break;
+                        case PlayerController.CharacterState.IDLE:
+                            // Successful hit.
+                            // To avoid duplicate hits, setting animation to idle.
+                            // TODO should play a successful attack animation, maybe just reverse the animation?
+                            attackerController.anim.Play("Idle");
+
+                            defenderController.HP -= 1;
+                            break;
+                    }
                     break;
             }
         }
-        if (attackerController.state == PlayerController.CharacterState.HEAVY_ATTACKING)
+        if (attackerController.action == PlayerController.CharacterAction.HEAVY_ATTACKING)
         {
-            switch (defenderController.state)
+            switch (defenderController.action)
             {
-                case PlayerController.CharacterState.PARRYING:
+                case PlayerController.CharacterAction.PARRYING:
                     // Disables attacker's attack button for X seconds
+                    Disarm(attackerController);
                     break;
-                case PlayerController.CharacterState.GUARDING:
+                case PlayerController.CharacterAction.GUARDING:
                     // Defender gets knocked back
+                    Knockback(defenderController);
                     break;
-                case PlayerController.CharacterState.LIGHT_ATTACKING:
+                case PlayerController.CharacterAction.LIGHT_ATTACKING:
+                    // Heavy overpowers light; attack connects with half damage
                     defenderController.HP -= 1;
                     break;
-                case PlayerController.CharacterState.HEAVY_ATTACKING:
-                    // Disables attacker's attack button for X seconds
+                case PlayerController.CharacterAction.HEAVY_ATTACKING:
+                    // Both lose 1HP and are knocked back
+                    Knockback(attackerController);
+                    Knockback(defenderController);
+                    attackerController.HP -= 1;
+                    defenderController.HP -= 1;
                     break;
-                case PlayerController.CharacterState.INVULNERABLE:
-                    // Do nothing presumably?
+                case PlayerController.CharacterAction.IDLE:
+                    switch (defenderController.state)
+                    {
+                        case PlayerController.CharacterState.VULNERABLE:
+                            // Kills defender
+                            defender.SetActive(false);
+                            break;
+                        case PlayerController.CharacterState.IDLE:
+                            // Attack connects fully
+                            attackerController.anim.Play("Idle");
+                            defenderController.HP -= 2;
+                            break;
+                    }
                     break;
-                case PlayerController.CharacterState.VULNERABLE:
-                    // Kills defender
-                    defender.SetActive(false);
-                    break;
-                case PlayerController.CharacterState.IDLE:
-                    attackerController.anim.Play("Idle");
-                    defenderController.HP -= 2;
-                    break;
-
             }
         }
             
     }
 
-    // Knockback not working yet, seems to have no effect
-    /*public void Knockback(PlayerController player)
+    public void Knockback(PlayerController player)
     {
-        Vector2 force;
-        print(player.gameObject.name);
-        Rigidbody2D rb = player.gameObject.GetComponentInChildren<Rigidbody2D>();
+        // Having issues with AddForce, it was working on the legs but not the animated parts.
+        // TODO: try putting each player object in an empty object with a rigidbody2d.
+        // http://answers.unity3d.com/questions/559976/can-i-addforce-to-a-model-while-using-animator.html
+
         if (player.facingLeft)
         {
-            force = new Vector2(-100.0f, 2.0f);
+            player.gameObject.transform.position += Vector3.right * 0.2f;
         } else
         {
-            force = new Vector2(100.0f, 2.0f);
+            player.gameObject.transform.position += Vector3.left * 0.2f;
         }
-        rb.AddForce(force, ForceMode2D.Force);
     }
-    */
+    
+
+    public void Disarm(PlayerController player)
+    {
+        player.disarmStartTime = Time.time;
+    }
 
 }
