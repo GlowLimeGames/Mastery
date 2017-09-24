@@ -9,17 +9,28 @@ public class GameController : MonoBehaviour {
 
     private void Start()
     {
+        playerOne.facingLeft = false;
+        playerTwo.facingLeft = true;
         CollisionBehavior.AttackResolution += Attack; // Subscribe to the AttackResolution event
     }
 
-    private float startTime;
+    private float p1StartTime;
+    private float p2StartTime;
+
+    private float p1DisarmStartTime;
+    private float p2DisarmStartTime;
 
     // Time to distinguish a press from a hold, for light/heavy and parry/guard
     // (Different numbers for those two categories?)
     private float holdTime = 0.15f;
 
+    // Length of disarm
+    private float disarmTime = 1.0f;
+
     // Make sure only one action is taken per button press
-    private bool actionThisPress = false;
+    private bool p1ActionThisPress = false;
+    private bool p2ActionThisPress = false;
+
 
     private void Update()
     {
@@ -34,43 +45,52 @@ public class GameController : MonoBehaviour {
         bool oneDefendHeld = Input.GetKey("g");
         bool oneDefendUp = Input.GetKeyUp("g");
 
+        // Player Two input reading
+        bool twoAttackDown = Input.GetKeyDown("h");
+        bool twoAttackHeld = Input.GetKey("h");
+        bool twoAttackUp = Input.GetKeyUp("h");
+
+        bool twoDefendDown = Input.GetKeyDown("j");
+        bool twoDefendHeld = Input.GetKey("j");
+        bool twoDefendUp = Input.GetKeyUp("j");
+
         // Attack inputs
         if (oneAttackDown)
         {
-            startTime = Time.time;
-            actionThisPress = false;
+            p1StartTime = Time.time;
+            p1ActionThisPress = false;
         }
         if (oneAttackHeld)
         {
-            if (Time.time >= (startTime + holdTime) && !actionThisPress)
+            if (Time.time >= (p1StartTime + holdTime) && !p1ActionThisPress)
             {
                 playerOne.state = PlayerController.CharacterState.HEAVY_ATTACKING;
                 playerOne.anim.Play("Heavy Attack");
 
-                actionThisPress = true;
+                p1ActionThisPress = true;
             }
         }
         if (oneAttackUp)
         {
-            if (Time.time < (startTime + holdTime))
+            if (Time.time < (p1StartTime + holdTime))
             {
                 playerOne.state = PlayerController.CharacterState.LIGHT_ATTACKING;
                 print("State switched to LIGHT_ATTACKING");
                 playerOne.anim.Play("Light Attack");
 
-                actionThisPress = true;
+                p1ActionThisPress = true;
             }
         }
 
         // Defend inputs
         if (oneDefendDown)
         {
-            startTime = Time.time;
-            actionThisPress = false;
+            p1StartTime = Time.time;
+            p1ActionThisPress = false;
         }
         if (oneDefendHeld)
         {
-            if (Time.time >= (startTime + holdTime) && !actionThisPress)
+            if (Time.time >= (p1StartTime + holdTime) && !p1ActionThisPress)
             {
                 playerOne.state = PlayerController.CharacterState.GUARDING;
                 playerOne.anim.Play("Guard");
@@ -78,10 +98,60 @@ public class GameController : MonoBehaviour {
         }
         if (oneDefendUp)
         {
-            if (Time.time < (startTime + holdTime))
+            if (Time.time < (p1StartTime + holdTime))
             {
                 playerOne.state = PlayerController.CharacterState.PARRYING;
                 playerOne.anim.Play("Parry");
+            }
+        }
+
+        // P2 Attack inputs
+        if (twoAttackDown)
+        {
+            p2StartTime = Time.time;
+            p2ActionThisPress = false;
+        }
+        if (twoAttackHeld)
+        {
+            if (Time.time >= (p2StartTime + holdTime) && !p2ActionThisPress)
+            {
+                playerTwo.state = PlayerController.CharacterState.HEAVY_ATTACKING;
+                playerTwo.anim.Play("Heavy Attack");
+
+                p2ActionThisPress = true;
+            }
+        }
+        if (twoAttackUp)
+        {
+            if (Time.time < (p2StartTime + holdTime))
+            {
+                playerTwo.state = PlayerController.CharacterState.LIGHT_ATTACKING;
+                playerTwo.anim.Play("Light Attack");
+
+                p2ActionThisPress = true;
+            }
+        }
+
+        // Defend inputs
+        if (twoDefendDown)
+        {
+            p2StartTime = Time.time;
+            p2ActionThisPress = false;
+        }
+        if (oneDefendHeld)
+        {
+            if (Time.time >= (p2StartTime + holdTime) && !p2ActionThisPress)
+            {
+                playerTwo.state = PlayerController.CharacterState.GUARDING;
+                playerTwo.anim.Play("Guard");
+            }
+        }
+        if (twoDefendUp)
+        {
+            if (Time.time < (p2StartTime + holdTime))
+            {
+                playerTwo.state = PlayerController.CharacterState.PARRYING;
+                playerTwo.anim.Play("Parry");
             }
         }
 
@@ -133,9 +203,15 @@ public class GameController : MonoBehaviour {
                     break;
                 case PlayerController.CharacterState.GUARDING:
                     // Attacker gets knocked back
+
                     break;
                 case PlayerController.CharacterState.LIGHT_ATTACKING:
                     // Both are knocked back
+                    // Idle for now, maybe we need a knockback state?
+                    attackerController.anim.Play("Idle");
+                    defenderController.anim.Play("Idle");
+                    //Knockback(attackerController);
+                    //Knockback(defenderController);
                     break;
                 case PlayerController.CharacterState.HEAVY_ATTACKING:
                     // Disables attacker's attack button for X seconds
@@ -189,5 +265,22 @@ public class GameController : MonoBehaviour {
         }
             
     }
+
+    // Knockback not working yet, seems to have no effect
+    /*public void Knockback(PlayerController player)
+    {
+        Vector2 force;
+        print(player.gameObject.name);
+        Rigidbody2D rb = player.gameObject.GetComponentInChildren<Rigidbody2D>();
+        if (player.facingLeft)
+        {
+            force = new Vector2(-100.0f, 2.0f);
+        } else
+        {
+            force = new Vector2(100.0f, 2.0f);
+        }
+        rb.AddForce(force, ForceMode2D.Force);
+    }
+    */
 
 }

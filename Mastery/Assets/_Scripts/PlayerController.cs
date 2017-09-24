@@ -20,12 +20,13 @@ public class PlayerController : MonoBehaviour {
 
     public CharacterState state;
     public Animator anim;
+    public bool facingLeft;
 
 	// Use this for initialization
 	private void Start () {
         state = CharacterState.IDLE;
         HP = 2;
-	}
+    }
 
     private void Update()
     {
