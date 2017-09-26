@@ -11,7 +11,9 @@ public class GameController : MonoBehaviour {
     {
         playerOne.facingLeft = false;
         playerTwo.facingLeft = true;
-        CollisionBehavior.AttackResolution += Attack; // Subscribe to the AttackResolution event
+
+        // Subscribe to the AttackResolution event
+        CollisionBehavior.AttackResolution += Attack; 
     }
 
     // Time to distinguish a press from a hold, for light/heavy and parry/guard
@@ -26,22 +28,28 @@ public class GameController : MonoBehaviour {
         //Input reading goes here
 
         // Player One input reading
-        bool oneAttackDown = Input.GetKeyDown("f");
-        bool oneAttackHeld = Input.GetKey("f");
-        bool oneAttackUp = Input.GetKeyUp("f");
+        // P1Fire1: button 0 (A/bottom button on Xbone/360), left ctrl
+        bool oneAttackDown = Input.GetButtonDown("P1Fire1");
+        bool oneAttackHeld = Input.GetButton("P1Fire1");
+        bool oneAttackUp = Input.GetButtonUp("P1Fire1");
 
-        bool oneDefendDown = Input.GetKeyDown("g");
-        bool oneDefendHeld = Input.GetKey("g");
-        bool oneDefendUp = Input.GetKeyUp("g");
+        // P1Fire2: button 1 (B/right button on Xbone/360), left shift
+        bool oneDefendDown = Input.GetButtonDown("P1Fire2");
+        bool oneDefendHeld = Input.GetButton("P1Fire2");
+        bool oneDefendUp = Input.GetButtonUp("P1Fire2");
 
         // Player Two input reading
-        bool twoAttackDown = Input.GetKeyDown("h");
-        bool twoAttackHeld = Input.GetKey("h");
-        bool twoAttackUp = Input.GetKeyUp("h");
+        // P2Fire1: button 0, right ctrl
+        bool twoAttackDown = Input.GetButtonDown("P2Fire1");
+        bool twoAttackHeld = Input.GetButton("P2Fire1");
+        bool twoAttackUp = Input.GetButtonUp("P2Fire1");
 
-        bool twoDefendDown = Input.GetKeyDown("j");
-        bool twoDefendHeld = Input.GetKey("j");
-        bool twoDefendUp = Input.GetKeyUp("j");
+        // P2Fire2: buton 1, right shift
+        bool twoDefendDown = Input.GetButtonDown("P2Fire2");
+        bool twoDefendHeld = Input.GetButton("P2Fire2");
+        bool twoDefendUp = Input.GetButtonUp("P2Fire2");
+
+        // TODO: Prevent attacking in the middle of a defend, and vice versa.
 
         // Attack inputs
         if (oneAttackDown)
@@ -191,7 +199,6 @@ public class GameController : MonoBehaviour {
 
     public void Attack(GameObject attacker, GameObject defender)
     {
-
         PlayerController attackerController;
         PlayerController defenderController;
         
@@ -205,7 +212,7 @@ public class GameController : MonoBehaviour {
             defenderController = playerOne;
         }
 
-        print(attackerController +  " (" + attackerController.state + ") attacks " + defenderController + " (" + defenderController.state + ")");
+        // print(attackerController +  " (" + attackerController.state + ") attacks " + defenderController + " (" + defenderController.state + ")");
         if (attackerController.action == PlayerController.CharacterAction.LIGHT_ATTACKING)
         {
             switch (defenderController.action)
@@ -297,6 +304,7 @@ public class GameController : MonoBehaviour {
         // TODO: try putting each player object in an empty object with a rigidbody2d.
         // http://answers.unity3d.com/questions/559976/can-i-addforce-to-a-model-while-using-animator.html
 
+        // For now, they are just snapping backwards a bit
         if (player.facingLeft)
         {
             player.gameObject.transform.position += Vector3.right * 0.2f;

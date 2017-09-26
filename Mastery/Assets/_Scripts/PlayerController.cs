@@ -51,8 +51,8 @@ public class PlayerController : MonoBehaviour {
 
     private void Update()
     {
-        // Update state based on animations.
-        // There should be a better way to do this...
+        // Update states based on animations.
+        // (I'm hoping there is a better way to do this)
         if (anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
         {
             state = CharacterState.IDLE;
