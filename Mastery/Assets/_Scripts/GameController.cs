@@ -7,21 +7,21 @@ public class GameController : MonoBehaviour {
     public PlayerController playerOne;
     public PlayerController playerTwo;
 
+    // Time to distinguish a press from a hold, for light/heavy and parry/guard
+    // (Different numbers for those two categories?)
+    private static float _holdTime = 0.15f;
+
+    // Length of disarm
+    private static float _disarmTime = 3.0f;
+
     private void Start()
     {
         playerOne.facingLeft = false;
         playerTwo.facingLeft = true;
 
         // Subscribe to the AttackResolution event
-        CollisionBehavior.AttackResolution += Attack; 
+        CollisionBehavior.AttackResolution += Attack;
     }
-
-    // Time to distinguish a press from a hold, for light/heavy and parry/guard
-    // (Different numbers for those two categories?)
-    private static float holdTime = 0.15f;
-
-    // Length of disarm
-    private static float disarmTime = 3.0f;
 
     private void Update()
     {
