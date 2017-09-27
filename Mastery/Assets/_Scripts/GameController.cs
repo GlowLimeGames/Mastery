@@ -54,7 +54,7 @@ public class GameController : MonoBehaviour {
         // Attack inputs
         if (oneAttackDown)
         {
-            if (Time.time >= (playerOne.disarmStartTime + disarmTime))
+            if (Time.time >= (playerOne.disarmStartTime + _disarmTime))
             {
                 playerOne.pressStartTime = Time.time;
                 playerOne.actionThisPress = false;
@@ -66,7 +66,7 @@ public class GameController : MonoBehaviour {
         }
         if (oneAttackHeld)
         {
-            if (Time.time >= (playerOne.pressStartTime + holdTime) && !playerOne.actionThisPress)
+            if (Time.time >= (playerOne.pressStartTime + _holdTime) && !playerOne.actionThisPress)
             {
                 playerOne.state = PlayerController.CharacterState.ATTACKING;
                 playerOne.action = PlayerController.CharacterAction.HEAVY_ATTACKING;
@@ -77,7 +77,7 @@ public class GameController : MonoBehaviour {
         }
         if (oneAttackUp)
         {
-            if (Time.time < (playerOne.pressStartTime + holdTime))
+            if (Time.time < (playerOne.pressStartTime + _holdTime))
             {
                 playerOne.state = PlayerController.CharacterState.ATTACKING;
                 playerOne.action = PlayerController.CharacterAction.LIGHT_ATTACKING;
@@ -96,7 +96,7 @@ public class GameController : MonoBehaviour {
         }
         if (oneDefendHeld)
         {
-            if (Time.time >= (playerOne.pressStartTime + holdTime) && !playerOne.actionThisPress)
+            if (Time.time >= (playerOne.pressStartTime + _holdTime) && !playerOne.actionThisPress)
             {
                 playerOne.state = PlayerController.CharacterState.GUARDING;
                 playerOne.action = PlayerController.CharacterAction.GUARDING;
@@ -105,7 +105,7 @@ public class GameController : MonoBehaviour {
         }
         if (oneDefendUp)
         {
-            if (Time.time < (playerOne.pressStartTime + holdTime))
+            if (Time.time < (playerOne.pressStartTime + _holdTime))
             {
                 playerOne.state = PlayerController.CharacterState.GUARDING;
                 playerOne.action = PlayerController.CharacterAction.PARRYING;
@@ -116,7 +116,7 @@ public class GameController : MonoBehaviour {
         // P2 Attack inputs
         if (twoAttackDown)
         {
-            if (Time.time >= (playerTwo.disarmStartTime + disarmTime))
+            if (Time.time >= (playerTwo.disarmStartTime + _disarmTime))
             {
                 playerTwo.pressStartTime = Time.time;
                 playerTwo.actionThisPress = false;
@@ -128,7 +128,7 @@ public class GameController : MonoBehaviour {
         }
         if (twoAttackHeld)
         {
-            if (Time.time >= (playerTwo.pressStartTime + holdTime) && !playerTwo.actionThisPress)
+            if (Time.time >= (playerTwo.pressStartTime + _holdTime) && !playerTwo.actionThisPress)
             {
                 playerTwo.state = PlayerController.CharacterState.ATTACKING;
                 playerTwo.action = PlayerController.CharacterAction.HEAVY_ATTACKING;
@@ -139,7 +139,7 @@ public class GameController : MonoBehaviour {
         }
         if (twoAttackUp)
         {
-            if (Time.time < (playerTwo.pressStartTime + holdTime))
+            if (Time.time < (playerTwo.pressStartTime + _holdTime))
             {
                 playerTwo.state = PlayerController.CharacterState.ATTACKING;
                 playerTwo.action = PlayerController.CharacterAction.LIGHT_ATTACKING;
@@ -157,7 +157,7 @@ public class GameController : MonoBehaviour {
         }
         if (twoDefendHeld)
         {
-            if (Time.time >= (playerTwo.pressStartTime + holdTime) && !playerTwo.actionThisPress)
+            if (Time.time >= (playerTwo.pressStartTime + _holdTime) && !playerTwo.actionThisPress)
             {
                 playerTwo.state = PlayerController.CharacterState.GUARDING;
                 playerTwo.action = PlayerController.CharacterAction.GUARDING;
@@ -166,7 +166,7 @@ public class GameController : MonoBehaviour {
         }
         if (twoDefendUp)
         {
-            if (Time.time < (playerTwo.pressStartTime + holdTime))
+            if (Time.time < (playerTwo.pressStartTime + _holdTime))
             {
                 playerTwo.state = PlayerController.CharacterState.GUARDING;
                 playerTwo.action = PlayerController.CharacterAction.PARRYING;
