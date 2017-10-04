@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,8 +15,42 @@ public class GameController : MonoBehaviour {
     // Length of disarm
     private static float _disarmTime = 3.0f;
 
+    //Remaining time left in the game - use this to transform the closing walls.
+    private float timeRemaining = 300.0f;
+    //The time when the walls will begin closing in on the arena. 
+    //timeToClose is the percentage of time that the walls will begin moving. 
+    //Change this value to change the time the walls will begin moving.
+    private float timeToClose = 0.75f;
+    private float beginClosing;
+
+    /// <summary>
+    ///notOver: current game is still in progress
+    ///p1Win: Player 1 is the winner
+    ///p2Win: Player 2 is the winner
+    ///timeUp: the time runs out
+    /// </summary>
+    //use this enum to handle endgame
+    private enum gameScenarios
+    {
+        //notover is 0001
+        notOver = 0x01,
+        // p1Win is 0010.
+        p1Win = 0x02,
+        // p2Win is 0100.
+        p2Win = 0x04,
+        // timeUp is 1000.
+        timeUp = 0x08,
+    }
+    //current status of the game, use as flag to end the game
+    private gameScenarios currentScenario;
+
     private void Start()
     {
+        //flag that will trigger the walls to move
+        beginClosing = timeRemaining * timeToClose;
+        //game begins in progress
+        currentScenario = gameScenarios.notOver;
+
         playerOne.facingLeft = false;
         playerTwo.facingLeft = true;
 
@@ -58,7 +93,8 @@ public class GameController : MonoBehaviour {
             {
                 playerOne.pressStartTime = Time.time;
                 playerOne.actionThisPress = false;
-            } else
+            }
+            else
             {
                 // TODO: Play some sort of "whoops, I'm disarmed" animation
             }
@@ -120,7 +156,8 @@ public class GameController : MonoBehaviour {
             {
                 playerTwo.pressStartTime = Time.time;
                 playerTwo.actionThisPress = false;
-            } else
+            }
+            else
             {
                 // TODO Disarmed animation
             }
@@ -172,6 +209,33 @@ public class GameController : MonoBehaviour {
                 playerTwo.action = PlayerController.CharacterAction.PARRYING;
                 playerTwo.anim.Play("Parry");
             }
+        }
+
+
+        //continually decreasing time for game timer.
+        timeRemaining -= Time.deltaTime;
+        if (timeRemaining < 0) {
+            currentScenario = gameScenarios.timeUp;
+        }
+
+
+        if (timeRemaining <= beginClosing)
+        {
+            //TODO: Wall-closing logic
+        }
+
+        //endgame logic
+        if (currentScenario == gameScenarios.p1Win)
+        {
+            //TODO: player 1 wins scenario
+        }
+        if (currentScenario == gameScenarios.p2Win)
+        {
+            //TODO: player 2 wins scenario
+        }
+        if (currentScenario == gameScenarios.timeUp)
+        {
+            //TODO: time runs out scenario
         }
 
     }
