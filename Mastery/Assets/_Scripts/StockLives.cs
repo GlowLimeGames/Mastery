@@ -20,11 +20,11 @@ public class StockLives : MonoBehaviour {
 	}
     private void OnEnable()
     {
-        StockManager.onFatal += RemoveStock;
+        EventManager.onFatal += RemoveStock;
     }
     private void OnDisable()
     {
-        StockManager.onFatal -= RemoveStock;
+        EventManager.onFatal -= RemoveStock;
     }
     void RemoveStock() {
         if (size > 1)
