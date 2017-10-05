@@ -72,6 +72,8 @@ public class GameController : MonoBehaviour {
         // Player One input reading
         // Movement
         playerOne.inputHorizontal = Input.GetAxisRaw("P1Horizontal");
+
+        // P1Fire3: button 2 (X/left button on Xbone/360), left shift
         playerOne.inputRollDown = Input.GetButtonDown("P1Fire3");
 
         // P1Fire1: button 0 (A/bottom button on Xbone/360), left ctrl
@@ -79,7 +81,7 @@ public class GameController : MonoBehaviour {
         playerOne.inputAttackHeld = Input.GetButton("P1Fire1");
         playerOne.inputAttackUp = Input.GetButtonUp("P1Fire1");
 
-        // P1Fire2: button 1 (B/right button on Xbone/360), left shift
+        // P1Fire2: button 1 (B/right button on Xbone/360), left alt
         playerOne.inputDefendDown = Input.GetButtonDown("P1Fire2");
         playerOne.inputDefendHeld = Input.GetButton("P1Fire2");
         playerOne.inputDefendUp = Input.GetButtonUp("P1Fire2");
@@ -87,6 +89,8 @@ public class GameController : MonoBehaviour {
         // Player Two input reading
         // Movement
         playerTwo.inputHorizontal = Input.GetAxisRaw("P2Horizontal");
+
+        // P2Fire3: button 2, right shift
         playerTwo.inputRollDown = Input.GetButtonDown("P2Fire3");
 
         // P2Fire1: button 0, right ctrl
@@ -94,7 +98,7 @@ public class GameController : MonoBehaviour {
         playerTwo.inputAttackHeld = Input.GetButton("P2Fire1");
         playerTwo.inputAttackUp = Input.GetButtonUp("P2Fire1");
 
-        // P2Fire2: buton 1, right shift
+        // P2Fire2: buton 1, right alt
         playerTwo.inputDefendDown = Input.GetButtonDown("P2Fire2");
         playerTwo.inputDefendHeld = Input.GetButton("P2Fire2");
         playerTwo.inputDefendUp = Input.GetButtonUp("P2Fire2");
@@ -107,6 +111,7 @@ public class GameController : MonoBehaviour {
             {
                 if (player.inputHorizontal != 0.0f)
                 {
+                    // Turn around if necessary
                     if (player.inputHorizontal < 0.0f && !player.facingLeft)
                     {
                         player.TurnAround();
@@ -238,6 +243,7 @@ public class GameController : MonoBehaviour {
                     player.transform.position += Vector3.right * _rollSpeed;
                 }
             }
+            // TODO: Something similar for knockback
         }
     }
 
@@ -268,7 +274,6 @@ public class GameController : MonoBehaviour {
             defenderController = playerOne;
         }
 
-        // print(attackerController +  " (" + attackerController.state + ") attacks " + defenderController + " (" + defenderController.state + ")");
         if (attackerController.action == PlayerController.CharacterAction.LIGHT_ATTACKING)
         {
             switch (defenderController.action)
@@ -379,4 +384,4 @@ public class GameController : MonoBehaviour {
 
 }
 
-// TODO: P2 can kill P1 but not the other way.
+// TODO: P2 can kill P1 but not vice versa.
