@@ -57,7 +57,6 @@ GameObject:
   - component: {fileID: 4878992945680198}
   - component: {fileID: 212696717067264400}
   - component: {fileID: 61642681939327204}
-  - component: {fileID: 50597817287292134}
   - component: {fileID: 114171660724321290}
   m_Layer: 0
   m_Name: Right Leg
@@ -76,7 +75,6 @@ GameObject:
   - component: {fileID: 4988606768651138}
   - component: {fileID: 212406906330673892}
   - component: {fileID: 61780748527301912}
-  - component: {fileID: 50851059053352526}
   - component: {fileID: 114187813109764270}
   m_Layer: 0
   m_Name: Left Leg
@@ -319,46 +317,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!50 &50597817287292134
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1288264862752956}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 1
-  m_Material: {fileID: 0}
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
---- !u!50 &50851059053352526
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1290061099244044}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 1
-  m_Material: {fileID: 0}
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
 --- !u!61 &61031478754567622
 BoxCollider2D:
   m_ObjectHideFlags: 1
@@ -548,7 +506,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4581bed730e102a4c95cd47d7df225b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  state: 0
+  action: 0
   anim: {fileID: 95255465309510396}
+  HP: 0
+  facingLeft: 0
+  pressStartTime: 0
+  disarmStartTime: 0
+  actionThisPress: 0
 --- !u!114 &114171660724321290
 MonoBehaviour:
   m_ObjectHideFlags: 1

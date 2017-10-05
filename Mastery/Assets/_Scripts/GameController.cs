@@ -8,6 +8,8 @@ public class GameController : MonoBehaviour {
     public PlayerController playerOne;
     public PlayerController playerTwo;
 
+    private static float _moveSpeed = 0.05f;
+
     // Time to distinguish a press from a hold, for light/heavy and parry/guard
     // (Different numbers for those two categories?)
     private static float _holdTime = 0.15f;
@@ -63,6 +65,9 @@ public class GameController : MonoBehaviour {
         //Input reading goes here
 
         // Player One input reading
+        // Movement
+        float oneHorizontal = Input.GetAxisRaw("P1Horizontal");
+
         // P1Fire1: button 0 (A/bottom button on Xbone/360), left ctrl
         bool oneAttackDown = Input.GetButtonDown("P1Fire1");
         bool oneAttackHeld = Input.GetButton("P1Fire1");
@@ -74,6 +79,9 @@ public class GameController : MonoBehaviour {
         bool oneDefendUp = Input.GetButtonUp("P1Fire2");
 
         // Player Two input reading
+        // Movement
+        float twoHorizontal = Input.GetAxisRaw("P2Horizontal");
+
         // P2Fire1: button 0, right ctrl
         bool twoAttackDown = Input.GetButtonDown("P2Fire1");
         bool twoAttackHeld = Input.GetButton("P2Fire1");
@@ -84,9 +92,17 @@ public class GameController : MonoBehaviour {
         bool twoDefendHeld = Input.GetButton("P2Fire2");
         bool twoDefendUp = Input.GetButtonUp("P2Fire2");
 
-        // TODO: Prevent attacking in the middle of a defend, and vice versa.
+        if (oneHorizontal != 0.0f)
+        {
+            playerOne.action = PlayerController.CharacterAction.MOVING;
+            playerOne.transform.position += Vector3.right * (_moveSpeed * oneHorizontal);
+            playerOne.anim.Play("Walking");
+
+        }
 
         // Attack inputs
+
+        // TODO: Prevent attacking in the middle of a defend, and vice versa.
         if (oneAttackDown)
         {
             if (Time.time >= (playerOne.disarmStartTime + _disarmTime))
@@ -147,6 +163,17 @@ public class GameController : MonoBehaviour {
                 playerOne.action = PlayerController.CharacterAction.PARRYING;
                 playerOne.anim.Play("Parry");
             }
+        }
+
+
+        // P2 Movement
+        print(twoHorizontal);
+        if (twoHorizontal != 0.0f)
+        {
+            playerTwo.action = PlayerController.CharacterAction.MOVING;
+            playerTwo.transform.position += Vector3.right * (_moveSpeed * twoHorizontal);
+            playerTwo.anim.Play("Walking");
+
         }
 
         // P2 Attack inputs

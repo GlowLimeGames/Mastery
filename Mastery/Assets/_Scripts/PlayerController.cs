@@ -23,6 +23,7 @@ public class PlayerController : MonoBehaviour {
         PARRYING,
         GUARDING,
         // KICKING,
+        MOVING,
     }
 
     public CharacterState state;
@@ -57,6 +58,12 @@ public class PlayerController : MonoBehaviour {
         {
             state = CharacterState.IDLE;
             action = CharacterAction.IDLE;
+        }
+
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Moving"))
+        {
+            state = CharacterState.IDLE;
+            action = CharacterAction.MOVING;
         }
 
         if (anim.GetCurrentAnimatorStateInfo(0).IsName("Light Attack"))

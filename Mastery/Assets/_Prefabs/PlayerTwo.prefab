@@ -21,7 +21,6 @@ GameObject:
   - component: {fileID: 4171172560207142}
   - component: {fileID: 212588351339749248}
   - component: {fileID: 61312115342406470}
-  - component: {fileID: 50557829239143320}
   - component: {fileID: 114841334703042064}
   m_Layer: 0
   m_Name: Left Leg
@@ -59,7 +58,6 @@ GameObject:
   - component: {fileID: 4476160479600522}
   - component: {fileID: 212229517432374520}
   - component: {fileID: 61911882840951794}
-  - component: {fileID: 50905605816481434}
   - component: {fileID: 114623965753455104}
   m_Layer: 0
   m_Name: Right Leg
@@ -259,26 +257,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!50 &50557829239143320
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1038626448615706}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 1
-  m_Material: {fileID: 0}
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
 --- !u!50 &50605930671371620
 Rigidbody2D:
   serializedVersion: 4
@@ -326,26 +304,6 @@ Rigidbody2D:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1956994715250796}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 1
-  m_Material: {fileID: 0}
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
---- !u!50 &50905605816481434
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1081397589620690}
   m_BodyType: 0
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
@@ -571,7 +529,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   state: 0
+  action: 0
   anim: {fileID: 95639027798573938}
+  HP: 0
+  facingLeft: 0
+  pressStartTime: 0
+  disarmStartTime: 0
+  actionThisPress: 0
 --- !u!114 &114623965753455104
 MonoBehaviour:
   m_ObjectHideFlags: 1
