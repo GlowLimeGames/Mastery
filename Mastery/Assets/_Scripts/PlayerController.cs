@@ -34,6 +34,17 @@ public class PlayerController : MonoBehaviour {
     public int HP;
     public bool facingLeft;
 
+    // Input holders
+    // TODO: Would be nice to put this in an object or something
+    public float inputHorizontal;
+    public bool inputRollDown;
+    public bool inputAttackDown;
+    public bool inputAttackHeld;
+    public bool inputAttackUp;
+    public bool inputDefendDown;
+    public bool inputDefendHeld;
+    public bool inputDefendUp;
+
     // The time the player pressed the button last
     public float pressStartTime;
 
@@ -105,6 +116,19 @@ public class PlayerController : MonoBehaviour {
         } else
         {
             return false;
+        }
+    }
+
+    public void TurnAround()
+    {
+        // TODO: Add a delay and animation to this, since it's used as a penalty for something too
+        transform.localScale = new Vector3(transform.localScale.x * -1, transform.localScale.y, transform.localScale.z);
+        if (facingLeft)
+        {
+            facingLeft = false;
+        } else
+        {
+            facingLeft = true;
         }
     }
 
