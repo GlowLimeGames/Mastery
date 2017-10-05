@@ -24,6 +24,7 @@ public class PlayerController : MonoBehaviour {
         GUARDING,
         // KICKING,
         MOVING,
+        ROLLING
     }
 
     public CharacterState state;
@@ -41,7 +42,6 @@ public class PlayerController : MonoBehaviour {
 
     // Whether an action has been performed with this button press
     public bool actionThisPress;
-
 
 	// Use this for initialization
 	private void Start () {
@@ -66,6 +66,12 @@ public class PlayerController : MonoBehaviour {
             action = CharacterAction.MOVING;
         }
 
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Roll"))
+        {
+            state = CharacterState.IDLE;
+            action = CharacterAction.ROLLING;
+        }
+
         if (anim.GetCurrentAnimatorStateInfo(0).IsName("Light Attack"))
         {
             state = CharacterState.ATTACKING;
@@ -88,6 +94,17 @@ public class PlayerController : MonoBehaviour {
         {
             state = CharacterState.GUARDING;
             action = CharacterAction.GUARDING;
+        }
+    }
+
+    public bool CanMove()
+    {
+        if (action == CharacterAction.IDLE || action == CharacterAction.MOVING)
+        {
+            return true;
+        } else
+        {
+            return false;
         }
     }
 
