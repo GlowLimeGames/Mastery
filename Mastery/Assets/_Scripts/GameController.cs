@@ -8,6 +8,11 @@ public class GameController : MonoBehaviour {
     public PlayerController playerOne;
     public PlayerController playerTwo;
 
+    private PlayerController[] _players = new PlayerController[2];
+
+    private static float _moveSpeed = 0.05f;
+    private static float _rollSpeed = 0.10f;
+
     // Time to distinguish a press from a hold, for light/heavy and parry/guard
     // (Different numbers for those two categories?)
     private static float _holdTime = 0.15f;
@@ -46,6 +51,8 @@ public class GameController : MonoBehaviour {
 
     private void Start()
     {
+        _players[0] = playerOne;
+        _players[1] = playerTwo;
         //flag that will trigger the walls to move
         beginClosing = timeRemaining * timeToClose;
         //game begins in progress
@@ -63,155 +70,135 @@ public class GameController : MonoBehaviour {
         //Input reading goes here
 
         // Player One input reading
-        // P1Fire1: button 0 (A/bottom button on Xbone/360), left ctrl
-        bool oneAttackDown = Input.GetButtonDown("P1Fire1");
-        bool oneAttackHeld = Input.GetButton("P1Fire1");
-        bool oneAttackUp = Input.GetButtonUp("P1Fire1");
+        // Movement
+        playerOne.inputHorizontal = Input.GetAxisRaw("P1Horizontal");
 
-        // P1Fire2: button 1 (B/right button on Xbone/360), left shift
-        bool oneDefendDown = Input.GetButtonDown("P1Fire2");
-        bool oneDefendHeld = Input.GetButton("P1Fire2");
-        bool oneDefendUp = Input.GetButtonUp("P1Fire2");
+        // P1Fire3: button 2 (X/left button on Xbone/360), left shift
+        playerOne.inputRollDown = Input.GetButtonDown("P1Fire3");
+
+        // P1Fire1: button 0 (A/bottom button on Xbone/360), left ctrl
+        playerOne.inputAttackDown = Input.GetButtonDown("P1Fire1");
+        playerOne.inputAttackHeld = Input.GetButton("P1Fire1");
+        playerOne.inputAttackUp = Input.GetButtonUp("P1Fire1");
+
+        // P1Fire2: button 1 (B/right button on Xbone/360), left alt
+        playerOne.inputDefendDown = Input.GetButtonDown("P1Fire2");
+        playerOne.inputDefendHeld = Input.GetButton("P1Fire2");
+        playerOne.inputDefendUp = Input.GetButtonUp("P1Fire2");
 
         // Player Two input reading
+        // Movement
+        playerTwo.inputHorizontal = Input.GetAxisRaw("P2Horizontal");
+
+        // P2Fire3: button 2, right shift
+        playerTwo.inputRollDown = Input.GetButtonDown("P2Fire3");
+
         // P2Fire1: button 0, right ctrl
-        bool twoAttackDown = Input.GetButtonDown("P2Fire1");
-        bool twoAttackHeld = Input.GetButton("P2Fire1");
-        bool twoAttackUp = Input.GetButtonUp("P2Fire1");
+        playerTwo.inputAttackDown = Input.GetButtonDown("P2Fire1");
+        playerTwo.inputAttackHeld = Input.GetButton("P2Fire1");
+        playerTwo.inputAttackUp = Input.GetButtonUp("P2Fire1");
 
-        // P2Fire2: buton 1, right shift
-        bool twoDefendDown = Input.GetButtonDown("P2Fire2");
-        bool twoDefendHeld = Input.GetButton("P2Fire2");
-        bool twoDefendUp = Input.GetButtonUp("P2Fire2");
+        // P2Fire2: buton 1, right alt
+        playerTwo.inputDefendDown = Input.GetButtonDown("P2Fire2");
+        playerTwo.inputDefendHeld = Input.GetButton("P2Fire2");
+        playerTwo.inputDefendUp = Input.GetButtonUp("P2Fire2");
 
-        // TODO: Prevent attacking in the middle of a defend, and vice versa.
 
-        // Attack inputs
-        if (oneAttackDown)
+        foreach(PlayerController player in _players)
         {
-            if (Time.time >= (playerOne.disarmStartTime + _disarmTime))
+            // Rolling disables pretty much all inputs
+            if (player.CanMove())
             {
-                playerOne.pressStartTime = Time.time;
-                playerOne.actionThisPress = false;
-            }
-            else
-            {
-                // TODO: Play some sort of "whoops, I'm disarmed" animation
-            }
+                if (player.inputHorizontal != 0.0f)
+                {
+                    // Turn around if necessary
+                    if (player.inputHorizontal < 0.0f && !player.facingLeft)
+                    {
+                        player.TurnAround();
+                    }
+                    else if (player.inputHorizontal > 0.0f && player.facingLeft)
+                    {
+                        player.TurnAround();
+                    }
 
-        }
-        if (oneAttackHeld)
-        {
-            if (Time.time >= (playerOne.pressStartTime + _holdTime) && !playerOne.actionThisPress)
-            {
-                playerOne.state = PlayerController.CharacterState.ATTACKING;
-                playerOne.action = PlayerController.CharacterAction.HEAVY_ATTACKING;
-                playerOne.anim.Play("Heavy Attack");
+                    player.action = PlayerController.CharacterAction.MOVING;
+                    player.transform.position += Vector3.right * (_moveSpeed * player.inputHorizontal);
+                    player.anim.Play("Walking");
+                }
 
-                playerOne.actionThisPress = true;
-            }
-        }
-        if (oneAttackUp)
-        {
-            if (Time.time < (playerOne.pressStartTime + _holdTime))
-            {
-                playerOne.state = PlayerController.CharacterState.ATTACKING;
-                playerOne.action = PlayerController.CharacterAction.LIGHT_ATTACKING;
-                playerOne.anim.Play("Light Attack");
+                // Attack inputs
+                if (player.inputAttackDown)
+                {
+                    if (Time.time >= (player.disarmStartTime + _disarmTime))
+                    {
+                        player.pressStartTime = Time.time;
+                        player.actionThisPress = false;
+                    }
+                    else
+                    {
+                        // TODO: Play some sort of "whoops, I'm disarmed" animation
+                    }
 
-                playerOne.actionThisPress = true;
-            }
-        }
+                }
+                if (player.inputAttackHeld)
+                {
+                    if (Time.time >= (player.pressStartTime + _holdTime) && !player.actionThisPress)
+                    {
+                        player.state = PlayerController.CharacterState.ATTACKING;
+                        player.action = PlayerController.CharacterAction.HEAVY_ATTACKING;
+                        player.anim.Play("Heavy Attack");
+
+                        player.actionThisPress = true;
+                    }
+                }
+                if (player.inputAttackUp)
+                {
+                    if (Time.time < (player.pressStartTime + _holdTime))
+                    {
+                        player.state = PlayerController.CharacterState.ATTACKING;
+                        player.action = PlayerController.CharacterAction.LIGHT_ATTACKING;
+                        player.anim.Play("Light Attack");
+
+                        player.actionThisPress = true;
+                    }
+                }
 
 
-        // Defend inputs
-        if (oneDefendDown)
-        {
-            playerOne.pressStartTime = Time.time;
-            playerOne.actionThisPress = false;
-        }
-        if (oneDefendHeld)
-        {
-            if (Time.time >= (playerOne.pressStartTime + _holdTime) && !playerOne.actionThisPress)
-            {
-                playerOne.state = PlayerController.CharacterState.GUARDING;
-                playerOne.action = PlayerController.CharacterAction.GUARDING;
-                playerOne.anim.Play("Guard");
-            }
-        }
-        if (oneDefendUp)
-        {
-            if (Time.time < (playerOne.pressStartTime + _holdTime))
-            {
-                playerOne.state = PlayerController.CharacterState.GUARDING;
-                playerOne.action = PlayerController.CharacterAction.PARRYING;
-                playerOne.anim.Play("Parry");
-            }
-        }
+                // Defend inputs
+                if (player.inputDefendDown)
+                {
+                    player.pressStartTime = Time.time;
+                    player.actionThisPress = false;
+                }
+                if (player.inputDefendHeld)
+                {
+                    if (Time.time >= (player.pressStartTime + _holdTime) && !player.actionThisPress)
+                    {
+                        player.state = PlayerController.CharacterState.GUARDING;
+                        player.action = PlayerController.CharacterAction.GUARDING;
+                        player.anim.Play("Guard");
+                    }
+                }
+                if (player.inputDefendUp)
+                {
+                    if (Time.time < (player.pressStartTime + _holdTime))
+                    {
+                        player.state = PlayerController.CharacterState.GUARDING;
+                        player.action = PlayerController.CharacterAction.PARRYING;
+                        player.anim.Play("Parry");
+                    }
+                }
 
-        // P2 Attack inputs
-        if (twoAttackDown)
-        {
-            if (Time.time >= (playerTwo.disarmStartTime + _disarmTime))
-            {
-                playerTwo.pressStartTime = Time.time;
-                playerTwo.actionThisPress = false;
-            }
-            else
-            {
-                // TODO Disarmed animation
-            }
-
-        }
-        if (twoAttackHeld)
-        {
-            if (Time.time >= (playerTwo.pressStartTime + _holdTime) && !playerTwo.actionThisPress)
-            {
-                playerTwo.state = PlayerController.CharacterState.ATTACKING;
-                playerTwo.action = PlayerController.CharacterAction.HEAVY_ATTACKING;
-                playerTwo.anim.Play("Heavy Attack");
-
-                playerTwo.actionThisPress = true;
-            }
-        }
-        if (twoAttackUp)
-        {
-            if (Time.time < (playerTwo.pressStartTime + _holdTime))
-            {
-                playerTwo.state = PlayerController.CharacterState.ATTACKING;
-                playerTwo.action = PlayerController.CharacterAction.LIGHT_ATTACKING;
-                playerTwo.anim.Play("Light Attack");
-
-                playerTwo.actionThisPress = true;
+                if (player.inputRollDown)
+                {
+                    player.action = PlayerController.CharacterAction.ROLLING;
+                    player.anim.Play("Roll");
+                    //StartCoroutine(StopRoll(player));
+                }
             }
         }
 
-        // Defend inputs
-        if (twoDefendDown)
-        {
-            playerTwo.pressStartTime = Time.time;
-            playerTwo.actionThisPress = false;
-        }
-        if (twoDefendHeld)
-        {
-            if (Time.time >= (playerTwo.pressStartTime + _holdTime) && !playerTwo.actionThisPress)
-            {
-                playerTwo.state = PlayerController.CharacterState.GUARDING;
-                playerTwo.action = PlayerController.CharacterAction.GUARDING;
-                playerTwo.anim.Play("Guard");
-            }
-        }
-        if (twoDefendUp)
-        {
-            if (Time.time < (playerTwo.pressStartTime + _holdTime))
-            {
-                playerTwo.state = PlayerController.CharacterState.GUARDING;
-                playerTwo.action = PlayerController.CharacterAction.PARRYING;
-                playerTwo.anim.Play("Parry");
-            }
-        }
-
-
+        // UI and game loop stuff:
         //continually decreasing time for game timer.
         timeRemaining -= Time.deltaTime;
         if (timeRemaining < 0) {
@@ -243,21 +230,32 @@ public class GameController : MonoBehaviour {
     private void FixedUpdate()
     {
         //Movement / Combat Functionality goes here
-
+        foreach(PlayerController player in _players)
+        {
+            if (player.action == PlayerController.CharacterAction.ROLLING)
+            {
+                if (player.facingLeft)
+                {
+                    player.transform.position += Vector3.left * _rollSpeed;
+                }
+                else
+                {
+                    player.transform.position += Vector3.right * _rollSpeed;
+                }
+            }
+            // TODO: Something similar for knockback
+        }
     }
 
     private void LateUpdate()
     {
         //Do something after Movement / Combat here
-
-        if (playerOne.HP <= 0)
+        foreach (PlayerController player in _players)
         {
-            playerOne.state = PlayerController.CharacterState.VULNERABLE;
-        }
-
-        if (playerTwo.HP <= 0)
-        {
-            playerTwo.state = PlayerController.CharacterState.VULNERABLE;
+            if (player.HP <= 0)
+            {
+                player.state = PlayerController.CharacterState.VULNERABLE;
+            }
         }
     }
 
@@ -276,14 +274,13 @@ public class GameController : MonoBehaviour {
             defenderController = playerOne;
         }
 
-        // print(attackerController +  " (" + attackerController.state + ") attacks " + defenderController + " (" + defenderController.state + ")");
         if (attackerController.action == PlayerController.CharacterAction.LIGHT_ATTACKING)
         {
             switch (defenderController.action)
             {
                 case PlayerController.CharacterAction.PARRYING:
                     // Attacker gets turned around
-                    // TODO: Not implemented, will after movement is added
+                    attackerController.TurnAround();
                     break;
                 case PlayerController.CharacterAction.GUARDING:
                     // Attacker gets knocked back
@@ -367,6 +364,7 @@ public class GameController : MonoBehaviour {
         // Having issues with AddForce, it was working on the legs but not the animated parts.
         // TODO: try putting each player object in an empty object with a rigidbody2d.
         // http://answers.unity3d.com/questions/559976/can-i-addforce-to-a-model-while-using-animator.html
+            // UPDATE: We're not using rigidbody physics, so could just use a coroutine or state change, like for the roll
 
         // For now, they are just snapping backwards a bit
         if (player.facingLeft)
@@ -385,3 +383,5 @@ public class GameController : MonoBehaviour {
     }
 
 }
+
+// TODO: P2 can kill P1 but not vice versa.

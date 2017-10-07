@@ -23,6 +23,8 @@ public class PlayerController : MonoBehaviour {
         PARRYING,
         GUARDING,
         // KICKING,
+        MOVING,
+        ROLLING
     }
 
     public CharacterState state;
@@ -32,6 +34,17 @@ public class PlayerController : MonoBehaviour {
     public int HP;
     public bool facingLeft;
 
+    // Input holders
+    // TODO: Would be nice to put this in an object or something
+    public float inputHorizontal;
+    public bool inputRollDown;
+    public bool inputAttackDown;
+    public bool inputAttackHeld;
+    public bool inputAttackUp;
+    public bool inputDefendDown;
+    public bool inputDefendHeld;
+    public bool inputDefendUp;
+
     // The time the player pressed the button last
     public float pressStartTime;
 
@@ -40,7 +53,6 @@ public class PlayerController : MonoBehaviour {
 
     // Whether an action has been performed with this button press
     public bool actionThisPress;
-
 
 	// Use this for initialization
 	private void Start () {
@@ -57,6 +69,18 @@ public class PlayerController : MonoBehaviour {
         {
             state = CharacterState.IDLE;
             action = CharacterAction.IDLE;
+        }
+
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Moving"))
+        {
+            state = CharacterState.IDLE;
+            action = CharacterAction.MOVING;
+        }
+
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Roll"))
+        {
+            state = CharacterState.IDLE;
+            action = CharacterAction.ROLLING;
         }
 
         if (anim.GetCurrentAnimatorStateInfo(0).IsName("Light Attack"))
@@ -81,6 +105,30 @@ public class PlayerController : MonoBehaviour {
         {
             state = CharacterState.GUARDING;
             action = CharacterAction.GUARDING;
+        }
+    }
+
+    public bool CanMove()
+    {
+        if (action == CharacterAction.IDLE || action == CharacterAction.MOVING)
+        {
+            return true;
+        } else
+        {
+            return false;
+        }
+    }
+
+    public void TurnAround()
+    {
+        // TODO: Add a delay and animation to this, since it's used as a penalty for something too
+        transform.localScale = new Vector3(transform.localScale.x * -1, transform.localScale.y, transform.localScale.z);
+        if (facingLeft)
+        {
+            facingLeft = false;
+        } else
+        {
+            facingLeft = true;
         }
     }
 
