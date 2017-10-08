@@ -70,8 +70,9 @@ public class GameController : MonoBehaviour {
         //Input reading goes here
 
         // Player One input reading
-        // Movement
+        // Movement and facing
         playerOne.inputHorizontal = Input.GetAxisRaw("P1Horizontal");
+        playerOne.inputRightHorizontal = Input.GetAxisRaw("P1RightHorizontal");
 
         // P1Fire3: button 2 (X/left button on Xbone/360), left shift
         playerOne.inputRollDown = Input.GetButtonDown("P1Fire3");
@@ -87,8 +88,9 @@ public class GameController : MonoBehaviour {
         playerOne.inputDefendUp = Input.GetButtonUp("P1Fire2");
 
         // Player Two input reading
-        // Movement
+        // Movement and facing
         playerTwo.inputHorizontal = Input.GetAxisRaw("P2Horizontal");
+        playerTwo.inputRightHorizontal = Input.GetAxisRaw("P2RightHorizontal");
 
         // P2Fire3: button 2, right shift
         playerTwo.inputRollDown = Input.GetButtonDown("P2Fire3");
@@ -109,22 +111,41 @@ public class GameController : MonoBehaviour {
             // Rolling disables pretty much all inputs
             if (player.CanMove())
             {
+                // Right stick takes priority over left stick for determining orientation.
+                if (player.inputRightHorizontal != 0.0f)
+                {
+                    if (player.inputRightHorizontal < 0.0f && !player.facingLeft)
+                    {
+                        player.TurnAround();
+                    }
+                    else if (player.inputRightHorizontal > 0.0f && player.facingLeft)
+                    {
+                        player.TurnAround();
+                    }
+                } else
+                {
+                    if (player.inputHorizontal != 0.0f)
+                    {
+                        // Not overridden by right stick, so turn around if not facing direction of motion
+                        if (player.inputHorizontal < 0.0f && !player.facingLeft)
+                        {
+                            player.TurnAround();
+                        }
+                        else if (player.inputHorizontal > 0.0f && player.facingLeft)
+                        {
+                            player.TurnAround();
+                        }
+                    }
+                }
+
+                // Motion happens regardless of right stick
                 if (player.inputHorizontal != 0.0f)
                 {
-                    // Turn around if necessary
-                    if (player.inputHorizontal < 0.0f && !player.facingLeft)
-                    {
-                        player.TurnAround();
-                    }
-                    else if (player.inputHorizontal > 0.0f && player.facingLeft)
-                    {
-                        player.TurnAround();
-                    }
-
                     player.action = PlayerController.CharacterAction.MOVING;
                     player.transform.position += Vector3.right * (_moveSpeed * player.inputHorizontal);
                     player.anim.Play("Walking");
                 }
+
 
                 // Attack inputs
                 if (player.inputAttackDown)

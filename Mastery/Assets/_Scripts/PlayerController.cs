@@ -37,6 +37,7 @@ public class PlayerController : MonoBehaviour {
     // Input holders
     // TODO: Would be nice to put this in an object or something
     public float inputHorizontal;
+    public float inputRightHorizontal;  // horizontal axis of right stick
     public bool inputRollDown;
     public bool inputAttackDown;
     public bool inputAttackHeld;
