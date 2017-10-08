@@ -22,9 +22,10 @@ public class PlayerController : MonoBehaviour {
         HEAVY_ATTACKING,
         PARRYING,
         GUARDING,
-        // KICKING,
+        KICKING,
         MOVING,
-        ROLLING
+        ROLLING,
+        KNOCKBACK,
     }
 
     public CharacterState state;
@@ -39,6 +40,7 @@ public class PlayerController : MonoBehaviour {
     public float inputHorizontal;
     public float inputRightHorizontal;  // horizontal axis of right stick
     public bool inputRollDown;
+    public bool inputKickDown;
     public bool inputAttackDown;
     public bool inputAttackHeld;
     public bool inputAttackUp;
@@ -52,14 +54,24 @@ public class PlayerController : MonoBehaviour {
     // The time the player was disarmed
     public float disarmStartTime;
 
+    // The time the player was shieldbroken
+    public float shieldBreakStartTime;
+
+    public float disableMovementStartTime;
+
     // Whether an action has been performed with this button press
     public bool actionThisPress;
 
 	// Use this for initialization
 	private void Start () {
         state = CharacterState.IDLE;
-        HP = 2;
+        HP = GameController.hpMax;
+
+        // initialize all disabling start times to a large negative value,
+        // so nothing is disabled upon starting
         disarmStartTime = -10.0f;
+        shieldBreakStartTime = -10.0f;
+        disableMovementStartTime = -10.0f;
     }
 
     private void Update()
@@ -109,7 +121,7 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
-    public bool CanMove()
+    public bool CanAct()
     {
         if (action == CharacterAction.IDLE || action == CharacterAction.MOVING)
         {

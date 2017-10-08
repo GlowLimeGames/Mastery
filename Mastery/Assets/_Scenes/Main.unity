@@ -151,6 +151,14 @@ Prefab:
       propertyPath: m_RootOrder
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: 1290061099244044, guid: 915288f187e60aa4a9abd2df58ff1b91, type: 2}
+      propertyPath: m_TagString
+      value: Untagged
+      objectReference: {fileID: 0}
+    - target: {fileID: 1288264862752956, guid: 915288f187e60aa4a9abd2df58ff1b91, type: 2}
+      propertyPath: m_TagString
+      value: Leg
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 0}
     - {fileID: 0}

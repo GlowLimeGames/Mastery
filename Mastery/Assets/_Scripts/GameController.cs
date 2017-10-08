@@ -10,6 +10,8 @@ public class GameController : MonoBehaviour {
 
     private PlayerController[] _players = new PlayerController[2];
 
+    public static int hpMax = 2;
+
     private static float _moveSpeed = 0.05f;
     private static float _rollSpeed = 0.10f;
 
@@ -19,6 +21,10 @@ public class GameController : MonoBehaviour {
 
     // Length of disarm
     private static float _disarmTime = 3.0f;
+
+    private static float _shieldBreakTime = 3.0f;
+
+    private static float _disableMovementTime = 3.0f;
 
     //Remaining time left in the game - use this to transform the closing walls.
     private float timeRemaining = 300.0f;
@@ -61,8 +67,9 @@ public class GameController : MonoBehaviour {
         playerOne.facingLeft = false;
         playerTwo.facingLeft = true;
 
-        // Subscribe to the AttackResolution event
+        // Subscribe to the AttackResolution and KickResolution events
         CollisionBehavior.AttackResolution += Attack;
+        CollisionBehavior.KickResolution += Kick;
     }
 
     private void Update()
@@ -87,6 +94,8 @@ public class GameController : MonoBehaviour {
         playerOne.inputDefendHeld = Input.GetButton("P1Fire2");
         playerOne.inputDefendUp = Input.GetButtonUp("P1Fire2");
 
+        playerOne.inputKickDown = Input.GetButtonDown("P1Fire4");
+
         // Player Two input reading
         // Movement and facing
         playerTwo.inputHorizontal = Input.GetAxisRaw("P2Horizontal");
@@ -105,46 +114,55 @@ public class GameController : MonoBehaviour {
         playerTwo.inputDefendHeld = Input.GetButton("P2Fire2");
         playerTwo.inputDefendUp = Input.GetButtonUp("P2Fire2");
 
+        playerTwo.inputKickDown = Input.GetButtonDown("P2Fire4");
+
 
         foreach(PlayerController player in _players)
         {
             // Rolling disables pretty much all inputs
-            if (player.CanMove())
+            if (player.CanAct())
             {
-                // Right stick takes priority over left stick for determining orientation.
-                if (player.inputRightHorizontal != 0.0f)
+                // If movement not disabled
+                if (Time.time >= (player.disableMovementStartTime + _disableMovementTime))
                 {
-                    if (player.inputRightHorizontal < 0.0f && !player.facingLeft)
+                    // Right stick takes priority over left stick for determining orientation.
+                    if (player.inputRightHorizontal != 0.0f)
                     {
-                        player.TurnAround();
+                        if (player.inputRightHorizontal < 0.0f && !player.facingLeft)
+                        {
+                            player.TurnAround();
+                        }
+                        else if (player.inputRightHorizontal > 0.0f && player.facingLeft)
+                        {
+                            player.TurnAround();
+                        }
                     }
-                    else if (player.inputRightHorizontal > 0.0f && player.facingLeft)
+                    else
                     {
-                        player.TurnAround();
+                        if (player.inputHorizontal != 0.0f)
+                        {
+                            // Not overridden by right stick, so turn around if not facing direction of motion
+                            if (player.inputHorizontal < 0.0f && !player.facingLeft)
+                            {
+                                player.TurnAround();
+                            }
+                            else if (player.inputHorizontal > 0.0f && player.facingLeft)
+                            {
+                                player.TurnAround();
+                            }
+                        }
                     }
-                } else
-                {
+
+                    // Motion happens regardless of right stick
                     if (player.inputHorizontal != 0.0f)
                     {
-                        // Not overridden by right stick, so turn around if not facing direction of motion
-                        if (player.inputHorizontal < 0.0f && !player.facingLeft)
-                        {
-                            player.TurnAround();
-                        }
-                        else if (player.inputHorizontal > 0.0f && player.facingLeft)
-                        {
-                            player.TurnAround();
-                        }
+                        print(Vector3.right * (_moveSpeed * player.inputHorizontal));
+                        player.action = PlayerController.CharacterAction.MOVING;
+                        player.transform.position += Vector3.right * (_moveSpeed * player.inputHorizontal);
+                        player.anim.Play("Walking");
                     }
                 }
 
-                // Motion happens regardless of right stick
-                if (player.inputHorizontal != 0.0f)
-                {
-                    player.action = PlayerController.CharacterAction.MOVING;
-                    player.transform.position += Vector3.right * (_moveSpeed * player.inputHorizontal);
-                    player.anim.Play("Walking");
-                }
 
 
                 // Attack inputs
@@ -184,12 +202,26 @@ public class GameController : MonoBehaviour {
                     }
                 }
 
+                // Kick input
+                if (player.inputKickDown)
+                {
+                    player.action = PlayerController.CharacterAction.KICKING;
+                    player.anim.Play("Kick");
+                }
+
 
                 // Defend inputs
                 if (player.inputDefendDown)
                 {
-                    player.pressStartTime = Time.time;
-                    player.actionThisPress = false;
+                    if (Time.time >= player.shieldBreakStartTime + _shieldBreakTime)
+                    {
+                        player.pressStartTime = Time.time;
+                        player.actionThisPress = false;
+                    }
+                    else
+                    {
+                        // TODO: Play a shield-broken animation
+                    }
                 }
                 if (player.inputDefendHeld)
                 {
@@ -215,6 +247,7 @@ public class GameController : MonoBehaviour {
                     player.action = PlayerController.CharacterAction.ROLLING;
                     player.anim.Play("Roll");
                     //StartCoroutine(StopRoll(player));
+                    // TODO: Make player invulnerable
                 }
             }
         }
@@ -367,6 +400,7 @@ public class GameController : MonoBehaviour {
                         case PlayerController.CharacterState.VULNERABLE:
                             // Kills defender
                             defender.SetActive(false);
+                            // TODO: Game logic goes here
                             break;
                         case PlayerController.CharacterState.IDLE:
                             // Attack connects fully
@@ -378,6 +412,44 @@ public class GameController : MonoBehaviour {
             }
         }
             
+    }
+
+    public void Kick(GameObject attacker, GameObject defender)
+    {
+        PlayerController attackerController;
+        PlayerController defenderController;
+
+        if (attacker == playerOne.gameObject)
+        {
+            attackerController = playerOne;
+            defenderController = playerTwo;
+        }
+        else
+        {
+            attackerController = playerTwo;
+            defenderController = playerOne;
+        }
+
+        if (attackerController.action == PlayerController.CharacterAction.KICKING)
+        {
+            switch (defenderController.action)
+            {
+                case PlayerController.CharacterAction.GUARDING:
+                    // Breaks defender's shield, restores attacker's health
+                    ShieldBreak(defenderController);
+                    attackerController.HP = hpMax;
+                    break;
+                case PlayerController.CharacterAction.PARRYING:
+                    // (Same as above? Not explicit in spec)
+                    ShieldBreak(defenderController);
+                    attackerController.HP = hpMax;
+                    break;
+                default:
+                    // If no shield up, then disable attacker's movement
+                    DisableMovement(attackerController);
+                    break;
+            }
+        }
     }
 
     public void Knockback(PlayerController player)
@@ -401,6 +473,16 @@ public class GameController : MonoBehaviour {
     public void Disarm(PlayerController player)
     {
         player.disarmStartTime = Time.time;
+    }
+
+    public void ShieldBreak(PlayerController player)
+    {
+        player.shieldBreakStartTime = Time.time;
+    }
+
+    public void DisableMovement(PlayerController player)
+    {
+        player.disableMovementStartTime = Time.time;
     }
 
 }
