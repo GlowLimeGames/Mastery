@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
-public class PlayerController : MonoBehaviour {
+public class PlayerController : MonoBehaviour
+{
 
     public enum CharacterState
     {
@@ -22,7 +23,7 @@ public class PlayerController : MonoBehaviour {
         HEAVY_ATTACKING,
         PARRYING,
         GUARDING,
-        // KICKING,
+        KICKING,
         MOVING,
         ROLLING
     }
@@ -39,6 +40,7 @@ public class PlayerController : MonoBehaviour {
     public float inputHorizontal;
     public float inputRightHorizontal;  // horizontal axis of right stick
     public bool inputRollDown;
+    public bool inputKickDown;
     public bool inputAttackDown;
     public bool inputAttackHeld;
     public bool inputAttackUp;
@@ -52,14 +54,21 @@ public class PlayerController : MonoBehaviour {
     // The time the player was disarmed
     public float disarmStartTime;
 
+    public float shieldBreakStartTime;
+
+    public float disableMovementStartTime;
+
     // Whether an action has been performed with this button press
     public bool actionThisPress;
 
-	// Use this for initialization
-	private void Start () {
+    // Use this for initialization
+    private void Start()
+    {
         state = CharacterState.IDLE;
         HP = 2;
         disarmStartTime = -10.0f;
+        shieldBreakStartTime = -10.0f;
+        disableMovementStartTime = -10.0f;
     }
 
     private void Update()
@@ -109,12 +118,13 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
-    public bool CanMove()
+    public bool CanAct()
     {
         if (action == CharacterAction.IDLE || action == CharacterAction.MOVING)
         {
             return true;
-        } else
+        }
+        else
         {
             return false;
         }
@@ -127,7 +137,8 @@ public class PlayerController : MonoBehaviour {
         if (facingLeft)
         {
             facingLeft = false;
-        } else
+        }
+        else
         {
             facingLeft = true;
         }

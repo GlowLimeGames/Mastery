@@ -426,7 +426,7 @@ InputManager:
     descriptiveName: Player 2 kick, top button
     descriptiveNegativeName: 
     negativeButton: 
-    positiveButton: joystick 2 button 3
+    positiveButton: joystick 1 button 3
     altNegativeButton: 
     altPositiveButton: 
     gravity: 1000
@@ -436,7 +436,7 @@ InputManager:
     invert: 0
     type: 0
     axis: 0
-    joyNum: 2
+    joyNum: 1
   - serializedVersion: 3
     m_Name: P2Fire4
     descriptiveName: Player 2 kick, top button
