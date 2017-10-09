@@ -51,11 +51,9 @@ public class PlayerController : MonoBehaviour
     // The time the player pressed the button last
     public float pressStartTime;
 
-    // The time the player was disarmed
+    // The time the player was disarmed, shieldbroken, or had movement disabled
     public float disarmStartTime;
-
     public float shieldBreakStartTime;
-
     public float disableMovementStartTime;
 
     // Whether an action has been performed with this button press
@@ -65,7 +63,7 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         state = CharacterState.IDLE;
-        HP = 2;
+        HP = GameController.hpMax;
         disarmStartTime = -10.0f;
         shieldBreakStartTime = -10.0f;
         disableMovementStartTime = -10.0f;
@@ -89,7 +87,7 @@ public class PlayerController : MonoBehaviour
 
         if (anim.GetCurrentAnimatorStateInfo(0).IsName("Roll"))
         {
-            state = CharacterState.IDLE;
+            state = CharacterState.INVULNERABLE;
             action = CharacterAction.ROLLING;
         }
 
@@ -103,6 +101,12 @@ public class PlayerController : MonoBehaviour
         {
             state = CharacterState.ATTACKING;
             action = CharacterAction.HEAVY_ATTACKING;
+        }
+
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Kick"))
+        {
+            state = CharacterState.ATTACKING;
+            action = CharacterAction.KICKING;
         }
 
         if (anim.GetCurrentAnimatorStateInfo(0).IsName("Parry"))
@@ -142,6 +146,39 @@ public class PlayerController : MonoBehaviour
         {
             facingLeft = true;
         }
+    }
+
+    public void Knockback()
+    {
+        // Having issues with AddForce, it was working on the legs but not the animated parts.
+        // TODO: try putting each player object in an empty object with a rigidbody2d.
+        // http://answers.unity3d.com/questions/559976/can-i-addforce-to-a-model-while-using-animator.html
+        // UPDATE: We're not using rigidbody physics, so could just use a coroutine or state change, like for the roll
+
+        // For now, they are just snapping backwards a bit
+        if (facingLeft)
+        {
+            gameObject.transform.position += Vector3.right * 0.2f;
+        }
+        else
+        {
+            gameObject.transform.position += Vector3.left * 0.2f;
+        }
+    }
+
+    public void Disarm()
+    {
+        disarmStartTime = Time.time;
+    }
+
+    public void ShieldBreak()
+    {
+        shieldBreakStartTime = Time.time;
+    }
+
+    public void DisableMovement()
+    {
+        disableMovementStartTime = Time.time;
     }
 
 }

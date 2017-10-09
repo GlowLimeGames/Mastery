@@ -82,9 +82,6 @@ public class GameController : MonoBehaviour
         playerOne.inputHorizontal = Input.GetAxisRaw("P1Horizontal");
         playerOne.inputRightHorizontal = Input.GetAxisRaw("P1RightHorizontal");
 
-        // P1Fire3: button 2 (X/left button on Xbone/360), left shift
-        playerOne.inputRollDown = Input.GetButtonDown("P1Fire3");
-
         // P1Fire1: button 0 (A/bottom button on Xbone/360), left ctrl
         playerOne.inputAttackDown = Input.GetButtonDown("P1Fire1");
         playerOne.inputAttackHeld = Input.GetButton("P1Fire1");
@@ -95,15 +92,16 @@ public class GameController : MonoBehaviour
         playerOne.inputDefendHeld = Input.GetButton("P1Fire2");
         playerOne.inputDefendUp = Input.GetButtonUp("P1Fire2");
 
+        // P1Fire3: button 2 (X/left button on Xbone/360), left shift
+        playerOne.inputRollDown = Input.GetButtonDown("P1Fire3");
+
+        // P1Fire4: button 3 (Y/top button on Xbone/360), no key yet
         playerOne.inputKickDown = Input.GetButtonDown("P1Fire4");
 
         // Player Two input reading
         // Movement and facing
         playerTwo.inputHorizontal = Input.GetAxisRaw("P2Horizontal");
         playerTwo.inputRightHorizontal = Input.GetAxisRaw("P2RightHorizontal");
-
-        // P2Fire3: button 2, right shift
-        playerTwo.inputRollDown = Input.GetButtonDown("P2Fire3");
 
         // P2Fire1: button 0, right ctrl
         playerTwo.inputAttackDown = Input.GetButtonDown("P2Fire1");
@@ -115,6 +113,10 @@ public class GameController : MonoBehaviour
         playerTwo.inputDefendHeld = Input.GetButton("P2Fire2");
         playerTwo.inputDefendUp = Input.GetButtonUp("P2Fire2");
 
+        // P2Fire3: button 2, right shift
+        playerTwo.inputRollDown = Input.GetButtonDown("P2Fire3");
+
+        // P2Fire4: button 3 (Y/top button on Xbone/360), no key yet
         playerTwo.inputKickDown = Input.GetButtonDown("P2Fire4");
 
 
@@ -153,7 +155,7 @@ public class GameController : MonoBehaviour
                         }
                     }
 
-                    // Motion happens regardless of right stick
+                    // Motion happens regardless of right stick status
                     if (player.inputHorizontal != 0.0f)
                     {
                         player.action = PlayerController.CharacterAction.MOVING;
@@ -308,6 +310,7 @@ public class GameController : MonoBehaviour
         }
     }
 
+    // TODO: This and Kick probably belong in PlayerController.
     public void Attack(GameObject attacker, GameObject defender)
     {
         PlayerController attackerController;
@@ -334,19 +337,19 @@ public class GameController : MonoBehaviour
                     break;
                 case PlayerController.CharacterAction.GUARDING:
                     // Attacker gets knocked back
-                    Knockback(attackerController);
+                    attackerController.Knockback();
                     break;
                 case PlayerController.CharacterAction.LIGHT_ATTACKING:
                     // Both are knocked back
                     // Idle for now, but should be a knockback animation in the future
                     attackerController.anim.Play("Idle");
                     defenderController.anim.Play("Idle");
-                    Knockback(attackerController);
-                    Knockback(defenderController);
+                    attackerController.Knockback();
+                    defenderController.Knockback();
                     break;
                 case PlayerController.CharacterAction.HEAVY_ATTACKING:
                     // Disables attacker's attack button for X seconds
-                    Disarm(attackerController);
+                    attackerController.Disarm();
                     break;
                 case PlayerController.CharacterAction.IDLE:
                     switch (defenderController.state)
@@ -373,11 +376,11 @@ public class GameController : MonoBehaviour
             {
                 case PlayerController.CharacterAction.PARRYING:
                     // Disables attacker's attack button for X seconds
-                    Disarm(attackerController);
+                    attackerController.Disarm();
                     break;
                 case PlayerController.CharacterAction.GUARDING:
                     // Defender gets knocked back
-                    Knockback(defenderController);
+                    defenderController.Knockback();
                     break;
                 case PlayerController.CharacterAction.LIGHT_ATTACKING:
                     // Heavy overpowers light; attack connects with half damage
@@ -385,8 +388,8 @@ public class GameController : MonoBehaviour
                     break;
                 case PlayerController.CharacterAction.HEAVY_ATTACKING:
                     // Both lose 1HP and are knocked back
-                    Knockback(attackerController);
-                    Knockback(defenderController);
+                    attackerController.Knockback();
+                    defenderController.Knockback();
                     attackerController.HP -= 1;
                     defenderController.HP -= 1;
                     break;
@@ -431,57 +434,20 @@ public class GameController : MonoBehaviour
             {
                 case PlayerController.CharacterAction.GUARDING:
                     // Breaks defender's shield, restores attacker's health
-                    ShieldBreak(defenderController);
+                    defenderController.ShieldBreak();
                     attackerController.HP = hpMax;
                     break;
                 case PlayerController.CharacterAction.PARRYING:
                     // (Same as above? Not explicit in spec)
-                    ShieldBreak(defenderController);
+                    defenderController.ShieldBreak();
                     attackerController.HP = hpMax;
                     break;
                 default:
                     // If no shield up, then disable attacker's movement
-                    DisableMovement(attackerController);
+                    attackerController.DisableMovement();
                     break;
             }
         }
     }
 
-
-    public void Knockback(PlayerController player)
-    {
-        // Having issues with AddForce, it was working on the legs but not the animated parts.
-        // TODO: try putting each player object in an empty object with a rigidbody2d.
-        // http://answers.unity3d.com/questions/559976/can-i-addforce-to-a-model-while-using-animator.html
-        // UPDATE: We're not using rigidbody physics, so could just use a coroutine or state change, like for the roll
-
-        // For now, they are just snapping backwards a bit
-        if (player.facingLeft)
-        {
-            player.gameObject.transform.position += Vector3.right * 0.2f;
-        }
-        else
-        {
-            player.gameObject.transform.position += Vector3.left * 0.2f;
-        }
-    }
-
-
-    public void Disarm(PlayerController player)
-    {
-        player.disarmStartTime = Time.time;
-    }
-
-    public void ShieldBreak(PlayerController player)
-    {
-        player.shieldBreakStartTime = Time.time;
-    }
-
-    public void DisableMovement(PlayerController player)
-    {
-        player.disableMovementStartTime = Time.time;
-    }
-
 }
-
-// TODO: P2 can kill P1 but not vice versa.
