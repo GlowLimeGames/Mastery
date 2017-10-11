@@ -77,7 +77,7 @@ GameObject:
   - component: {fileID: 114623965753455104}
   m_Layer: 0
   m_Name: Right Leg
-  m_TagString: Untagged
+  m_TagString: Leg
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -577,7 +577,9 @@ MonoBehaviour:
   HP: 0
   facingLeft: 0
   inputHorizontal: 0
+  inputRightHorizontal: 0
   inputRollDown: 0
+  inputKickDown: 0
   inputAttackDown: 0
   inputAttackHeld: 0
   inputAttackUp: 0
@@ -586,6 +588,8 @@ MonoBehaviour:
   inputDefendUp: 0
   pressStartTime: 0
   disarmStartTime: 0
+  shieldBreakStartTime: 0
+  disableMovementStartTime: 0
   actionThisPress: 0
 --- !u!114 &114623965753455104
 MonoBehaviour:
