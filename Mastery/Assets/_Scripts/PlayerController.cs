@@ -19,6 +19,7 @@ public class PlayerController : MonoBehaviour
     public enum CharacterAction
     {
         IDLE,
+        TURNING,
         LIGHT_ATTACKING,
         HEAVY_ATTACKING,
         PARRYING,
@@ -79,6 +80,12 @@ public class PlayerController : MonoBehaviour
             action = CharacterAction.IDLE;
         }
 
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Turn Around"))
+        {
+            state = CharacterState.IDLE;
+            action = CharacterAction.TURNING;
+        }
+
         if (anim.GetCurrentAnimatorStateInfo(0).IsName("Moving"))
         {
             state = CharacterState.IDLE;
@@ -137,6 +144,7 @@ public class PlayerController : MonoBehaviour
     public void TurnAround()
     {
         // TODO: Add a delay and animation to this, since it's used as a penalty for something too
+        anim.Play("Turn Around");
         transform.localScale = new Vector3(transform.localScale.x * -1, transform.localScale.y, transform.localScale.z);
         if (facingLeft)
         {

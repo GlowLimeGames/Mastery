@@ -160,7 +160,7 @@ public class GameController : MonoBehaviour
                     }
 
                     // Motion happens regardless of right stick status
-                    if (player.inputHorizontal != 0.0f)
+                    if (player.inputHorizontal != 0.0f && player.action != PlayerController.CharacterAction.TURNING)
                     {
                         player.action = PlayerController.CharacterAction.MOVING;
                         player.transform.position += Vector3.right * (_moveSpeed * player.inputHorizontal);
