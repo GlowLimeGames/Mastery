@@ -2,12 +2,16 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
 {
 
     public PlayerController playerOne;
     public PlayerController playerTwo;
+
+    public Text playerOneHpText;
+    public Text playerTwoHpText;
 
     private PlayerController[] _players = new PlayerController[2];
 
@@ -301,6 +305,9 @@ public class GameController : MonoBehaviour
     private void LateUpdate()
     {
         //Do something after Movement / Combat here
+        playerOneHpText.text = "P1 HP: " + playerOne.HP.ToString();
+        playerTwoHpText.text = "P2 HP: " + playerTwo.HP.ToString();
+
         foreach (PlayerController player in _players)
         {
             if (player.HP <= 0)
