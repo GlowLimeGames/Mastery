@@ -19,6 +19,7 @@ public class GameController : MonoBehaviour
 
     private static float _moveSpeed = 0.05f;
     private static float _rollSpeed = 0.10f;
+    private static float _knockbackSpeed = 0.06f;
 
     // Time to distinguish a press from a hold, for light/heavy and parry/guard
     // (Different numbers for those two categories?)
@@ -246,7 +247,6 @@ public class GameController : MonoBehaviour
                     {
                         player.action = PlayerController.CharacterAction.ROLLING;
                         player.anim.Play("Roll");
-                        //StartCoroutine(StopRoll(player));
                     }
                 }
             }
@@ -298,7 +298,18 @@ public class GameController : MonoBehaviour
                     player.transform.position += Vector3.right * _rollSpeed;
                 }
             }
-            // TODO: Something similar for knockback
+
+            if (player.state == PlayerController.CharacterState.KNOCKBACK)
+            {
+                if (player.facingLeft)
+                {
+                    player.transform.position += Vector3.right * _knockbackSpeed;
+                }
+                else
+                {
+                    player.transform.position += Vector3.left * _knockbackSpeed;
+                }
+            }
         }
     }
 
@@ -348,9 +359,6 @@ public class GameController : MonoBehaviour
                     break;
                 case PlayerController.CharacterAction.LIGHT_ATTACKING:
                     // Both are knocked back
-                    // Idle for now, but should be a knockback animation in the future
-                    attackerController.anim.Play("Idle");
-                    defenderController.anim.Play("Idle");
                     attackerController.Knockback();
                     defenderController.Knockback();
                     break;
