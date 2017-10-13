@@ -179,12 +179,11 @@ public class GameController : MonoBehaviour
                         }
 
                         float deltaX = player.transform.position.x - otherPlayer.transform.position.x;
-                        print(deltaX);
 
                         if (player.inputHorizontal < 0.0f)
                         {
                             // Make sure the other player is not adjacent to this one
-                            // (Numbers must are different to avoid trapping the player on contact)
+                            // (Numbers must be different to avoid trapping the player on contact)
                             if ((deltaX <= -2.4) || (deltaX >= 2.7))
                             {
                                 player.action = PlayerController.CharacterAction.MOVING;
