@@ -18,7 +18,7 @@ public class GameController : MonoBehaviour
     public static int hpMax = 2;
 
     private static float _moveSpeed = 0.05f;
-    private static float _rollSpeed = 0.11f;
+    private static float _rollSpeed = 0.12f;
     private static float _knockbackSpeed = 0.06f;
 
     // Time to distinguish a press from a hold, for light/heavy and parry/guard
@@ -280,7 +280,6 @@ public class GameController : MonoBehaviour
                     if (player.inputRollDown)
                     {
                         player.action = PlayerController.CharacterAction.ROLLING;
-                        // TODO: Player can roll into the other and get stuck there
                         player.anim.Play("Roll");
                     }
                 }
@@ -322,6 +321,7 @@ public class GameController : MonoBehaviour
         //Movement / Combat Functionality goes here
         foreach (PlayerController player in _players)
         {
+            // Rolling motion
             if (player.action == PlayerController.CharacterAction.ROLLING)
             {
                 if (player.facingLeft)
@@ -334,6 +334,7 @@ public class GameController : MonoBehaviour
                 }
             }
 
+            // Knockback motion
             if (player.state == PlayerController.CharacterState.KNOCKBACK)
             {
                 if (player.facingLeft)
@@ -343,6 +344,16 @@ public class GameController : MonoBehaviour
                 else
                 {
                     player.transform.position += Vector3.left * _knockbackSpeed;
+                }
+            }
+
+            // Fix player positions if one has rolled inside the other
+            if (playerOne.action != PlayerController.CharacterAction.ROLLING && playerTwo.action != PlayerController.CharacterAction.ROLLING)
+            {
+                float deltaX = playerOne.transform.position.x - playerTwo.transform.position.x;
+                if (Math.Abs(deltaX) < 2.4)
+                {
+                    _fixIllegalPlayerPosition();
                 }
             }
         }
@@ -560,6 +571,26 @@ public class GameController : MonoBehaviour
         }
     }
     */
+
+    private void _fixIllegalPlayerPosition()
+    {
+        PlayerController leftPlayer;
+        PlayerController rightPlayer;
+
+        if (playerOne.transform.position.x <= playerTwo.transform.position.x)
+        {
+            leftPlayer = playerOne;
+            rightPlayer = playerTwo;
+        } else
+        {
+            leftPlayer = playerTwo;
+            rightPlayer = playerOne;
+        }
+
+        leftPlayer.gameObject.transform.position += Vector3.left * 0.1f;
+        rightPlayer.gameObject.transform.position += Vector3.right * 0.1f;
+
+    }
 
 
 }
