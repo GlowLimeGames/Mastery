@@ -117,7 +117,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4557656629271506, guid: 915288f187e60aa4a9abd2df58ff1b91, type: 2}
       propertyPath: m_LocalPosition.x
-      value: -1.5
+      value: -4
       objectReference: {fileID: 0}
     - target: {fileID: 4557656629271506, guid: 915288f187e60aa4a9abd2df58ff1b91, type: 2}
       propertyPath: m_LocalPosition.y
@@ -147,6 +147,14 @@ Prefab:
       propertyPath: m_RootOrder
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1487509796185156, guid: 915288f187e60aa4a9abd2df58ff1b91, type: 2}
+      propertyPath: m_TagString
+      value: Shield
+      objectReference: {fileID: 0}
+    - target: {fileID: 4982033929468220, guid: 915288f187e60aa4a9abd2df58ff1b91, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 1.05
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 915288f187e60aa4a9abd2df58ff1b91, type: 2}
   m_IsPrefabParent: 0
@@ -165,7 +173,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4240293254246368, guid: 44e2126e47637ce49a1dfe8f25246b8e, type: 2}
       propertyPath: m_LocalPosition.x
-      value: 1.5
+      value: 1.6
       objectReference: {fileID: 0}
     - target: {fileID: 4240293254246368, guid: 44e2126e47637ce49a1dfe8f25246b8e, type: 2}
       propertyPath: m_LocalPosition.y
@@ -194,6 +202,14 @@ Prefab:
     - target: {fileID: 4240293254246368, guid: 44e2126e47637ce49a1dfe8f25246b8e, type: 2}
       propertyPath: m_RootOrder
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1956994715250796, guid: 44e2126e47637ce49a1dfe8f25246b8e, type: 2}
+      propertyPath: m_TagString
+      value: Shield
+      objectReference: {fileID: 0}
+    - target: {fileID: 4181028931397620, guid: 44e2126e47637ce49a1dfe8f25246b8e, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 1.05
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 44e2126e47637ce49a1dfe8f25246b8e, type: 2}

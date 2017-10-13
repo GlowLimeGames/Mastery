@@ -36,6 +36,8 @@ public class PlayerController : MonoBehaviour
 
     public int HP;
     public bool facingLeft;
+    //public bool canMoveLeft;
+    //public bool canMoveRight;
 
     // Input holders
     // TODO: Would be nice to put this in an object or something
@@ -69,6 +71,9 @@ public class PlayerController : MonoBehaviour
         disarmStartTime = -10.0f;
         shieldBreakStartTime = -10.0f;
         disableMovementStartTime = -10.0f;
+
+        //canMoveLeft = true;
+        //canMoveRight = true;
     }
 
     private void Update()
@@ -170,11 +175,7 @@ public class PlayerController : MonoBehaviour
 
     public void Knockback()
     {
-        // Having issues with AddForce, it was working on the legs but not the animated parts.
-        // TODO: try putting each player object in an empty object with a rigidbody2d.
-        // http://answers.unity3d.com/questions/559976/can-i-addforce-to-a-model-while-using-animator.html
-        // UPDATE: We're not using rigidbody physics, so could just use a coroutine or state change, like for the roll
-
+        // Need to knockback player in opposite direction so they rotate away from the collision
         if (facingLeft)
         {
             anim.Play("KnockbackR");
@@ -183,16 +184,6 @@ public class PlayerController : MonoBehaviour
         {
             anim.Play("KnockbackL");
         }
-
-        // For now, they are just snapping backwards a bit
-        //if (facingLeft)
-        //{
-        //   gameObject.transform.position += Vector3.right * 0.2f;
-        //}
-        //else
-        //{
-        //    gameObject.transform.position += Vector3.left * 0.2f;
-        //}
     }
 
     public void Disarm()

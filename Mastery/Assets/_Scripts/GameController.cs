@@ -18,7 +18,7 @@ public class GameController : MonoBehaviour
     public static int hpMax = 2;
 
     private static float _moveSpeed = 0.05f;
-    private static float _rollSpeed = 0.10f;
+    private static float _rollSpeed = 0.11f;
     private static float _knockbackSpeed = 0.06f;
 
     // Time to distinguish a press from a hold, for light/heavy and parry/guard
@@ -73,9 +73,11 @@ public class GameController : MonoBehaviour
         playerOne.facingLeft = false;
         playerTwo.facingLeft = true;
 
-        // Subscribe to the AttackResolution event
+        // Subscribe to the events from CollisionBehavior
         CollisionBehavior.AttackResolution += Attack;
         CollisionBehavior.KickResolution += Kick;
+        //CollisionBehavior.StopMovementWhileAgainst += IsAgainst;
+        //CollisionBehavior.ReEnableMovement += IsNotAgainst;
     }
 
     private void Update()
@@ -163,9 +165,41 @@ public class GameController : MonoBehaviour
                     // Motion happens regardless of right stick status
                     if (player.inputHorizontal != 0.0f && player.action != PlayerController.CharacterAction.TURNING)
                     {
-                        player.action = PlayerController.CharacterAction.MOVING;
-                        player.transform.position += Vector3.right * (_moveSpeed * player.inputHorizontal);
-                        player.anim.Play("Walking");
+                        PlayerController otherPlayer;
+                        if (player == playerOne)
+                        {
+                            otherPlayer = playerTwo;
+                        }
+                        else
+                        {
+                            otherPlayer = playerOne;
+                        }
+
+                        float deltaX = player.transform.position.x - otherPlayer.transform.position.x;
+                        print(deltaX);
+
+                        if (player.inputHorizontal < 0.0f)
+                        {
+                            // Make sure the other player is not adjacent to this one
+                            // (Numbers must are different to avoid trapping the player on contact)
+                            if ((deltaX <= -2.4) || (deltaX >= 2.7))
+                            {
+                                player.action = PlayerController.CharacterAction.MOVING;
+                                player.transform.position += Vector3.right * (_moveSpeed * player.inputHorizontal);
+                                player.anim.Play("Walking");
+                            }
+
+                        } else if (player.inputHorizontal > 0.0f)
+
+                        {
+                            if ((deltaX <= -2.7) || (deltaX >= 2.4))
+                            {
+                                player.action = PlayerController.CharacterAction.MOVING;
+                                player.transform.position += Vector3.right * (_moveSpeed * player.inputHorizontal);
+                                player.anim.Play("Walking");
+                            }
+                        }
+
                     }
                 }
 
@@ -246,6 +280,7 @@ public class GameController : MonoBehaviour
                     if (player.inputRollDown)
                     {
                         player.action = PlayerController.CharacterAction.ROLLING;
+                        // TODO: Player can roll into the other and get stuck there
                         player.anim.Play("Roll");
                     }
                 }
@@ -464,5 +499,67 @@ public class GameController : MonoBehaviour
             }
         }
     }
+
+    /*
+    public void IsAgainst(GameObject first, GameObject second)
+    {
+        PlayerController firstController;
+        PlayerController secondController;
+
+        if (first == playerOne.gameObject)
+        {
+            firstController = playerOne;
+            secondController = playerTwo;
+        }
+        else
+        {
+            firstController = playerTwo;
+            secondController = playerOne;
+        }
+
+        // Check which one is on the left
+        if (firstController.gameObject.transform.position.x < secondController.gameObject.transform.position.x)
+        {
+            firstController.canMoveRight = false;
+            secondController.canMoveLeft = false;
+        }
+        else
+        {
+            firstController.canMoveLeft = false;
+            secondController.canMoveRight = false;
+        }
+    }
+
+    public void IsNotAgainst(GameObject first, GameObject second)
+    {
+        PlayerController firstController;
+        PlayerController secondController;
+
+        print("Is not against");
+
+        if (first == playerOne.gameObject)
+        {
+            firstController = playerOne;
+            secondController = playerTwo;
+        }
+        else
+        {
+            firstController = playerTwo;
+            secondController = playerOne;
+        }
+
+        if (firstController.gameObject.transform.position.x < secondController.gameObject.transform.position.x)
+        {
+            firstController.canMoveRight = true;
+            secondController.canMoveLeft = true;
+        }
+        else
+        {
+            firstController.canMoveLeft = true;
+            secondController.canMoveRight = true;
+        }
+    }
+    */
+
 
 }

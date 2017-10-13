@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Sword
   - Leg
+  - Shield
   layers:
   - Default
   - TransparentFX
