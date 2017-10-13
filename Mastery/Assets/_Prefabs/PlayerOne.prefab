@@ -115,7 +115,7 @@ GameObject:
   - component: {fileID: 114916795605572268}
   m_Layer: 0
   m_Name: Left Arm
-  m_TagString: Untagged
+  m_TagString: Shield
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -194,7 +194,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1039726801512284}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.5, y: -2, z: 0}
+  m_LocalPosition: {x: -1.6, y: -2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4998172528225658}
@@ -267,7 +267,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1487509796185156}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1, y: -1, z: 0}
+  m_LocalPosition: {x: 1.05, y: -1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4557656629271506}
@@ -573,6 +573,10 @@ MonoBehaviour:
   anim: {fileID: 95255465309510396}
   HP: 0
   facingLeft: 0
+  hpText: {fileID: 0}
+  disarmText: {fileID: 0}
+  shieldBreakText: {fileID: 0}
+  disableMovementText: {fileID: 0}
   inputHorizontal: 0
   inputRightHorizontal: 0
   inputRollDown: 0

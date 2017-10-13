@@ -13,6 +13,9 @@ public class GameController : MonoBehaviour
     public Text playerOneHpText;
     public Text playerTwoHpText;
 
+    public Text playerOneDisarmText;
+    public Text playerTwoDisarmText;
+
     private PlayerController[] _players = new PlayerController[2];
 
     public static int hpMax = 2;
@@ -371,6 +374,19 @@ public class GameController : MonoBehaviour
             {
                 player.state = PlayerController.CharacterState.VULNERABLE;
             }
+
+            if (Time.time >= (player.disarmStartTime + _disarmTime))
+            {
+                player.disarmText.text = "";
+            }
+            if (Time.time >= (player.disableMovementStartTime + _disableMovementTime))
+            {
+                player.disableMovementText.text = "";
+            }
+            if (Time.time >= (player.shieldBreakStartTime + _shieldBreakTime))
+            {
+                player.shieldBreakText.text = "";
+            }
         }
     }
 
@@ -510,67 +526,6 @@ public class GameController : MonoBehaviour
             }
         }
     }
-
-    /*
-    public void IsAgainst(GameObject first, GameObject second)
-    {
-        PlayerController firstController;
-        PlayerController secondController;
-
-        if (first == playerOne.gameObject)
-        {
-            firstController = playerOne;
-            secondController = playerTwo;
-        }
-        else
-        {
-            firstController = playerTwo;
-            secondController = playerOne;
-        }
-
-        // Check which one is on the left
-        if (firstController.gameObject.transform.position.x < secondController.gameObject.transform.position.x)
-        {
-            firstController.canMoveRight = false;
-            secondController.canMoveLeft = false;
-        }
-        else
-        {
-            firstController.canMoveLeft = false;
-            secondController.canMoveRight = false;
-        }
-    }
-
-    public void IsNotAgainst(GameObject first, GameObject second)
-    {
-        PlayerController firstController;
-        PlayerController secondController;
-
-        print("Is not against");
-
-        if (first == playerOne.gameObject)
-        {
-            firstController = playerOne;
-            secondController = playerTwo;
-        }
-        else
-        {
-            firstController = playerTwo;
-            secondController = playerOne;
-        }
-
-        if (firstController.gameObject.transform.position.x < secondController.gameObject.transform.position.x)
-        {
-            firstController.canMoveRight = true;
-            secondController.canMoveLeft = true;
-        }
-        else
-        {
-            firstController.canMoveLeft = true;
-            secondController.canMoveRight = true;
-        }
-    }
-    */
 
     private void _fixIllegalPlayerPosition()
     {

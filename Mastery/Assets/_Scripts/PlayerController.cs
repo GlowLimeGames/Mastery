@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using DG.Tweening;
 
 public class PlayerController : MonoBehaviour
@@ -38,6 +39,12 @@ public class PlayerController : MonoBehaviour
     public bool facingLeft;
     //public bool canMoveLeft;
     //public bool canMoveRight;
+
+    // Debug texts
+    public Text hpText;
+    public Text disarmText;
+    public Text shieldBreakText;
+    public Text disableMovementText;
 
     // Input holders
     // TODO: Would be nice to put this in an object or something
@@ -189,16 +196,19 @@ public class PlayerController : MonoBehaviour
     public void Disarm()
     {
         disarmStartTime = Time.time;
+        disarmText.text = "Disarmed";
     }
 
     public void ShieldBreak()
     {
         shieldBreakStartTime = Time.time;
+        shieldBreakText.text = "Shield Broken";
     }
 
     public void DisableMovement()
     {
         disableMovementStartTime = Time.time;
+        disableMovementText.text = "Movement Disabled";
     }
 
 }
