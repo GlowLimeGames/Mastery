@@ -37,8 +37,6 @@ public class PlayerController : MonoBehaviour
 
     public int HP;
     public bool facingLeft;
-    //public bool canMoveLeft;
-    //public bool canMoveRight;
 
     // Debug texts
     public Text hpText;
@@ -78,9 +76,6 @@ public class PlayerController : MonoBehaviour
         disarmStartTime = -10.0f;
         shieldBreakStartTime = -10.0f;
         disableMovementStartTime = -10.0f;
-
-        //canMoveLeft = true;
-        //canMoveRight = true;
     }
 
     private void Update()
