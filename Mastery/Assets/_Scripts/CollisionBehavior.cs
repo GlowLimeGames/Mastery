@@ -43,4 +43,12 @@ public class CollisionBehavior : MonoBehaviour
     {
 
     }
+
+    private bool _collisionIsBetweenDifferentPlayers(Collision2D collision)
+    {
+        GameObject collOne = collision.collider.gameObject.transform.parent.gameObject;
+        GameObject collTwo = collision.otherCollider.gameObject.transform.parent.gameObject;
+
+        return collOne != collTwo;
+    }
 }

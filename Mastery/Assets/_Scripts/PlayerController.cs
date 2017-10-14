@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using DG.Tweening;
 
 public class PlayerController : MonoBehaviour
@@ -10,6 +11,7 @@ public class PlayerController : MonoBehaviour
     {
         IDLE,
         ATTACKING,
+        KNOCKBACK,
         GUARDING,
         VULNERABLE,
         INVULNERABLE
@@ -19,6 +21,7 @@ public class PlayerController : MonoBehaviour
     public enum CharacterAction
     {
         IDLE,
+        TURNING,
         LIGHT_ATTACKING,
         HEAVY_ATTACKING,
         PARRYING,
@@ -34,6 +37,12 @@ public class PlayerController : MonoBehaviour
 
     public int HP;
     public bool facingLeft;
+
+    // Debug texts
+    public Text hpText;
+    public Text disarmText;
+    public Text shieldBreakText;
+    public Text disableMovementText;
 
     // Input holders
     // TODO: Would be nice to put this in an object or something
@@ -76,6 +85,24 @@ public class PlayerController : MonoBehaviour
         if (anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
         {
             state = CharacterState.IDLE;
+            action = CharacterAction.IDLE;
+        }
+
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Turn Around"))
+        {
+            state = CharacterState.IDLE;
+            action = CharacterAction.TURNING;
+        }
+
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("KnockbackL"))
+        {
+            state = CharacterState.KNOCKBACK;
+            action = CharacterAction.IDLE;
+        }
+
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("KnockbackR"))
+        {
+            state = CharacterState.KNOCKBACK;
             action = CharacterAction.IDLE;
         }
 
@@ -124,7 +151,7 @@ public class PlayerController : MonoBehaviour
 
     public bool CanAct()
     {
-        if (action == CharacterAction.IDLE || action == CharacterAction.MOVING)
+        if (action == CharacterAction.IDLE || action == CharacterAction.MOVING || action == CharacterAction.TURNING)
         {
             return true;
         }
@@ -136,7 +163,7 @@ public class PlayerController : MonoBehaviour
 
     public void TurnAround()
     {
-        // TODO: Add a delay and animation to this, since it's used as a penalty for something too
+        anim.Play("Turn Around");
         transform.localScale = new Vector3(transform.localScale.x * -1, transform.localScale.y, transform.localScale.z);
         if (facingLeft)
         {
@@ -150,35 +177,33 @@ public class PlayerController : MonoBehaviour
 
     public void Knockback()
     {
-        // Having issues with AddForce, it was working on the legs but not the animated parts.
-        // TODO: try putting each player object in an empty object with a rigidbody2d.
-        // http://answers.unity3d.com/questions/559976/can-i-addforce-to-a-model-while-using-animator.html
-        // UPDATE: We're not using rigidbody physics, so could just use a coroutine or state change, like for the roll
-
-        // For now, they are just snapping backwards a bit
+        // Need to knockback player in opposite direction so they rotate away from the collision
         if (facingLeft)
         {
-            gameObject.transform.position += Vector3.right * 0.2f;
+            anim.Play("KnockbackR");
         }
         else
         {
-            gameObject.transform.position += Vector3.left * 0.2f;
+            anim.Play("KnockbackL");
         }
     }
 
     public void Disarm()
     {
         disarmStartTime = Time.time;
+        disarmText.text = "Disarmed";
     }
 
     public void ShieldBreak()
     {
         shieldBreakStartTime = Time.time;
+        shieldBreakText.text = "Shield Broken";
     }
 
     public void DisableMovement()
     {
         disableMovementStartTime = Time.time;
+        disableMovementText.text = "Movement Disabled";
     }
 
 }

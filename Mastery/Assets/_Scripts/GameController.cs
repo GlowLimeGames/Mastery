@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
 {
@@ -9,12 +10,19 @@ public class GameController : MonoBehaviour
     public PlayerController playerOne;
     public PlayerController playerTwo;
 
+    public Text playerOneHpText;
+    public Text playerTwoHpText;
+
+    public Text playerOneDisarmText;
+    public Text playerTwoDisarmText;
+
     private PlayerController[] _players = new PlayerController[2];
 
     public static int hpMax = 2;
 
     private static float _moveSpeed = 0.05f;
-    private static float _rollSpeed = 0.10f;
+    private static float _rollSpeed = 0.12f;
+    private static float _knockbackSpeed = 0.06f;
 
     // Time to distinguish a press from a hold, for light/heavy and parry/guard
     // (Different numbers for those two categories?)
@@ -68,9 +76,11 @@ public class GameController : MonoBehaviour
         playerOne.facingLeft = false;
         playerTwo.facingLeft = true;
 
-        // Subscribe to the AttackResolution event
+        // Subscribe to the events from CollisionBehavior
         CollisionBehavior.AttackResolution += Attack;
         CollisionBehavior.KickResolution += Kick;
+        //CollisionBehavior.StopMovementWhileAgainst += IsAgainst;
+        //CollisionBehavior.ReEnableMovement += IsNotAgainst;
     }
 
     private void Update()
@@ -156,11 +166,42 @@ public class GameController : MonoBehaviour
                     }
 
                     // Motion happens regardless of right stick status
-                    if (player.inputHorizontal != 0.0f)
+                    if (player.inputHorizontal != 0.0f && player.action != PlayerController.CharacterAction.TURNING)
                     {
-                        player.action = PlayerController.CharacterAction.MOVING;
-                        player.transform.position += Vector3.right * (_moveSpeed * player.inputHorizontal);
-                        player.anim.Play("Walking");
+                        PlayerController otherPlayer;
+                        if (player == playerOne)
+                        {
+                            otherPlayer = playerTwo;
+                        }
+                        else
+                        {
+                            otherPlayer = playerOne;
+                        }
+
+                        float deltaX = player.transform.position.x - otherPlayer.transform.position.x;
+
+                        if (player.inputHorizontal < 0.0f)
+                        {
+                            // Make sure the other player is not adjacent to this one
+                            // (Numbers must be different to avoid trapping the player on contact)
+                            if ((deltaX <= -2.4) || (deltaX >= 2.7))
+                            {
+                                player.action = PlayerController.CharacterAction.MOVING;
+                                player.transform.position += Vector3.right * (_moveSpeed * player.inputHorizontal);
+                                player.anim.Play("Walking");
+                            }
+
+                        } else if (player.inputHorizontal > 0.0f)
+
+                        {
+                            if ((deltaX <= -2.7) || (deltaX >= 2.4))
+                            {
+                                player.action = PlayerController.CharacterAction.MOVING;
+                                player.transform.position += Vector3.right * (_moveSpeed * player.inputHorizontal);
+                                player.anim.Play("Walking");
+                            }
+                        }
+
                     }
                 }
 
@@ -242,7 +283,6 @@ public class GameController : MonoBehaviour
                     {
                         player.action = PlayerController.CharacterAction.ROLLING;
                         player.anim.Play("Roll");
-                        //StartCoroutine(StopRoll(player));
                     }
                 }
             }
@@ -283,6 +323,7 @@ public class GameController : MonoBehaviour
         //Movement / Combat Functionality goes here
         foreach (PlayerController player in _players)
         {
+            // Rolling motion
             if (player.action == PlayerController.CharacterAction.ROLLING)
             {
                 if (player.facingLeft)
@@ -294,18 +335,56 @@ public class GameController : MonoBehaviour
                     player.transform.position += Vector3.right * _rollSpeed;
                 }
             }
-            // TODO: Something similar for knockback
+
+            // Knockback motion
+            if (player.state == PlayerController.CharacterState.KNOCKBACK)
+            {
+                if (player.facingLeft)
+                {
+                    player.transform.position += Vector3.right * _knockbackSpeed;
+                }
+                else
+                {
+                    player.transform.position += Vector3.left * _knockbackSpeed;
+                }
+            }
+
+            // Fix player positions if one has rolled inside the other
+            if (playerOne.action != PlayerController.CharacterAction.ROLLING && playerTwo.action != PlayerController.CharacterAction.ROLLING)
+            {
+                float deltaX = playerOne.transform.position.x - playerTwo.transform.position.x;
+                if (Math.Abs(deltaX) < 2.4)
+                {
+                    _fixIllegalPlayerPosition();
+                }
+            }
         }
     }
 
     private void LateUpdate()
     {
         //Do something after Movement / Combat here
+        playerOneHpText.text = "P1 HP: " + playerOne.HP.ToString();
+        playerTwoHpText.text = "P2 HP: " + playerTwo.HP.ToString();
+
         foreach (PlayerController player in _players)
         {
             if (player.HP <= 0)
             {
                 player.state = PlayerController.CharacterState.VULNERABLE;
+            }
+
+            if (Time.time >= (player.disarmStartTime + _disarmTime))
+            {
+                player.disarmText.text = "";
+            }
+            if (Time.time >= (player.disableMovementStartTime + _disableMovementTime))
+            {
+                player.disableMovementText.text = "";
+            }
+            if (Time.time >= (player.shieldBreakStartTime + _shieldBreakTime))
+            {
+                player.shieldBreakText.text = "";
             }
         }
     }
@@ -341,9 +420,6 @@ public class GameController : MonoBehaviour
                     break;
                 case PlayerController.CharacterAction.LIGHT_ATTACKING:
                     // Both are knocked back
-                    // Idle for now, but should be a knockback animation in the future
-                    attackerController.anim.Play("Idle");
-                    defenderController.anim.Play("Idle");
                     attackerController.Knockback();
                     defenderController.Knockback();
                     break;
@@ -449,5 +525,26 @@ public class GameController : MonoBehaviour
             }
         }
     }
+
+    private void _fixIllegalPlayerPosition()
+    {
+        PlayerController leftPlayer;
+        PlayerController rightPlayer;
+
+        if (playerOne.transform.position.x <= playerTwo.transform.position.x)
+        {
+            leftPlayer = playerOne;
+            rightPlayer = playerTwo;
+        } else
+        {
+            leftPlayer = playerTwo;
+            rightPlayer = playerOne;
+        }
+
+        leftPlayer.gameObject.transform.position += Vector3.left * 0.1f;
+        rightPlayer.gameObject.transform.position += Vector3.right * 0.1f;
+
+    }
+
 
 }
