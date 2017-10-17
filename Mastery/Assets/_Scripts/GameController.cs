@@ -406,7 +406,7 @@ public class GameController : MonoBehaviour
             defenderController = playerOne;
         }
 
-        // If attacker hits defender from behind, treat defender as idle
+        // If attacker hits defender from behind, treat defender as idle, ignoring frontal attacks/defends
         if (attackerController.facingLeft == defenderController.facingLeft)
         {
             defenderController.anim.Play("Idle");
@@ -415,7 +415,6 @@ public class GameController : MonoBehaviour
 
         if (attackerController.action == PlayerController.CharacterAction.LIGHT_ATTACKING)
         {
-            
             switch (defenderController.action)
             {
                 case PlayerController.CharacterAction.PARRYING:
