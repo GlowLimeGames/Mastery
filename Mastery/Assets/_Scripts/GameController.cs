@@ -137,7 +137,7 @@ public class GameController : MonoBehaviour
             {
                 if (Time.time >= (player.disableMovementStartTime + _disableMovementTime))
                 {
-                    // Right stick takes priority over left stick for determining orientation.
+                    // Right stick determines the direction you're facing
                     if (player.inputRightHorizontal != 0.0f)
                     {
                         if (player.inputRightHorizontal < 0.0f && !player.facingLeft)
@@ -149,23 +149,8 @@ public class GameController : MonoBehaviour
                             player.TurnAround();
                         }
                     }
-                    else
-                    {
-                        if (player.inputHorizontal != 0.0f)
-                        {
-                            // Not overridden by right stick, so turn around if not facing direction of motion
-                            if (player.inputHorizontal < 0.0f && !player.facingLeft)
-                            {
-                                player.TurnAround();
-                            }
-                            else if (player.inputHorizontal > 0.0f && player.facingLeft)
-                            {
-                                player.TurnAround();
-                            }
-                        }
-                    }
 
-                    // Motion happens regardless of right stick status
+                    // Left stick determines motion
                     if (player.inputHorizontal != 0.0f && player.action != PlayerController.CharacterAction.TURNING)
                     {
                         PlayerController otherPlayer;
