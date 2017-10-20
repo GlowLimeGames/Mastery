@@ -28,7 +28,8 @@ public class PlayerController : MonoBehaviour
         GUARDING,
         KICKING,
         MOVING,
-        ROLLING
+        ROLLING,
+        DELAY,
     }
 
     public CharacterState state;
@@ -118,10 +119,16 @@ public class PlayerController : MonoBehaviour
             action = CharacterAction.ROLLING;
         }
 
-        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Light Attack"))
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Light Attack (Swing)"))
         {
             state = CharacterState.ATTACKING;
             action = CharacterAction.LIGHT_ATTACKING;
+        }
+
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Light Attack (Return)"))
+        {
+            state = CharacterState.IDLE;
+            action = CharacterAction.DELAY;
         }
 
         if (anim.GetCurrentAnimatorStateInfo(0).IsName("Heavy Attack"))

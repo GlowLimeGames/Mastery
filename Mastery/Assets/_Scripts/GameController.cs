@@ -238,7 +238,7 @@ public class GameController : MonoBehaviour
                     {
                         player.state = PlayerController.CharacterState.ATTACKING;
                         player.action = PlayerController.CharacterAction.LIGHT_ATTACKING;
-                        player.anim.Play("Light Attack");
+                        player.anim.Play("Light Attack (Swing)");
 
                         player.actionThisPress = true;
                     }
