@@ -39,6 +39,7 @@ public class PlayerController : MonoBehaviour
 
     public int HP;
     public bool facingLeft;
+    public bool rollingLeft;
 
     // Debug texts
     public Text hpText;

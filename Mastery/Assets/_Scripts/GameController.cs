@@ -266,6 +266,20 @@ public class GameController : MonoBehaviour
 
                     if (player.inputRollDown)
                     {
+                        // Roll in the direction you're moving.
+                        // If not moving, roll in the direction you're facing
+                        if (player.inputHorizontal < 0.0f)
+                        {
+                            player.rollingLeft = true;
+                        }
+                        else if (player.inputHorizontal == 0.0f)
+                        {
+                            player.rollingLeft = player.facingLeft;
+                        }
+                        else
+                        {
+                            player.rollingLeft = false;
+                        }
                         player.action = PlayerController.CharacterAction.ROLLING;
                         player.anim.Play("Roll");
                     }
@@ -311,7 +325,7 @@ public class GameController : MonoBehaviour
             // Rolling motion
             if (player.action == PlayerController.CharacterAction.ROLLING)
             {
-                if (player.facingLeft)
+                if (player.rollingLeft)
                 {
                     player.transform.position += Vector3.left * _rollSpeed;
                 }
@@ -412,7 +426,10 @@ public class GameController : MonoBehaviour
                     // Disables attacker's attack button for X seconds
                     attackerController.Disarm();
                     break;
-                case PlayerController.CharacterAction.IDLE:
+                case PlayerController.CharacterAction.ROLLING:
+                    // Nothing, they're invulnerable
+                    break;
+                default:                               // IDLE, MOVING, DELAY, TURNING, KICKING(?), STUN(?), ...
                     switch (defenderController.state)
                     {
                         case PlayerController.CharacterState.VULNERABLE:
@@ -455,7 +472,10 @@ public class GameController : MonoBehaviour
                     attackerController.HP -= 1;
                     defenderController.HP -= 1;
                     break;
-                case PlayerController.CharacterAction.IDLE:
+                case PlayerController.CharacterAction.ROLLING:
+                    // Nothing, they're invulnerable
+                    break;
+                default:                                // IDLE, MOVING, DELAY, TURNING, KICKING(?), STUN(?), ...
                     switch (defenderController.state)
                     {
                         case PlayerController.CharacterState.VULNERABLE:
