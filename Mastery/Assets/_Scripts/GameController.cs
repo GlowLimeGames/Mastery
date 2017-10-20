@@ -227,7 +227,7 @@ public class GameController : MonoBehaviour
                     {
                         player.state = PlayerController.CharacterState.ATTACKING;
                         player.action = PlayerController.CharacterAction.HEAVY_ATTACKING;
-                        player.anim.Play("Heavy Attack");
+                        player.anim.Play("Heavy Attack (Swing)");
 
                         player.actionThisPress = true;
                     }
@@ -436,8 +436,6 @@ public class GameController : MonoBehaviour
                             break;
                         case PlayerController.CharacterState.IDLE:
                             // Successful hit.
-                            // To avoid duplicate hits, setting animation to idle.
-                            // TODO should play a successful attack animation, maybe just reverse the animation?
                             attackerController.anim.Play("Light Attack (Return)");
 
                             defenderController.anim.Play("Stun");
@@ -460,7 +458,9 @@ public class GameController : MonoBehaviour
                     defenderController.Knockback();
                     break;
                 case PlayerController.CharacterAction.LIGHT_ATTACKING:
-                    // Heavy overpowers light; attack connects with half damage
+                    // Heavy overpowers light; heavy attack connects with half damage
+                    attackerController.anim.Play("Heavy Attack (Return)");
+                    defenderController.anim.Play("Stun");
                     defenderController.HP -= 1;
                     break;
                 case PlayerController.CharacterAction.HEAVY_ATTACKING:
@@ -479,8 +479,9 @@ public class GameController : MonoBehaviour
                             break;
                         case PlayerController.CharacterState.IDLE:
                             // Attack connects fully
-                            attackerController.anim.Play("Idle");
+                            attackerController.anim.Play("Heavy Attack (Return)");
                             defenderController.HP -= 2;
+                            defenderController.anim.Play("Stun");
                             break;
                     }
                     break;

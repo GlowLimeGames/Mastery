@@ -132,10 +132,16 @@ public class PlayerController : MonoBehaviour
             action = CharacterAction.DELAY;
         }
 
-        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Heavy Attack"))
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Heavy Attack (Swing)"))
         {
             state = CharacterState.ATTACKING;
             action = CharacterAction.HEAVY_ATTACKING;
+        }
+
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Heavy Attack (Return)"))
+        {
+            state = CharacterState.IDLE;
+            action = CharacterAction.DELAY;
         }
 
         if (anim.GetCurrentAnimatorStateInfo(0).IsName("Kick"))
