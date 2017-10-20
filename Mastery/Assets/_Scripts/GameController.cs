@@ -438,8 +438,9 @@ public class GameController : MonoBehaviour
                             // Successful hit.
                             // To avoid duplicate hits, setting animation to idle.
                             // TODO should play a successful attack animation, maybe just reverse the animation?
-                            attackerController.anim.Play("Idle");
+                            attackerController.anim.Play("Light Attack (Return)");
 
+                            defenderController.anim.Play("Stun");
                             defenderController.HP -= 1;
                             break;
                     }

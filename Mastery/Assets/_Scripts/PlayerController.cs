@@ -29,7 +29,8 @@ public class PlayerController : MonoBehaviour
         KICKING,
         MOVING,
         ROLLING,
-        DELAY,
+        DELAY,      // bringing weapon back after swinging it. Need a better name
+        STUN,
     }
 
     public CharacterState state;
@@ -153,6 +154,12 @@ public class PlayerController : MonoBehaviour
         {
             state = CharacterState.GUARDING;
             action = CharacterAction.GUARDING;
+        }
+
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Stun"))
+        {
+            state = CharacterState.IDLE;
+            action = CharacterAction.STUN;
         }
     }
 
