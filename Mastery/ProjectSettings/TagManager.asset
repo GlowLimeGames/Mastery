@@ -7,7 +7,8 @@ TagManager:
   - Sword
   - Leg
   - Shield
-  - Target
+  - ShieldActive
+  - ShieldInactive
   layers:
   - Default
   - TransparentFX

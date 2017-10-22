@@ -13,9 +13,6 @@ public class GameController : MonoBehaviour
     public Text playerOneHpText;
     public Text playerTwoHpText;
 
-    public Text playerOneDisarmText;
-    public Text playerTwoDisarmText;
-
     private PlayerController[] _players = new PlayerController[2];
 
     public static int hpMax = 2;
