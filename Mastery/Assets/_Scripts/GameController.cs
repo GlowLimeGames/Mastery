@@ -360,8 +360,8 @@ public class GameController : MonoBehaviour
     private void LateUpdate()
     {
         //Do something after Movement / Combat here
-        playerOneHpText.text = "P1 HP: " + playerOne.HP.ToString();
-        playerTwoHpText.text = "P2 HP: " + playerTwo.HP.ToString();
+        playerOneHpText.text = "HP: " + playerOne.HP.ToString();
+        playerTwoHpText.text = "HP: " + playerTwo.HP.ToString();
 
         foreach (PlayerController player in _players)
         {
@@ -531,6 +531,7 @@ public class GameController : MonoBehaviour
     }
 
     private void _fixIllegalPlayerPosition()
+        // Players can end a roll inside the other player. Push them apart whenever this happens.
     {
         PlayerController leftPlayer;
         PlayerController rightPlayer;
