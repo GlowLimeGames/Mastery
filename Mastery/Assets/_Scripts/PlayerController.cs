@@ -71,6 +71,9 @@ public class PlayerController : MonoBehaviour
     // Whether an action has been performed with this button press
     public bool actionThisPress;
 
+    // Need to access shield in order to change its tag to active/inactive.
+    public GameObject shieldObject;
+
     // Use this for initialization
     private void Start()
     {
@@ -168,6 +171,8 @@ public class PlayerController : MonoBehaviour
             state = CharacterState.IDLE;
             action = CharacterAction.STUN;
         }
+
+        _setShieldState();
     }
 
     public bool CanAct()
@@ -225,6 +230,17 @@ public class PlayerController : MonoBehaviour
     {
         disableMovementStartTime = Time.time;
         disableMovementText.text = "Movement Disabled";
+    }
+
+    private void _setShieldState()
+    {
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Parry") || (anim.GetCurrentAnimatorStateInfo(0).IsName("Guard")))
+        {
+            shieldObject.tag = "ShieldActive";
+        } else
+        {
+            shieldObject.tag = "ShieldInactive";
+        }
     }
 
 }
