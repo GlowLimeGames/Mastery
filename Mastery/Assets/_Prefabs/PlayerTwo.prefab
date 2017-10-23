@@ -152,7 +152,7 @@ GameObject:
   - component: {fileID: 114174461292186514}
   m_Layer: 0
   m_Name: Left Arm
-  m_TagString: Shield
+  m_TagString: ShieldInactive
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -576,6 +576,7 @@ MonoBehaviour:
   anim: {fileID: 95639027798573938}
   HP: 0
   facingLeft: 0
+  rollingLeft: 0
   hpText: {fileID: 0}
   disarmText: {fileID: 0}
   shieldBreakText: {fileID: 0}
@@ -595,6 +596,7 @@ MonoBehaviour:
   shieldBreakStartTime: 0
   disableMovementStartTime: 0
   actionThisPress: 0
+  shieldObject: {fileID: 1956994715250796}
 --- !u!114 &114623965753455104
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -913,7 +915,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 9e8557596e9ffd04388cfec4a1a746b9, type: 3}
-  m_Color: {r: 0.2231834, g: 0.31617647, b: 0.22382471, a: 1}
+  m_Color: {r: 0.35980755, g: 0.8897059, b: 0.363462, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

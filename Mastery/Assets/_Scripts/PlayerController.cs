@@ -28,7 +28,9 @@ public class PlayerController : MonoBehaviour
         GUARDING,
         KICKING,
         MOVING,
-        ROLLING
+        ROLLING,
+        DELAY,      // bringing weapon back after swinging it. Need a better name
+        STUN,
     }
 
     public CharacterState state;
@@ -37,6 +39,7 @@ public class PlayerController : MonoBehaviour
 
     public int HP;
     public bool facingLeft;
+    public bool rollingLeft;
 
     // Debug texts
     public Text hpText;
@@ -67,6 +70,9 @@ public class PlayerController : MonoBehaviour
 
     // Whether an action has been performed with this button press
     public bool actionThisPress;
+
+    // Need to access shield in order to change its tag to active/inactive.
+    public GameObject shieldObject;
 
     // Use this for initialization
     private void Start()
@@ -118,16 +124,28 @@ public class PlayerController : MonoBehaviour
             action = CharacterAction.ROLLING;
         }
 
-        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Light Attack"))
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Light Attack (Swing)"))
         {
             state = CharacterState.ATTACKING;
             action = CharacterAction.LIGHT_ATTACKING;
         }
 
-        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Heavy Attack"))
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Light Attack (Return)"))
+        {
+            state = CharacterState.IDLE;
+            action = CharacterAction.DELAY;
+        }
+
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Heavy Attack (Swing)"))
         {
             state = CharacterState.ATTACKING;
             action = CharacterAction.HEAVY_ATTACKING;
+        }
+
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Heavy Attack (Return)"))
+        {
+            state = CharacterState.IDLE;
+            action = CharacterAction.DELAY;
         }
 
         if (anim.GetCurrentAnimatorStateInfo(0).IsName("Kick"))
@@ -147,6 +165,14 @@ public class PlayerController : MonoBehaviour
             state = CharacterState.GUARDING;
             action = CharacterAction.GUARDING;
         }
+
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Stun"))
+        {
+            state = CharacterState.IDLE;
+            action = CharacterAction.STUN;
+        }
+
+        _setShieldState();
     }
 
     public bool CanAct()
@@ -204,6 +230,17 @@ public class PlayerController : MonoBehaviour
     {
         disableMovementStartTime = Time.time;
         disableMovementText.text = "Movement Disabled";
+    }
+
+    private void _setShieldState()
+    {
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Parry") || (anim.GetCurrentAnimatorStateInfo(0).IsName("Guard")))
+        {
+            shieldObject.tag = "ShieldActive";
+        } else
+        {
+            shieldObject.tag = "ShieldInactive";
+        }
     }
 
 }

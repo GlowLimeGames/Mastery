@@ -13,9 +13,6 @@ public class GameController : MonoBehaviour
     public Text playerOneHpText;
     public Text playerTwoHpText;
 
-    public Text playerOneDisarmText;
-    public Text playerTwoDisarmText;
-
     private PlayerController[] _players = new PlayerController[2];
 
     public static int hpMax = 2;
@@ -137,7 +134,7 @@ public class GameController : MonoBehaviour
             {
                 if (Time.time >= (player.disableMovementStartTime + _disableMovementTime))
                 {
-                    // Right stick takes priority over left stick for determining orientation.
+                    // Right stick determines the direction you're facing
                     if (player.inputRightHorizontal != 0.0f)
                     {
                         if (player.inputRightHorizontal < 0.0f && !player.facingLeft)
@@ -149,23 +146,8 @@ public class GameController : MonoBehaviour
                             player.TurnAround();
                         }
                     }
-                    else
-                    {
-                        if (player.inputHorizontal != 0.0f)
-                        {
-                            // Not overridden by right stick, so turn around if not facing direction of motion
-                            if (player.inputHorizontal < 0.0f && !player.facingLeft)
-                            {
-                                player.TurnAround();
-                            }
-                            else if (player.inputHorizontal > 0.0f && player.facingLeft)
-                            {
-                                player.TurnAround();
-                            }
-                        }
-                    }
 
-                    // Motion happens regardless of right stick status
+                    // Left stick determines motion
                     if (player.inputHorizontal != 0.0f && player.action != PlayerController.CharacterAction.TURNING)
                     {
                         PlayerController otherPlayer;
@@ -227,7 +209,7 @@ public class GameController : MonoBehaviour
                     {
                         player.state = PlayerController.CharacterState.ATTACKING;
                         player.action = PlayerController.CharacterAction.HEAVY_ATTACKING;
-                        player.anim.Play("Heavy Attack");
+                        player.anim.Play("Heavy Attack (Swing)");
 
                         player.actionThisPress = true;
                     }
@@ -238,7 +220,7 @@ public class GameController : MonoBehaviour
                     {
                         player.state = PlayerController.CharacterState.ATTACKING;
                         player.action = PlayerController.CharacterAction.LIGHT_ATTACKING;
-                        player.anim.Play("Light Attack");
+                        player.anim.Play("Light Attack (Swing)");
 
                         player.actionThisPress = true;
                     }
@@ -281,6 +263,20 @@ public class GameController : MonoBehaviour
 
                     if (player.inputRollDown)
                     {
+                        // Roll in the direction you're moving.
+                        // If not moving, roll in the direction you're facing
+                        if (player.inputHorizontal < 0.0f)
+                        {
+                            player.rollingLeft = true;
+                        }
+                        else if (player.inputHorizontal == 0.0f)
+                        {
+                            player.rollingLeft = player.facingLeft;
+                        }
+                        else
+                        {
+                            player.rollingLeft = false;
+                        }
                         player.action = PlayerController.CharacterAction.ROLLING;
                         player.anim.Play("Roll");
                     }
@@ -326,7 +322,7 @@ public class GameController : MonoBehaviour
             // Rolling motion
             if (player.action == PlayerController.CharacterAction.ROLLING)
             {
-                if (player.facingLeft)
+                if (player.rollingLeft)
                 {
                     player.transform.position += Vector3.left * _rollSpeed;
                 }
@@ -364,8 +360,8 @@ public class GameController : MonoBehaviour
     private void LateUpdate()
     {
         //Do something after Movement / Combat here
-        playerOneHpText.text = "P1 HP: " + playerOne.HP.ToString();
-        playerTwoHpText.text = "P2 HP: " + playerTwo.HP.ToString();
+        playerOneHpText.text = "HP: " + playerOne.HP.ToString();
+        playerTwoHpText.text = "HP: " + playerTwo.HP.ToString();
 
         foreach (PlayerController player in _players)
         {
@@ -434,7 +430,10 @@ public class GameController : MonoBehaviour
                     // Disables attacker's attack button for X seconds
                     attackerController.Disarm();
                     break;
-                case PlayerController.CharacterAction.IDLE:
+                case PlayerController.CharacterAction.ROLLING:
+                    // Nothing, they're invulnerable
+                    break;
+                default:                               // IDLE, MOVING, DELAY, TURNING, KICKING(?), STUN(?), ...
                     switch (defenderController.state)
                     {
                         case PlayerController.CharacterState.VULNERABLE:
@@ -443,10 +442,9 @@ public class GameController : MonoBehaviour
                             break;
                         case PlayerController.CharacterState.IDLE:
                             // Successful hit.
-                            // To avoid duplicate hits, setting animation to idle.
-                            // TODO should play a successful attack animation, maybe just reverse the animation?
-                            attackerController.anim.Play("Idle");
+                            attackerController.anim.Play("Light Attack (Return)");
 
+                            defenderController.anim.Play("Stun");
                             defenderController.HP -= 1;
                             break;
                     }
@@ -466,7 +464,9 @@ public class GameController : MonoBehaviour
                     defenderController.Knockback();
                     break;
                 case PlayerController.CharacterAction.LIGHT_ATTACKING:
-                    // Heavy overpowers light; attack connects with half damage
+                    // Heavy overpowers light; heavy attack connects with half damage
+                    attackerController.anim.Play("Heavy Attack (Return)");
+                    defenderController.anim.Play("Stun");
                     defenderController.HP -= 1;
                     break;
                 case PlayerController.CharacterAction.HEAVY_ATTACKING:
@@ -476,7 +476,10 @@ public class GameController : MonoBehaviour
                     attackerController.HP -= 1;
                     defenderController.HP -= 1;
                     break;
-                case PlayerController.CharacterAction.IDLE:
+                case PlayerController.CharacterAction.ROLLING:
+                    // Nothing, they're invulnerable
+                    break;
+                default:                                // IDLE, MOVING, DELAY, TURNING, KICKING(?), STUN(?), ...
                     switch (defenderController.state)
                     {
                         case PlayerController.CharacterState.VULNERABLE:
@@ -485,8 +488,9 @@ public class GameController : MonoBehaviour
                             break;
                         case PlayerController.CharacterState.IDLE:
                             // Attack connects fully
-                            attackerController.anim.Play("Idle");
+                            attackerController.anim.Play("Heavy Attack (Return)");
                             defenderController.HP -= 2;
+                            defenderController.anim.Play("Stun");
                             break;
                     }
                     break;
@@ -534,6 +538,7 @@ public class GameController : MonoBehaviour
     }
 
     private void _fixIllegalPlayerPosition()
+        // Players can end a roll inside the other player. Push them apart whenever this happens.
     {
         PlayerController leftPlayer;
         PlayerController rightPlayer;

@@ -13,6 +13,12 @@ public class CollisionBehavior : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        // If it hit an inactive shield, ignore it
+        if (collision.otherCollider.gameObject.CompareTag("ShieldInactive"))
+        {
+            return;
+        }
+
         if (collision.collider.gameObject.CompareTag("Sword"))
         {
             GameObject attacker = collision.collider.gameObject.transform.parent.gameObject;
