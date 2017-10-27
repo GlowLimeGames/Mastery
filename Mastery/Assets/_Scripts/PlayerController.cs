@@ -37,11 +37,14 @@ public class PlayerController : MonoBehaviour
     public CharacterAction action;
     public Animator anim;
 
+    public int stock;
+    public bool isDead;
     public int HP;
     public bool facingLeft;
     public bool rollingLeft;
 
     // Debug texts
+    public Text stockText;
     public Text hpText;
     public Text disarmText;
     public Text shieldBreakText;
@@ -68,6 +71,8 @@ public class PlayerController : MonoBehaviour
     public float shieldBreakStartTime;
     public float disableMovementStartTime;
 
+    public float deathTime;
+
     // Whether an action has been performed with this button press
     public bool actionThisPress;
 
@@ -78,10 +83,15 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         state = CharacterState.IDLE;
+        stock = GameController.stockMax;
         HP = GameController.hpMax;
+        isDead = false;
+
+        // Set all event times to a negative, so their relevant conditions don't trigger
         disarmStartTime = -10.0f;
         shieldBreakStartTime = -10.0f;
         disableMovementStartTime = -10.0f;
+        deathTime = -10.0f;
     }
 
     private void Update()
@@ -230,6 +240,32 @@ public class PlayerController : MonoBehaviour
     {
         disableMovementStartTime = Time.time;
         disableMovementText.text = "Movement Disabled";
+    }
+
+    public void IsKilled()
+    {
+        isDead = true;
+        
+        stock -= 1;
+        stockText.text = "Stock: " + stock.ToString();
+        gameObject.transform.position += Vector3.right * 100.0f;
+        gameObject.SetActive(false);
+
+        deathTime = Time.time;
+    }
+
+    public void Respawn()
+    {
+        // TODO: Find a safe random position to respawn in, for now it's just at 1.0
+        isDead = false;
+        float respawnX = 1.0f;
+        gameObject.transform.position = new Vector3(respawnX, -2.0f, 0.0f);
+        // Game object is getting stuck with the rotation it had while dying. TODO fix this
+        // It'll probably go away as I add a death animation...
+        // gameObject.transform.rotation = new Quaternion(0, 0, 0, 0);
+        gameObject.SetActive(true);
+        anim.Play("Idle");
+        HP = GameController.hpMax;
     }
 
     private void _setShieldState()

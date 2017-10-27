@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
@@ -10,11 +11,15 @@ public class GameController : MonoBehaviour
     public PlayerController playerOne;
     public PlayerController playerTwo;
 
+    // TODO: Deprecate these two
     public Text playerOneHpText;
     public Text playerTwoHpText;
 
+    public Text VictoryOverlay;
+
     private PlayerController[] _players = new PlayerController[2];
 
+    public static int stockMax = 3;
     public static int hpMax = 2;
 
     private static float _moveSpeed = 0.05f;
@@ -31,6 +36,8 @@ public class GameController : MonoBehaviour
     private static float _disableMovementTime = 3.0f;
 
     private static float _shieldBreakTime = 3.0f;
+
+    private static float _respawnTime = 2.0f;
 
     //Remaining time left in the game - use this to transform the closing walls.
     private float timeRemaining = 300.0f;
@@ -76,8 +83,6 @@ public class GameController : MonoBehaviour
         // Subscribe to the events from CollisionBehavior
         CollisionBehavior.AttackResolution += Attack;
         CollisionBehavior.KickResolution += Kick;
-        //CollisionBehavior.StopMovementWhileAgainst += IsAgainst;
-        //CollisionBehavior.ReEnableMovement += IsNotAgainst;
     }
 
     private void Update()
@@ -312,11 +317,23 @@ public class GameController : MonoBehaviour
             //TODO: time runs out scenario
         }
 
+        foreach(PlayerController player in _players)
+        {
+            if ((player.isDead) && (player.stock > 0))
+            {
+                if (Time.time >= (player.deathTime + _respawnTime))
+                {
+                    player.Respawn();
+                }
+            }
+
+        }
+
     }
 
     private void FixedUpdate()
     {
-        //Movement / Combat Functionality goes here
+        // Movement / Combat Functionality goes here
         foreach (PlayerController player in _players)
         {
             // Rolling motion
@@ -359,12 +376,13 @@ public class GameController : MonoBehaviour
 
     private void LateUpdate()
     {
-        //Do something after Movement / Combat here
+        // Do something after Movement / Combat here
         playerOneHpText.text = "HP: " + playerOne.HP.ToString();
         playerTwoHpText.text = "HP: " + playerTwo.HP.ToString();
 
         foreach (PlayerController player in _players)
         {
+            // TODO: Move this all into PlayerController methods Disarm() etc
             if (player.HP <= 0)
             {
                 player.state = PlayerController.CharacterState.VULNERABLE;
@@ -382,7 +400,20 @@ public class GameController : MonoBehaviour
             {
                 player.shieldBreakText.text = "";
             }
+
+            // This can stay
+            if (player.stock <= 0)
+            {
+                PlayerWins(_otherPlayer(player));
+            }
         }
+    }
+
+    private void OnDestroy()
+    {
+        // Unsubscribe from those events to avoid issues when restarting the match
+        CollisionBehavior.AttackResolution -= Attack;
+        CollisionBehavior.KickResolution -= Kick;
     }
 
     // TODO: This and Kick probably belong in PlayerController.
@@ -431,7 +462,7 @@ public class GameController : MonoBehaviour
                     {
                         case PlayerController.CharacterState.VULNERABLE:
                             // Kills defender
-                            defender.SetActive(false);
+                            defenderController.IsKilled();
                             break;
                         case PlayerController.CharacterState.IDLE:
                             // Successful hit.
@@ -477,7 +508,7 @@ public class GameController : MonoBehaviour
                     {
                         case PlayerController.CharacterState.VULNERABLE:
                             // Kills defender
-                            defender.SetActive(false);
+                            defenderController.IsKilled();
                             break;
                         case PlayerController.CharacterState.IDLE:
                             // Attack connects fully
@@ -530,6 +561,19 @@ public class GameController : MonoBehaviour
         }
     }
 
+    public void PlayerWins(PlayerController player)
+    {
+        //print(player.ToString() + " wins");
+        VictoryOverlay.text = player.name.ToString() + " Wins";
+        VictoryOverlay.gameObject.SetActive(true);
+
+    }
+
+    public void RestartMatch()
+    {
+        SceneManager.LoadScene("Main");
+    }
+
     private void _fixIllegalPlayerPosition()
         // Players can end a roll inside the other player. Push them apart whenever this happens.
     {
@@ -551,5 +595,15 @@ public class GameController : MonoBehaviour
 
     }
 
+    private PlayerController _otherPlayer(PlayerController thisPlayer)
+    {
+        if (thisPlayer == playerOne)
+        {
+            return playerTwo;
+        } else
+        {
+            return playerOne;
+        }
+    }
 
 }
