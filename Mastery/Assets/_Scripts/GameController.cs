@@ -11,6 +11,8 @@ public class GameController : MonoBehaviour
     public PlayerController playerOne;
     public PlayerController playerTwo;
 
+    public GameObject wallLeft;
+
     // TODO: Deprecate these two
     public Text playerOneHpText;
     public Text playerTwoHpText;
@@ -40,12 +42,14 @@ public class GameController : MonoBehaviour
     private static float _respawnTime = 2.0f;
 
     //Remaining time left in the game - use this to transform the closing walls.
-    private float timeRemaining = 300.0f;
+    private float _timeRemaining = 10.0f;
     //The time when the walls will begin closing in on the arena. 
     //timeToClose is the percentage of time that the walls will begin moving. 
     //Change this value to change the time the walls will begin moving.
     private float timeToClose = 0.75f;
     private float beginClosing;
+
+    private float _wallSpeed = 0.01f;
 
     /// <summary>
     ///notOver: current game is still in progress
@@ -73,7 +77,7 @@ public class GameController : MonoBehaviour
         _players[0] = playerOne;
         _players[1] = playerTwo;
         //flag that will trigger the walls to move
-        beginClosing = timeRemaining * timeToClose;
+        beginClosing = _timeRemaining * timeToClose;
         //game begins in progress
         currentScenario = gameScenarios.notOver;
 
@@ -155,28 +159,27 @@ public class GameController : MonoBehaviour
                     // Left stick determines motion
                     if (player.inputHorizontal != 0.0f && player.action != PlayerController.CharacterAction.TURNING)
                     {
-                        PlayerController otherPlayer;
-                        if (player == playerOne)
-                        {
-                            otherPlayer = playerTwo;
-                        }
-                        else
-                        {
-                            otherPlayer = playerOne;
-                        }
+                        PlayerController otherPlayer = _otherPlayer(player);
 
+                        // TODO: Remove these magic numbers!
                         float deltaX = player.transform.position.x - otherPlayer.transform.position.x;
+                        float leftWallDeltaX = player.transform.position.x - wallLeft.transform.position.x;
 
                         if (player.inputHorizontal < 0.0f)
                         {
-                            // Make sure the other player is not adjacent to this one
-                            // (Numbers must be different to avoid trapping the player on contact)
-                            if ((deltaX <= -2.4) || (deltaX >= 2.7))
+
+                            if (leftWallDeltaX > 1.75)
                             {
-                                player.action = PlayerController.CharacterAction.MOVING;
-                                player.transform.position += Vector3.right * (_moveSpeed * player.inputHorizontal);
-                                player.anim.Play("Walking");
+                                // Make sure the other player is not left-adjacent to this one
+                                // (Numbers must be different to avoid trapping the player on contact)
+                                if ((deltaX <= -2.4) || (deltaX >= 2.7))
+                                {
+                                    player.action = PlayerController.CharacterAction.MOVING;
+                                    player.transform.position += Vector3.right * (_moveSpeed * player.inputHorizontal);
+                                    player.anim.Play("Walking");
+                                }
                             }
+
 
                         } else if (player.inputHorizontal > 0.0f)
 
@@ -196,6 +199,8 @@ public class GameController : MonoBehaviour
                     {
                         // Roll in the direction you're moving.
                         // If not moving, roll in the direction you're facing
+                        float leftWallDeltaX = player.transform.position.x - wallLeft.transform.position.x;
+
                         if (player.inputHorizontal < 0.0f)
                         {
                             player.rollingLeft = true;
@@ -208,8 +213,13 @@ public class GameController : MonoBehaviour
                         {
                             player.rollingLeft = false;
                         }
-                        player.action = PlayerController.CharacterAction.ROLLING;
-                        player.anim.Play("Roll");
+
+                        if ((player.rollingLeft && (leftWallDeltaX > 1.75)) || (!player.rollingLeft)) // TODO check rightWallDeltaX
+                        {
+                            player.action = PlayerController.CharacterAction.ROLLING;
+                            player.anim.Play("Roll");
+                        }
+
                     }
                 }
 
@@ -292,16 +302,17 @@ public class GameController : MonoBehaviour
 
         // UI and game loop stuff:
         //continually decreasing time for game timer.
-        timeRemaining -= Time.deltaTime;
-        if (timeRemaining < 0)
+        _timeRemaining -= Time.deltaTime;
+        print(_timeRemaining);
+        if (_timeRemaining < 0)
         {
             currentScenario = gameScenarios.timeUp;
         }
 
 
-        if (timeRemaining <= beginClosing)
+        if (_timeRemaining <= beginClosing)
         {
-            //TODO: Wall-closing logic
+            wallLeft.transform.position += Vector3.right * _wallSpeed;
         }
 
         //endgame logic
@@ -342,7 +353,12 @@ public class GameController : MonoBehaviour
             {
                 if (player.rollingLeft)
                 {
-                    player.transform.position += Vector3.left * _rollSpeed;
+                    float leftWallDeltaX = player.transform.position.x - wallLeft.transform.position.x;
+                    if (leftWallDeltaX > 1.75)
+                    {
+                        player.transform.position += Vector3.left * _rollSpeed;
+                    }
+                    
                 }
                 else
                 {
@@ -363,16 +379,29 @@ public class GameController : MonoBehaviour
                 }
             }
 
-            // Fix player positions if one has rolled inside the other
-            if (playerOne.action != PlayerController.CharacterAction.ROLLING && playerTwo.action != PlayerController.CharacterAction.ROLLING)
-            {
-                float deltaX = playerOne.transform.position.x - playerTwo.transform.position.x;
-                if (Math.Abs(deltaX) < 2.4)
-                {
-                    _fixIllegalPlayerPosition();
-                }
-            }
         }
+        // Fix player positions if one has rolled inside the other
+        if (playerOne.action != PlayerController.CharacterAction.ROLLING && playerTwo.action != PlayerController.CharacterAction.ROLLING)
+        {
+            float deltaX = playerOne.transform.position.x - playerTwo.transform.position.x;
+            float playerOneLeftWallDeltaX = playerOne.transform.position.x - wallLeft.transform.position.x;
+            float playerTwoLeftWallDeltaX = playerTwo.transform.position.x - wallLeft.transform.position.x;
+
+            if (Math.Abs(deltaX) < 2.4)
+            {
+                _unstickPlayers();
+            }
+            // (Actually these aren't necessary if unstickPlayers accounts for wall position)
+            //if (Math.Abs(playerOneLeftWallDeltaX) < 1.75)
+            //{
+            //    _unstickPlayerFromWall(playerOne, wallLeft);
+            //}
+            //if (Math.Abs(playerTwoLeftWallDeltaX) < 1.75)
+            //{
+            //    _unstickPlayerFromWall(playerTwo, wallLeft);
+            //}
+        }
+
     }
 
     private void LateUpdate()
@@ -400,6 +429,14 @@ public class GameController : MonoBehaviour
             if (Time.time >= (player.shieldBreakStartTime + _shieldBreakTime))
             {
                 player.shieldBreakText.text = "";
+            }
+
+            if (_timeRemaining <= beginClosing)
+            {
+                if (Math.Abs((player.transform.position.x - wallLeft.transform.position.x)) < 1.75)
+                {
+                    player.transform.position += Vector3.right * _wallSpeed;
+                }
             }
 
             // This can stay
@@ -575,9 +612,10 @@ public class GameController : MonoBehaviour
         SceneManager.LoadScene("Main");
     }
 
-    private void _fixIllegalPlayerPosition()
+    private void _unstickPlayers()
         // Players can end a roll inside the other player. Push them apart whenever this happens.
     {
+        // TOODO: Prevent this from pushing players inside the walls. Push players unequally if one is adjacent...
         PlayerController leftPlayer;
         PlayerController rightPlayer;
 
@@ -591,9 +629,25 @@ public class GameController : MonoBehaviour
             rightPlayer = playerOne;
         }
 
-        leftPlayer.gameObject.transform.position += Vector3.left * 0.1f;
-        rightPlayer.gameObject.transform.position += Vector3.right * 0.1f;
+        float leftPlayerWallDeltaX = leftPlayer.gameObject.transform.position.x - wallLeft.transform.position.x;
 
+        if (leftPlayerWallDeltaX > 1.80)
+        {
+            leftPlayer.gameObject.transform.position += Vector3.left * 0.05f;
+            rightPlayer.gameObject.transform.position += Vector3.right * 0.05f;
+        } else
+        {
+            rightPlayer.gameObject.transform.position += Vector3.right * 0.1f;
+        }
+        // Push each equally
+    }
+
+    private void _unstickPlayerFromWall(PlayerController player, GameObject wall)
+    {
+        if (wall == wallLeft)
+        {
+            player.transform.position += Vector3.right * _wallSpeed * 2.0f;
+        }
     }
 
     private PlayerController _otherPlayer(PlayerController thisPlayer)
