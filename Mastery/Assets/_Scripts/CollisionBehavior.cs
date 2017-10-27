@@ -13,14 +13,14 @@ public class CollisionBehavior : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        // If it hit an inactive shield, ignore it
-        if (collision.otherCollider.gameObject.CompareTag("ShieldInactive"))
-        {
-            return;
-        }
 
         if (collision.collider.gameObject.CompareTag("Sword"))
         {
+            // If it hit an inactive shield, ignore it
+            if (collision.otherCollider.gameObject.CompareTag("ShieldInactive"))
+            {
+                return;
+            }
             GameObject attacker = collision.collider.gameObject.transform.parent.gameObject;
             GameObject defender = collision.otherCollider.gameObject.transform.parent.gameObject;
             if (attacker != defender)          // Lots of self collisions happening, ignore those
@@ -31,6 +31,7 @@ public class CollisionBehavior : MonoBehaviour
 
         if (collision.collider.gameObject.CompareTag("Leg"))
         {
+            // Still include inactiveshield when it's a leg.
             GameObject attacker = collision.collider.gameObject.transform.parent.gameObject;
             GameObject defender = collision.otherCollider.gameObject.transform.parent.gameObject;
             if (attacker != defender)          // Lots of self collisions happening, ignore those

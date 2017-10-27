@@ -190,6 +190,27 @@ public class GameController : MonoBehaviour
                         }
 
                     }
+
+                    // Rolling inputs. Disabled when movement disabled
+                    if (player.inputRollDown)
+                    {
+                        // Roll in the direction you're moving.
+                        // If not moving, roll in the direction you're facing
+                        if (player.inputHorizontal < 0.0f)
+                        {
+                            player.rollingLeft = true;
+                        }
+                        else if (player.inputHorizontal == 0.0f)
+                        {
+                            player.rollingLeft = player.facingLeft;
+                        }
+                        else
+                        {
+                            player.rollingLeft = false;
+                        }
+                        player.action = PlayerController.CharacterAction.ROLLING;
+                        player.anim.Play("Roll");
+                    }
                 }
 
 
@@ -264,26 +285,6 @@ public class GameController : MonoBehaviour
                             player.action = PlayerController.CharacterAction.PARRYING;
                             player.anim.Play("Parry");
                         }
-                    }
-
-                    if (player.inputRollDown)
-                    {
-                        // Roll in the direction you're moving.
-                        // If not moving, roll in the direction you're facing
-                        if (player.inputHorizontal < 0.0f)
-                        {
-                            player.rollingLeft = true;
-                        }
-                        else if (player.inputHorizontal == 0.0f)
-                        {
-                            player.rollingLeft = player.facingLeft;
-                        }
-                        else
-                        {
-                            player.rollingLeft = false;
-                        }
-                        player.action = PlayerController.CharacterAction.ROLLING;
-                        player.anim.Play("Roll");
                     }
                 }
             }
