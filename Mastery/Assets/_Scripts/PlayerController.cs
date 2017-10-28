@@ -81,7 +81,7 @@ public class PlayerController : MonoBehaviour
 
     // Need to access shield in order to change its tag to active/inactive.
     public GameObject shieldObject;
-
+ 
     // Use this for initialization
     private void Start()
     {
@@ -247,12 +247,12 @@ public class PlayerController : MonoBehaviour
 
     public void IsKilled()
     {
+        anim.Play("Die");    // doesn't display, since it doesn't wait to move the character out of the way
         isDead = true;
         
         stock -= 1;
         stockText.text = "Stock: " + stock.ToString();
         gameObject.transform.position += Vector3.right * 100.0f;
-        gameObject.SetActive(false);
 
         deathTime = Time.time;
     }
@@ -260,12 +260,12 @@ public class PlayerController : MonoBehaviour
     public void Respawn()
     {
         // TODO: Find a safe random position to respawn in, for now it's just at 1.0
+        // Needs to be within the walls, and away from the other player
+
+        // TODO: also set them invulnerable for a time?
         isDead = false;
         float respawnX = 1.0f;
         gameObject.transform.position = new Vector3(respawnX, -2.0f, 0.0f);
-        // Game object is getting stuck with the rotation it had while dying. TODO fix this
-        // It'll probably go away as I add a death animation...
-        // gameObject.transform.rotation = new Quaternion(0, 0, 0, 0);
         gameObject.SetActive(true);
         anim.Play("Idle");
         HP = GameController.hpMax;

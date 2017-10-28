@@ -13,7 +13,8 @@ public class CollisionBehavior : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-
+        // TODO: Don't register a hit on a returning sword.
+        // Check tags or animations?
         if (collision.collider.gameObject.CompareTag("Sword"))
         {
             // If it hit an inactive shield, ignore it

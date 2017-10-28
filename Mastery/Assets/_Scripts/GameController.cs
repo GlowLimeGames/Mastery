@@ -362,7 +362,6 @@ public class GameController : MonoBehaviour
             {
                 if (player.rollingLeft)
                 {
-                    //float leftWallDeltaX = player.transform.position.x - wallLeft.transform.position.x;
                     if (player.leftWallDeltaX > 1.75)
                     {
                         player.transform.position += Vector3.left * _rollSpeed;
@@ -382,14 +381,19 @@ public class GameController : MonoBehaviour
             {
                 if (player.facingLeft)
                 {
-                    player.transform.position += Vector3.right * _knockbackSpeed;
+                    if (player.rightWallDeltaX < -1.75)
+                    {
+                        player.transform.position += Vector3.right * _knockbackSpeed;
+                    }
                 }
                 else
                 {
-                    player.transform.position += Vector3.left * _knockbackSpeed;
+                    if (player.leftWallDeltaX > 1.75)
+                    {
+                        player.transform.position += Vector3.left * _knockbackSpeed;
+                    }
                 }
             }
-
         }
         // Fix player positions if one has rolled inside the other
         if (playerOne.action != PlayerController.CharacterAction.ROLLING && playerTwo.action != PlayerController.CharacterAction.ROLLING)
@@ -419,7 +423,6 @@ public class GameController : MonoBehaviour
             player.leftWallDeltaX = player.transform.position.x - wallLeft.transform.position.x;
             player.rightWallDeltaX = player.transform.position.x - wallRight.transform.position.x;
 
-            // TODO: Move this all into PlayerController methods Disarm() etc
             if (player.HP <= 0)
             {
                 player.state = PlayerController.CharacterState.VULNERABLE;
@@ -452,7 +455,6 @@ public class GameController : MonoBehaviour
                 }
             }
 
-            // This can stay
             if (player.stock <= 0)
             {
                 PlayerWins(_otherPlayer(player));

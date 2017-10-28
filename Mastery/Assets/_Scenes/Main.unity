@@ -1052,6 +1052,72 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
   m_EffectDistance: {x: 1, y: -1}
   m_UseGraphicAlpha: 1
+--- !u!1001 &594430688
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4905845150965802, guid: 5442ff53c43f98244b4980e9bf75ee9e, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 4905845150965802, guid: 5442ff53c43f98244b4980e9bf75ee9e, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: -1.286
+      objectReference: {fileID: 0}
+    - target: {fileID: 4905845150965802, guid: 5442ff53c43f98244b4980e9bf75ee9e, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4905845150965802, guid: 5442ff53c43f98244b4980e9bf75ee9e, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4905845150965802, guid: 5442ff53c43f98244b4980e9bf75ee9e, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4905845150965802, guid: 5442ff53c43f98244b4980e9bf75ee9e, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 4905845150965802, guid: 5442ff53c43f98244b4980e9bf75ee9e, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 4905845150965802, guid: 5442ff53c43f98244b4980e9bf75ee9e, type: 2}
+      propertyPath: m_RootOrder
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 1113063965104624, guid: 5442ff53c43f98244b4980e9bf75ee9e, type: 2}
+      propertyPath: m_Name
+      value: Right Wall
+      objectReference: {fileID: 0}
+    - target: {fileID: 4905845150965802, guid: 5442ff53c43f98244b4980e9bf75ee9e, type: 2}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 4905845150965802, guid: 5442ff53c43f98244b4980e9bf75ee9e, type: 2}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4905845150965802, guid: 5442ff53c43f98244b4980e9bf75ee9e, type: 2}
+      propertyPath: m_LocalScale.x
+      value: 8.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 1113063965104624, guid: 5442ff53c43f98244b4980e9bf75ee9e, type: 2}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4905845150965802, guid: 5442ff53c43f98244b4980e9bf75ee9e, type: 2}
+      propertyPath: m_LocalScale.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 5442ff53c43f98244b4980e9bf75ee9e, type: 2}
+  m_IsPrefabParent: 0
 --- !u!1 &774847878
 GameObject:
   m_ObjectHideFlags: 0
@@ -1576,7 +1642,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4905845150965802, guid: 5442ff53c43f98244b4980e9bf75ee9e, type: 2}
       propertyPath: m_LocalPosition.y
-      value: 2
+      value: -1.286
       objectReference: {fileID: 0}
     - target: {fileID: 4905845150965802, guid: 5442ff53c43f98244b4980e9bf75ee9e, type: 2}
       propertyPath: m_LocalPosition.z
@@ -1616,7 +1682,15 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4905845150965802, guid: 5442ff53c43f98244b4980e9bf75ee9e, type: 2}
       propertyPath: m_LocalScale.x
-      value: 15
+      value: 8.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 1113063965104624, guid: 5442ff53c43f98244b4980e9bf75ee9e, type: 2}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4905845150965802, guid: 5442ff53c43f98244b4980e9bf75ee9e, type: 2}
+      propertyPath: m_LocalScale.z
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 5442ff53c43f98244b4980e9bf75ee9e, type: 2}
@@ -1785,6 +1859,7 @@ MonoBehaviour:
   playerOne: {fileID: 488358806}
   playerTwo: {fileID: 333747357}
   wallLeft: {fileID: 1432267960}
+  wallRight: {fileID: 1962975693}
   playerOneHpText: {fileID: 1210369247}
   playerTwoHpText: {fileID: 128489283}
   VictoryOverlay: {fileID: 81280796}
@@ -2147,6 +2222,11 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!1 &1962975693 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 1113063965104624, guid: 5442ff53c43f98244b4980e9bf75ee9e,
+    type: 2}
+  m_PrefabInternal: {fileID: 594430688}
 --- !u!1 &1976956170
 GameObject:
   m_ObjectHideFlags: 0
