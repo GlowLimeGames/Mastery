@@ -43,6 +43,9 @@ public class PlayerController : MonoBehaviour
     public bool facingLeft;
     public bool rollingLeft;
 
+    public float leftWallDeltaX;
+    public float rightWallDeltaX;
+
     // Debug texts
     public Text stockText;
     public Text hpText;
