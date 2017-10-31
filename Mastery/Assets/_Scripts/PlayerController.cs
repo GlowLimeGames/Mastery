@@ -259,12 +259,19 @@ public class PlayerController : MonoBehaviour
 
     public void Respawn()
     {
-        // TODO: Find a safe random position to respawn in, for now it's just at 1.0
+        // TODO: Find a safe random position to respawn in
         // Needs to be within the walls, and away from the other player
+        // safeXMin and safeXMax give bounds for the walls. How to think about this?
+        
+        // |-----------X-------------------------|
+        // lw          p1                        rw
+        
+        // p2 should spawn in the larger portion, either in the middle of p1rw or right against rw
 
         // TODO: also set them invulnerable for a time?
         isDead = false;
-        float respawnX = 1.0f;
+        float respawnX = Random.Range(GameController.safeXMin, GameController.safeXMax);
+        // float respawnX = 1.0f;
         gameObject.transform.position = new Vector3(respawnX, -2.0f, 0.0f);
         gameObject.SetActive(true);
         anim.Play("Idle");

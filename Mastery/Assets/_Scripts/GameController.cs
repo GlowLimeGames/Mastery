@@ -14,10 +14,6 @@ public class GameController : MonoBehaviour
     public GameObject wallLeft;
     public GameObject wallRight;
 
-    // TODO: Deprecate these two
-    public Text playerOneHpText;
-    public Text playerTwoHpText;
-
     public Text VictoryOverlay;
 
     private PlayerController[] _players = new PlayerController[2];
@@ -43,20 +39,23 @@ public class GameController : MonoBehaviour
     private static float _respawnTime = 2.0f;
 
     // Distance between players
-    private float playerDeltaX;
+    private float _playerDeltaX;
 
     //Remaining time left in the game - use this to transform the closing walls.
-    private float _timeRemaining = 10.0f;
+    private float _timeRemaining = 20.0f;
     //The time when the walls will begin closing in on the arena. 
-    //timeToClose is the percentage of time that the walls will begin moving. 
+    //_timeToClose is the percentage of time that the walls will begin moving. 
     //Change this value to change the time the walls will begin moving.
-    private float timeToClose = 0.75f;
-    private float beginClosing;
+    private float _timeToClose = 0.75f;
+    private float _beginClosing;
 
     // Where the walls should stop closing in
-    private float wallStopX = 4.0f;
+    private float _wallStopX = 4.0f;
 
-    private float _wallSpeed = 0.01f;
+    private float _wallSpeed = 0.001f;
+
+    public static float safeXMin = -7.0f;
+    public static float safeXMax = 7.0f;
 
     /// <summary>
     ///notOver: current game is still in progress
@@ -84,7 +83,7 @@ public class GameController : MonoBehaviour
         _players[0] = playerOne;
         _players[1] = playerTwo;
         //flag that will trigger the walls to move
-        beginClosing = _timeRemaining * timeToClose;
+        _beginClosing = _timeRemaining * _timeToClose;
         //game begins in progress
         currentScenario = gameScenarios.notOver;
 
@@ -318,10 +317,13 @@ public class GameController : MonoBehaviour
         }
 
 
-        if ((_timeRemaining <= beginClosing) && (wallRight.transform.position.x > wallStopX))
+        if ((_timeRemaining <= _beginClosing) && (wallRight.transform.position.x > _wallStopX))
         {
+            // TODO: Stop walls from closing if the match is over
             wallLeft.transform.position += Vector3.right * _wallSpeed;
+            safeXMin += _wallSpeed;
             wallRight.transform.position += Vector3.left * _wallSpeed;
+            safeXMax -= _wallSpeed;
         }
 
         //endgame logic
@@ -398,11 +400,8 @@ public class GameController : MonoBehaviour
         // Fix player positions if one has rolled inside the other
         if (playerOne.action != PlayerController.CharacterAction.ROLLING && playerTwo.action != PlayerController.CharacterAction.ROLLING)
         {
-            //float deltaX = playerOne.transform.position.x - playerTwo.transform.position.x;
-            float playerOneLeftWallDeltaX = playerOne.transform.position.x - wallLeft.transform.position.x;
-            float playerTwoLeftWallDeltaX = playerTwo.transform.position.x - wallLeft.transform.position.x;
 
-            if (Math.Abs(playerDeltaX) < 2.4)
+            if (Math.Abs(_playerDeltaX) < 2.4)
             {
                 _unstickPlayers();
             }
@@ -413,15 +412,15 @@ public class GameController : MonoBehaviour
     private void LateUpdate()
     {
         // Do something after Movement / Combat here
-        playerOneHpText.text = "HP: " + playerOne.HP.ToString();
-        playerTwoHpText.text = "HP: " + playerTwo.HP.ToString();
 
-        playerDeltaX = playerOne.transform.position.x - playerTwo.transform.position.x;
+        _playerDeltaX = playerOne.transform.position.x - playerTwo.transform.position.x;
 
         foreach (PlayerController player in _players)
         {
             player.leftWallDeltaX = player.transform.position.x - wallLeft.transform.position.x;
             player.rightWallDeltaX = player.transform.position.x - wallRight.transform.position.x;
+
+            player.hpText.text = "HP: " + player.HP.ToString();
 
             if (player.HP <= 0)
             {
@@ -442,7 +441,7 @@ public class GameController : MonoBehaviour
             }
 
             // Walls "push" adjacent players at the same speed they're moving
-            if (_timeRemaining <= beginClosing)
+            if (_timeRemaining <= _beginClosing)
             {
                 if (Math.Abs(player.leftWallDeltaX) < 1.75)
                 {
