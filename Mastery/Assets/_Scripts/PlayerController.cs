@@ -37,11 +37,17 @@ public class PlayerController : MonoBehaviour
     public CharacterAction action;
     public Animator anim;
 
+    public int stock;
+    public bool isDead;
     public int HP;
     public bool facingLeft;
     public bool rollingLeft;
 
+    public float leftWallDeltaX;
+    public float rightWallDeltaX;
+
     // Debug texts
+    public Text stockText;
     public Text hpText;
     public Text disarmText;
     public Text shieldBreakText;
@@ -68,20 +74,27 @@ public class PlayerController : MonoBehaviour
     public float shieldBreakStartTime;
     public float disableMovementStartTime;
 
+    public float deathTime;
+
     // Whether an action has been performed with this button press
     public bool actionThisPress;
 
     // Need to access shield in order to change its tag to active/inactive.
     public GameObject shieldObject;
-
+ 
     // Use this for initialization
     private void Start()
     {
         state = CharacterState.IDLE;
+        stock = GameController.stockMax;
         HP = GameController.hpMax;
+        isDead = false;
+
+        // Set all event times to a negative, so their relevant conditions don't trigger
         disarmStartTime = -10.0f;
         shieldBreakStartTime = -10.0f;
         disableMovementStartTime = -10.0f;
+        deathTime = -10.0f;
     }
 
     private void Update()
@@ -230,6 +243,39 @@ public class PlayerController : MonoBehaviour
     {
         disableMovementStartTime = Time.time;
         disableMovementText.text = "Movement Disabled";
+    }
+
+    public void IsKilled()
+    {
+        anim.Play("Die");    // doesn't display, since it doesn't wait to move the character out of the way
+        isDead = true;
+        
+        stock -= 1;
+        stockText.text = "Stock: " + stock.ToString();
+        gameObject.transform.position += Vector3.right * 100.0f;
+
+        deathTime = Time.time;
+    }
+
+    public void Respawn()
+    {
+        // TODO: Find a safe random position to respawn in
+        // Needs to be within the walls, and away from the other player
+        // safeXMin and safeXMax give bounds for the walls. How to think about this?
+        
+        // |-----------X-------------------------|
+        // lw          p1                        rw
+        
+        // p2 should spawn in the larger portion, either in the middle of p1rw or right against rw
+
+        // TODO: also set them invulnerable for a time?
+        isDead = false;
+        float respawnX = Random.Range(GameController.safeXMin, GameController.safeXMax);
+        // float respawnX = 1.0f;
+        gameObject.transform.position = new Vector3(respawnX, -2.0f, 0.0f);
+        gameObject.SetActive(true);
+        anim.Play("Idle");
+        HP = GameController.hpMax;
     }
 
     private void _setShieldState()
