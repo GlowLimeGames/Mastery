@@ -1566,7 +1566,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1396183948
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1848,8 +1848,6 @@ MonoBehaviour:
   playerTwo: {fileID: 333747357}
   wallLeft: {fileID: 1432267960}
   wallRight: {fileID: 1962975693}
-  playerOneHpText: {fileID: 1210369247}
-  playerTwoHpText: {fileID: 128489283}
   VictoryOverlay: {fileID: 81280796}
 --- !u!4 &1763555696
 Transform:
