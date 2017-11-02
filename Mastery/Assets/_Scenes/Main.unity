@@ -201,6 +201,15 @@ Prefab:
       propertyPath: stockText
       value: 
       objectReference: {fileID: 200046401}
+    - target: {fileID: 1127075828519142, guid: 915288f187e60aa4a9abd2df58ff1b91, type: 2}
+      propertyPath: m_TagString
+      value: SwordInactive
+      objectReference: {fileID: 0}
+    - target: {fileID: 114134730857878706, guid: 915288f187e60aa4a9abd2df58ff1b91,
+        type: 2}
+      propertyPath: swordObject
+      value: 
+      objectReference: {fileID: 1556321855}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 915288f187e60aa4a9abd2df58ff1b91, type: 2}
   m_IsPrefabParent: 0
@@ -699,6 +708,15 @@ Prefab:
       propertyPath: stockText
       value: 
       objectReference: {fileID: 2022682540}
+    - target: {fileID: 1737846912426802, guid: 44e2126e47637ce49a1dfe8f25246b8e, type: 2}
+      propertyPath: m_TagString
+      value: SwordInactive
+      objectReference: {fileID: 0}
+    - target: {fileID: 114605213845206904, guid: 44e2126e47637ce49a1dfe8f25246b8e,
+        type: 2}
+      propertyPath: swordObject
+      value: 
+      objectReference: {fileID: 772137767}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 44e2126e47637ce49a1dfe8f25246b8e, type: 2}
   m_IsPrefabParent: 0
@@ -1118,6 +1136,11 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 5442ff53c43f98244b4980e9bf75ee9e, type: 2}
   m_IsPrefabParent: 0
+--- !u!1 &772137767 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 1737846912426802, guid: 44e2126e47637ce49a1dfe8f25246b8e,
+    type: 2}
+  m_PrefabInternal: {fileID: 387735722}
 --- !u!1 &774847878
 GameObject:
   m_ObjectHideFlags: 0
@@ -1805,6 +1828,11 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1521311172}
+--- !u!1 &1556321855 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 1127075828519142, guid: 915288f187e60aa4a9abd2df58ff1b91,
+    type: 2}
+  m_PrefabInternal: {fileID: 42841691}
 --- !u!1 &1763555693
 GameObject:
   m_ObjectHideFlags: 0

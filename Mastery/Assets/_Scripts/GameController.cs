@@ -379,7 +379,7 @@ public class GameController : MonoBehaviour
             }
 
             // Knockback motion
-            if (player.state == PlayerController.CharacterState.KNOCKBACK)
+            if (player.action == PlayerController.CharacterAction.KNOCKBACK)
             {
                 if (player.facingLeft)
                 {
@@ -544,6 +544,7 @@ public class GameController : MonoBehaviour
                     break;
                 case PlayerController.CharacterAction.GUARDING:
                     // Defender gets knocked back
+                    attackerController.anim.Play("Heavy Attack (Return)");
                     defenderController.Knockback();
                     break;
                 case PlayerController.CharacterAction.LIGHT_ATTACKING:

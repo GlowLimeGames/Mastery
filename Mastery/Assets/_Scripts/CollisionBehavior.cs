@@ -15,7 +15,7 @@ public class CollisionBehavior : MonoBehaviour
     {
         // TODO: Don't register a hit on a returning sword.
         // Check tags or animations?
-        if (collision.collider.gameObject.CompareTag("Sword"))
+        if (collision.collider.gameObject.CompareTag("SwordActive"))
         {
             // If it hit an inactive shield, ignore it
             if (collision.otherCollider.gameObject.CompareTag("ShieldInactive"))

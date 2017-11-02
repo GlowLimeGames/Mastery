@@ -11,7 +11,7 @@ public class PlayerController : MonoBehaviour
     {
         IDLE,
         ATTACKING,
-        KNOCKBACK,
+        // KNOCKBACK,
         GUARDING,
         VULNERABLE,
         INVULNERABLE
@@ -29,6 +29,7 @@ public class PlayerController : MonoBehaviour
         KICKING,
         MOVING,
         ROLLING,
+        KNOCKBACK,
         DELAY,      // bringing weapon back after swinging it. Need a better name
         STUN,
     }
@@ -79,7 +80,8 @@ public class PlayerController : MonoBehaviour
     // Whether an action has been performed with this button press
     public bool actionThisPress;
 
-    // Need to access shield in order to change its tag to active/inactive.
+    // Need to access sword/shield in order to change its tag to active/inactive.
+    public GameObject swordObject;
     public GameObject shieldObject;
  
     // Use this for initialization
@@ -115,14 +117,15 @@ public class PlayerController : MonoBehaviour
 
         if (anim.GetCurrentAnimatorStateInfo(0).IsName("KnockbackL"))
         {
-            state = CharacterState.KNOCKBACK;
-            action = CharacterAction.IDLE;
+            //print("State is knockback" + Time.time);
+            state = CharacterState.IDLE;
+            action = CharacterAction.KNOCKBACK;
         }
 
         if (anim.GetCurrentAnimatorStateInfo(0).IsName("KnockbackR"))
         {
-            state = CharacterState.KNOCKBACK;
-            action = CharacterAction.IDLE;
+            state = CharacterState.IDLE;
+            action = CharacterAction.KNOCKBACK;
         }
 
         if (anim.GetCurrentAnimatorStateInfo(0).IsName("Moving"))
@@ -185,6 +188,7 @@ public class PlayerController : MonoBehaviour
             action = CharacterAction.STUN;
         }
 
+        _setSwordState();
         _setShieldState();
     }
 
@@ -229,6 +233,7 @@ public class PlayerController : MonoBehaviour
 
     public void Disarm()
     {
+        // TODO: This really needs an animation
         disarmStartTime = Time.time;
         disarmText.text = "Disarmed";
     }
@@ -276,6 +281,19 @@ public class PlayerController : MonoBehaviour
         gameObject.SetActive(true);
         anim.Play("Idle");
         HP = GameController.hpMax;
+        state = CharacterState.IDLE;
+    }
+
+    private void _setSwordState()
+    {
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Light Attack (Swing)") || (anim.GetCurrentAnimatorStateInfo(0).IsName("Heavy Attack (Swing)")))
+        {
+            swordObject.tag = "SwordActive";
+        }
+        else
+        {
+            swordObject.tag = "SwordInactive";
+        }
     }
 
     private void _setShieldState()
