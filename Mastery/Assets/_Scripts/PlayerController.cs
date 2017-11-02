@@ -260,6 +260,11 @@ public class PlayerController : MonoBehaviour
         gameObject.transform.position += Vector3.right * 100.0f;
 
         deathTime = Time.time;
+
+        // Disarming states shouldn't carry over between stocks
+        disarmStartTime = -10.0f;
+        shieldBreakStartTime = -10.0f;
+        disableMovementStartTime = -10.0f;
     }
 
     public void Respawn()

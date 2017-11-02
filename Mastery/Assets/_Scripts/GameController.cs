@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
+    public bool gameOver;
 
     public PlayerController playerOne;
     public PlayerController playerTwo;
@@ -80,6 +81,7 @@ public class GameController : MonoBehaviour
 
     private void Start()
     {
+        gameOver = false;
         _players[0] = playerOne;
         _players[1] = playerTwo;
         //flag that will trigger the walls to move
@@ -101,6 +103,12 @@ public class GameController : MonoBehaviour
 
         // Player One input reading
         // Movement and facing
+
+        if (gameOver)
+        {
+            return;
+        }
+
         playerOne.inputHorizontal = Input.GetAxisRaw("P1Horizontal");
         playerOne.inputRightHorizontal = Input.GetAxisRaw("P1RightHorizontal");
 
@@ -207,7 +215,6 @@ public class GameController : MonoBehaviour
                     {
                         // Roll in the direction you're moving.
                         // If not moving, roll in the direction you're facing
-                        //float leftWallDeltaX = player.transform.position.x - wallLeft.transform.position.x;
 
                         if (player.inputHorizontal < 0.0f)
                         {
@@ -317,7 +324,7 @@ public class GameController : MonoBehaviour
         }
 
 
-        if ((_timeRemaining <= _beginClosing) && (wallRight.transform.position.x > _wallStopX))
+        if ((_timeRemaining <= _beginClosing) && (wallRight.transform.position.x > _wallStopX) && (!gameOver))
         {
             // TODO: Stop walls from closing if the match is over
             wallLeft.transform.position += Vector3.right * _wallSpeed;
@@ -623,8 +630,16 @@ public class GameController : MonoBehaviour
 
     public void PlayerWins(PlayerController player)
     {
-        //print(player.ToString() + " wins");
-        VictoryOverlay.text = player.name.ToString() + " Wins";
+        gameOver = true;
+        player.anim.Play("Victory");
+        if (player == playerOne)
+        {
+            VictoryOverlay.text = "Player One Wins";
+        } else
+        {
+            VictoryOverlay.text = "Player Two Wins";
+        }
+        
         VictoryOverlay.gameObject.SetActive(true);
 
     }
