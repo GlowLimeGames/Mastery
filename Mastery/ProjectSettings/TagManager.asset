@@ -9,6 +9,8 @@ TagManager:
   - Shield
   - ShieldActive
   - ShieldInactive
+  - SwordActive
+  - SwordInactive
   layers:
   - Default
   - TransparentFX

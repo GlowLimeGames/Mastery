@@ -114,7 +114,7 @@ GameObject:
   - component: {fileID: 114301380614472454}
   m_Layer: 0
   m_Name: Right Arm
-  m_TagString: Sword
+  m_TagString: SwordInactive
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -574,9 +574,14 @@ MonoBehaviour:
   state: 0
   action: 0
   anim: {fileID: 95639027798573938}
+  stock: 0
+  isDead: 0
   HP: 0
   facingLeft: 0
   rollingLeft: 0
+  leftWallDeltaX: 0
+  rightWallDeltaX: 0
+  stockText: {fileID: 0}
   hpText: {fileID: 0}
   disarmText: {fileID: 0}
   shieldBreakText: {fileID: 0}
@@ -595,7 +600,9 @@ MonoBehaviour:
   disarmStartTime: 0
   shieldBreakStartTime: 0
   disableMovementStartTime: 0
+  deathTime: 0
   actionThisPress: 0
+  swordObject: {fileID: 1737846912426802}
   shieldObject: {fileID: 1956994715250796}
 --- !u!114 &114623965753455104
 MonoBehaviour:

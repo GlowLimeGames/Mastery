@@ -13,15 +13,21 @@ public class CollisionBehavior : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        // TODO: Don't register a hit on a returning sword.
-        // Check tags or animations?
-        if (collision.collider.gameObject.CompareTag("Sword"))
+        // Two things that can hit: an active sword, and a leg
+        if (collision.collider.gameObject.CompareTag("SwordActive"))
         {
             // If it hit an inactive shield, ignore it
             if (collision.otherCollider.gameObject.CompareTag("ShieldInactive"))
             {
                 return;
             }
+
+            // Also ignore inactive sword
+            if (collision.otherCollider.gameObject.CompareTag("SwordInactive"))
+            {
+                return;
+            }
+
             GameObject attacker = collision.collider.gameObject.transform.parent.gameObject;
             GameObject defender = collision.otherCollider.gameObject.transform.parent.gameObject;
             if (attacker != defender)          // Lots of self collisions happening, ignore those

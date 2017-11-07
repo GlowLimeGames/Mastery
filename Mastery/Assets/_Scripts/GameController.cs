@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
+    public static bool gameOver = false;
 
     public PlayerController playerOne;
     public PlayerController playerTwo;
@@ -30,13 +31,14 @@ public class GameController : MonoBehaviour
     private static float _holdTime = 0.15f;
 
     // Length of disarm
-    private static float _disarmTime = 3.0f;
+    public static float disarmTime = 3.0f;
 
-    private static float _disableMovementTime = 3.0f;
+    public static float disableMovementTime = 3.0f;
 
-    private static float _shieldBreakTime = 3.0f;
+    public static float shieldBreakTime = 3.0f;
 
-    private static float _respawnTime = 2.0f;
+    public static float respawnTime = 2.0f;
+    public static float respawnInvulnerabilityTime = 2.0f;
 
     // Distance between players
     private float _playerDeltaX;
@@ -80,6 +82,7 @@ public class GameController : MonoBehaviour
 
     private void Start()
     {
+        gameOver = false;
         _players[0] = playerOne;
         _players[1] = playerTwo;
         //flag that will trigger the walls to move
@@ -101,6 +104,12 @@ public class GameController : MonoBehaviour
 
         // Player One input reading
         // Movement and facing
+
+        if (gameOver)
+        {
+            return;
+        }
+
         playerOne.inputHorizontal = Input.GetAxisRaw("P1Horizontal");
         playerOne.inputRightHorizontal = Input.GetAxisRaw("P1RightHorizontal");
 
@@ -147,7 +156,7 @@ public class GameController : MonoBehaviour
             // Rolling disables pretty much all inputs
             if (player.CanAct())
             {
-                if (Time.time >= (player.disableMovementStartTime + _disableMovementTime))
+                if (!player.movementDisabled)
                 {
                     // Right stick determines the direction you're facing
                     if (player.inputRightHorizontal != 0.0f)
@@ -183,7 +192,7 @@ public class GameController : MonoBehaviour
                                 {
                                     player.action = PlayerController.CharacterAction.MOVING;
                                     player.transform.position += Vector3.right * (_moveSpeed * player.inputHorizontal);
-                                    player.anim.Play("Walking");
+                                    player.anim.Play("Walking", 1);  // walking is in Leg Layer, layer 1
                                 }
                             }
                         }
@@ -196,7 +205,7 @@ public class GameController : MonoBehaviour
                                 {
                                     player.action = PlayerController.CharacterAction.MOVING;
                                     player.transform.position += Vector3.right * (_moveSpeed * player.inputHorizontal);
-                                    player.anim.Play("Walking");
+                                    player.anim.Play("Walking", 1);
                                 }
                             }
                         }
@@ -207,7 +216,6 @@ public class GameController : MonoBehaviour
                     {
                         // Roll in the direction you're moving.
                         // If not moving, roll in the direction you're facing
-                        //float leftWallDeltaX = player.transform.position.x - wallLeft.transform.position.x;
 
                         if (player.inputHorizontal < 0.0f)
                         {
@@ -236,7 +244,7 @@ public class GameController : MonoBehaviour
                 // Attack inputs
                 if (player.inputAttackDown)
                 {
-                    if (Time.time >= (player.disarmStartTime + _disarmTime))
+                    if (!player.disarmed)
                     {
                         player.pressStartTime = Time.time;
                         player.actionThisPress = false;
@@ -251,7 +259,6 @@ public class GameController : MonoBehaviour
                 {
                     if (Time.time >= (player.pressStartTime + _holdTime) && !player.actionThisPress)
                     {
-                        player.state = PlayerController.CharacterState.ATTACKING;
                         player.action = PlayerController.CharacterAction.HEAVY_ATTACKING;
                         player.anim.Play("Heavy Attack (Swing)");
 
@@ -262,7 +269,6 @@ public class GameController : MonoBehaviour
                 {
                     if (Time.time < (player.pressStartTime + _holdTime))
                     {
-                        player.state = PlayerController.CharacterState.ATTACKING;
                         player.action = PlayerController.CharacterAction.LIGHT_ATTACKING;
                         player.anim.Play("Light Attack (Swing)");
 
@@ -279,7 +285,7 @@ public class GameController : MonoBehaviour
 
 
                 // Defend inputs
-                if (Time.time >= (player.shieldBreakStartTime + _shieldBreakTime))
+                if (!player.shieldBroken)
                 {
                     if (player.inputDefendDown)
                     {
@@ -290,18 +296,21 @@ public class GameController : MonoBehaviour
                     {
                         if (Time.time >= (player.pressStartTime + _holdTime) && !player.actionThisPress)
                         {
-                            player.state = PlayerController.CharacterState.GUARDING;
                             player.action = PlayerController.CharacterAction.GUARDING;
-                            player.anim.Play("Guard");
+                            player.anim.Play("Guard (On)");
                         }
                     }
                     if (player.inputDefendUp)
                     {
                         if (Time.time < (player.pressStartTime + _holdTime))
                         {
-                            player.state = PlayerController.CharacterState.GUARDING;
                             player.action = PlayerController.CharacterAction.PARRYING;
                             player.anim.Play("Parry");
+                        }
+                        else
+                        {
+                            player.action = PlayerController.CharacterAction.GUARDING;
+                            player.anim.Play("Guard (Off)");
                         }
                     }
                 }
@@ -309,7 +318,7 @@ public class GameController : MonoBehaviour
         }
 
         // UI and game loop stuff:
-        //continually decreasing time for game timer.
+        // continually decreasing time for game timer.
         _timeRemaining -= Time.deltaTime;
         if (_timeRemaining < 0)
         {
@@ -317,9 +326,8 @@ public class GameController : MonoBehaviour
         }
 
 
-        if ((_timeRemaining <= _beginClosing) && (wallRight.transform.position.x > _wallStopX))
+        if ((_timeRemaining <= _beginClosing) && (wallRight.transform.position.x > _wallStopX) && (!gameOver))
         {
-            // TODO: Stop walls from closing if the match is over
             wallLeft.transform.position += Vector3.right * _wallSpeed;
             safeXMin += _wallSpeed;
             wallRight.transform.position += Vector3.left * _wallSpeed;
@@ -338,18 +346,6 @@ public class GameController : MonoBehaviour
         if (currentScenario == gameScenarios.timeUp)
         {
             //TODO: time runs out scenario
-        }
-
-        foreach(PlayerController player in _players)
-        {
-            if ((player.isDead) && (player.stock > 0))
-            {
-                if (Time.time >= (player.deathTime + _respawnTime))
-                {
-                    player.Respawn();
-                }
-            }
-
         }
 
     }
@@ -379,7 +375,7 @@ public class GameController : MonoBehaviour
             }
 
             // Knockback motion
-            if (player.state == PlayerController.CharacterState.KNOCKBACK)
+            if (player.action == PlayerController.CharacterAction.KNOCKBACK)
             {
                 if (player.facingLeft)
                 {
@@ -420,25 +416,18 @@ public class GameController : MonoBehaviour
             player.leftWallDeltaX = player.transform.position.x - wallLeft.transform.position.x;
             player.rightWallDeltaX = player.transform.position.x - wallRight.transform.position.x;
 
-            player.hpText.text = "HP: " + player.HP.ToString();
-
-            if (player.HP <= 0)
-            {
-                player.state = PlayerController.CharacterState.VULNERABLE;
-            }
-
-            if (Time.time >= (player.disarmStartTime + _disarmTime))
-            {
-                player.disarmText.text = "";
-            }
-            if (Time.time >= (player.disableMovementStartTime + _disableMovementTime))
-            {
-                player.disableMovementText.text = "";
-            }
-            if (Time.time >= (player.shieldBreakStartTime + _shieldBreakTime))
-            {
-                player.shieldBreakText.text = "";
-            }
+            //if (Time.time >= (player.disarmStartTime + _disarmTime))
+            //{
+            //    player.disarmText.text = "";
+            //}
+            //if (Time.time >= (player.disableMovementStartTime + _disableMovementTime))
+            //{
+            //    player.disableMovementText.text = "";
+            //}
+            //if (Time.time >= (player.shieldBreakStartTime + _shieldBreakTime))
+            //{
+            //    player.shieldBreakText.text = "";
+            //}
 
             // Walls "push" adjacent players at the same speed they're moving
             if (_timeRemaining <= _beginClosing)
@@ -485,6 +474,11 @@ public class GameController : MonoBehaviour
             defenderController = playerOne;
         }
 
+        if (defenderController.isInvulnerable)
+        {
+            return;
+        }
+
         // If attacker hits defender from behind, treat defender as idle, ignoring frontal attacks/defends
         if (attackerController.facingLeft == defenderController.facingLeft)
         {
@@ -517,20 +511,11 @@ public class GameController : MonoBehaviour
                     // Nothing, they're invulnerable
                     break;
                 default:                               // IDLE, MOVING, DELAY, TURNING, KICKING(?), STUN(?), ...
-                    switch (defenderController.state)
-                    {
-                        case PlayerController.CharacterState.VULNERABLE:
-                            // Kills defender
-                            defenderController.IsKilled();
-                            break;
-                        case PlayerController.CharacterState.IDLE:
-                            // Successful hit.
-                            attackerController.anim.Play("Light Attack (Return)");
+                    // Successful hit.
+                    attackerController.anim.Play("Light Attack (Return)");
 
-                            defenderController.anim.Play("Stun");
-                            defenderController.HP -= 1;
-                            break;
-                    }
+                    defenderController.anim.Play("Stun");
+                    defenderController.TakeDamage(1);
                     break;
             }
         }
@@ -544,38 +529,30 @@ public class GameController : MonoBehaviour
                     break;
                 case PlayerController.CharacterAction.GUARDING:
                     // Defender gets knocked back
+                    attackerController.anim.Play("Heavy Attack (Return)");
                     defenderController.Knockback();
                     break;
                 case PlayerController.CharacterAction.LIGHT_ATTACKING:
                     // Heavy overpowers light; heavy attack connects with half damage
                     attackerController.anim.Play("Heavy Attack (Return)");
                     defenderController.anim.Play("Stun");
-                    defenderController.HP -= 1;
+                    defenderController.TakeNonMortalDamage(1);
                     break;
                 case PlayerController.CharacterAction.HEAVY_ATTACKING:
                     // Both lose 1HP and are knocked back
                     attackerController.Knockback();
                     defenderController.Knockback();
-                    attackerController.HP -= 1;
-                    defenderController.HP -= 1;
+                    attackerController.TakeNonMortalDamage(1);
+                    defenderController.TakeNonMortalDamage(1);
                     break;
                 case PlayerController.CharacterAction.ROLLING:
                     // Nothing, they're invulnerable
                     break;
                 default:                                // IDLE, MOVING, DELAY, TURNING, KICKING(?), STUN(?), ...
-                    switch (defenderController.state)
-                    {
-                        case PlayerController.CharacterState.VULNERABLE:
-                            // Kills defender
-                            defenderController.IsKilled();
-                            break;
-                        case PlayerController.CharacterState.IDLE:
-                            // Attack connects fully
-                            attackerController.anim.Play("Heavy Attack (Return)");
-                            defenderController.HP -= 2;
-                            defenderController.anim.Play("Stun");
-                            break;
-                    }
+                    // Attack connects fully
+                    attackerController.anim.Play("Heavy Attack (Return)");
+                    defenderController.TakeDamage(2);
+                    defenderController.anim.Play("Stun");
                     break;
             }
         }
@@ -605,12 +582,12 @@ public class GameController : MonoBehaviour
                 case PlayerController.CharacterAction.GUARDING:
                     // Breaks defender's shield, restores attacker's health
                     defenderController.ShieldBreak();
-                    attackerController.HP = hpMax;
+                    attackerController.MaxOutHP();
                     break;
                 case PlayerController.CharacterAction.PARRYING:
                     // (Same as above? Not explicit in spec)
                     defenderController.ShieldBreak();
-                    attackerController.HP = hpMax;
+                    attackerController.MaxOutHP();
                     break;
                 default:
                     // If no shield up, then disable attacker's movement
@@ -622,8 +599,16 @@ public class GameController : MonoBehaviour
 
     public void PlayerWins(PlayerController player)
     {
-        //print(player.ToString() + " wins");
-        VictoryOverlay.text = player.name.ToString() + " Wins";
+        gameOver = true;
+        player.anim.Play("Victory");
+        if (player == playerOne)
+        {
+            VictoryOverlay.text = "Player One Wins";
+        } else
+        {
+            VictoryOverlay.text = "Player Two Wins";
+        }
+        
         VictoryOverlay.gameObject.SetActive(true);
 
     }

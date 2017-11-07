@@ -60,7 +60,7 @@ GameObject:
   - component: {fileID: 114468442379390338}
   m_Layer: 0
   m_Name: Right Arm
-  m_TagString: Sword
+  m_TagString: SwordInactive
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -115,7 +115,7 @@ GameObject:
   - component: {fileID: 114916795605572268}
   m_Layer: 0
   m_Name: Left Arm
-  m_TagString: Shield
+  m_TagString: ShieldInactive
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -571,8 +571,14 @@ MonoBehaviour:
   state: 0
   action: 0
   anim: {fileID: 95255465309510396}
+  stock: 0
+  isDead: 0
   HP: 0
   facingLeft: 0
+  rollingLeft: 0
+  leftWallDeltaX: 0
+  rightWallDeltaX: 0
+  stockText: {fileID: 0}
   hpText: {fileID: 0}
   disarmText: {fileID: 0}
   shieldBreakText: {fileID: 0}
@@ -591,7 +597,10 @@ MonoBehaviour:
   disarmStartTime: 0
   shieldBreakStartTime: 0
   disableMovementStartTime: 0
+  deathTime: 0
   actionThisPress: 0
+  swordObject: {fileID: 1127075828519142}
+  shieldObject: {fileID: 1487509796185156}
 --- !u!114 &114171660724321290
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -746,7 +755,7 @@ SpriteRenderer:
   m_SortingLayer: 1
   m_SortingOrder: 3
   m_Sprite: {fileID: 21300000, guid: 9e8557596e9ffd04388cfec4a1a746b9, type: 3}
-  m_Color: {r: 0.3602941, g: 0.21458693, b: 0.22363082, a: 1}
+  m_Color: {r: 0.7941176, g: 0.3561851, b: 0.38336712, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
