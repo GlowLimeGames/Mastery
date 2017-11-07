@@ -322,7 +322,7 @@ public class GameController : MonoBehaviour
         }
 
         // UI and game loop stuff:
-        //continually decreasing time for game timer.
+        // continually decreasing time for game timer.
         _timeRemaining -= Time.deltaTime;
         if (_timeRemaining < 0)
         {
@@ -332,7 +332,6 @@ public class GameController : MonoBehaviour
 
         if ((_timeRemaining <= _beginClosing) && (wallRight.transform.position.x > _wallStopX) && (!gameOver))
         {
-            // TODO: Stop walls from closing if the match is over
             wallLeft.transform.position += Vector3.right * _wallSpeed;
             safeXMin += _wallSpeed;
             wallRight.transform.position += Vector3.left * _wallSpeed;
@@ -432,8 +431,6 @@ public class GameController : MonoBehaviour
         {
             player.leftWallDeltaX = player.transform.position.x - wallLeft.transform.position.x;
             player.rightWallDeltaX = player.transform.position.x - wallRight.transform.position.x;
-
-            player.hpText.text = "HP: " + player.HP.ToString();
 
             if (player.HP <= 0)
             {
@@ -541,7 +538,7 @@ public class GameController : MonoBehaviour
                             attackerController.anim.Play("Light Attack (Return)");
 
                             defenderController.anim.Play("Stun");
-                            defenderController.HP -= 1;
+                            defenderController.TakeDamage(1);
                             break;
                     }
                     break;
@@ -564,14 +561,14 @@ public class GameController : MonoBehaviour
                     // Heavy overpowers light; heavy attack connects with half damage
                     attackerController.anim.Play("Heavy Attack (Return)");
                     defenderController.anim.Play("Stun");
-                    defenderController.HP -= 1;
+                    defenderController.TakeDamage(1);
                     break;
                 case PlayerController.CharacterAction.HEAVY_ATTACKING:
                     // Both lose 1HP and are knocked back
                     attackerController.Knockback();
                     defenderController.Knockback();
-                    attackerController.HP -= 1;
-                    defenderController.HP -= 1;
+                    attackerController.TakeDamage(1);
+                    defenderController.TakeDamage(1);
                     break;
                 case PlayerController.CharacterAction.ROLLING:
                     // Nothing, they're invulnerable
@@ -586,7 +583,7 @@ public class GameController : MonoBehaviour
                         case PlayerController.CharacterState.IDLE:
                             // Attack connects fully
                             attackerController.anim.Play("Heavy Attack (Return)");
-                            defenderController.HP -= 2;
+                            defenderController.TakeDamage(2);
                             defenderController.anim.Play("Stun");
                             break;
                     }
@@ -619,12 +616,12 @@ public class GameController : MonoBehaviour
                 case PlayerController.CharacterAction.GUARDING:
                     // Breaks defender's shield, restores attacker's health
                     defenderController.ShieldBreak();
-                    attackerController.HP = hpMax;
+                    attackerController.MaxOutHP();
                     break;
                 case PlayerController.CharacterAction.PARRYING:
                     // (Same as above? Not explicit in spec)
                     defenderController.ShieldBreak();
-                    attackerController.HP = hpMax;
+                    attackerController.MaxOutHP();
                     break;
                 default:
                     // If no shield up, then disable attacker's movement

@@ -109,84 +109,16 @@ public class PlayerController : MonoBehaviour
             action = CharacterAction.IDLE;
         }
 
-        //if (anim.GetCurrentAnimatorStateInfo(0).IsName("Turn Around"))
-        //{
-        //    state = CharacterState.IDLE;
-        //    action = CharacterAction.TURNING;
-        //}
-
-        if (anim.GetCurrentAnimatorStateInfo(0).IsName("KnockbackL"))
-        {
-            //print("State is knockback" + Time.time);
-            state = CharacterState.IDLE;
-            action = CharacterAction.KNOCKBACK;
-        }
-
-        if (anim.GetCurrentAnimatorStateInfo(0).IsName("KnockbackR"))
-        {
-            state = CharacterState.IDLE;
-            action = CharacterAction.KNOCKBACK;
-        }
-
-        // TODO: Using layer 1 for this one
-        //if (anim.GetCurrentAnimatorStateInfo(1).IsName("Walking"))
-        //{
-        //    state = CharacterState.IDLE;
-        //    action = CharacterAction.MOVING;
-        //}
-
-        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Roll"))
-        {
-            state = CharacterState.INVULNERABLE;
-            action = CharacterAction.ROLLING;
-        }
-
-        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Light Attack (Swing)"))
-        {
-            state = CharacterState.ATTACKING;
-            action = CharacterAction.LIGHT_ATTACKING;
-        }
-
         if (anim.GetCurrentAnimatorStateInfo(0).IsName("Light Attack (Return)"))
         {
             state = CharacterState.IDLE;
             action = CharacterAction.DELAY;
         }
 
-        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Heavy Attack (Swing)"))
-        {
-            state = CharacterState.ATTACKING;
-            action = CharacterAction.HEAVY_ATTACKING;
-        }
-
         if (anim.GetCurrentAnimatorStateInfo(0).IsName("Heavy Attack (Return)"))
         {
             state = CharacterState.IDLE;
             action = CharacterAction.DELAY;
-        }
-
-        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Kick"))
-        {
-            state = CharacterState.ATTACKING;
-            action = CharacterAction.KICKING;
-        }
-
-        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Parry"))
-        {
-            state = CharacterState.GUARDING;
-            action = CharacterAction.PARRYING;
-        }
-
-        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Guard (On)"))
-        {
-            state = CharacterState.GUARDING;
-            action = CharacterAction.GUARDING;
-        }
-
-        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Guard (Off)"))
-        {
-            state = CharacterState.GUARDING;
-            action = CharacterAction.GUARDING;
         }
 
         if (anim.GetCurrentAnimatorStateInfo(0).IsName("Stun"))
@@ -228,9 +160,18 @@ public class PlayerController : MonoBehaviour
         facingLeft = !facingLeft;
     }
 
+    public void Stun()
+    {
+        state = CharacterState.IDLE;
+        action = CharacterAction.STUN;
+        anim.Play("Stun");
+    }
+
     public void Knockback()
     {
         // Need to knockback player in opposite direction so they rotate away from the collision
+        state = CharacterState.IDLE;
+        action = CharacterAction.KNOCKBACK;
         if (facingLeft)
         {
             anim.Play("KnockbackR");
@@ -258,6 +199,18 @@ public class PlayerController : MonoBehaviour
     {
         disableMovementStartTime = Time.time;
         disableMovementText.text = "Movement Disabled";
+    }
+
+    public void TakeDamage(int dmg)
+    {
+        HP -= dmg;
+        hpText.text = "HP: " + HP.ToString();
+    }
+
+    public void MaxOutHP()
+    {
+        HP = GameController.hpMax;
+        hpText.text = "HP: " + HP.ToString();
     }
 
     public void IsKilled()
@@ -296,7 +249,7 @@ public class PlayerController : MonoBehaviour
         gameObject.transform.position = new Vector3(respawnX, -2.0f, 0.0f);
         gameObject.SetActive(true);
         anim.Play("Idle");
-        HP = GameController.hpMax;
+        MaxOutHP();
         state = CharacterState.IDLE;
     }
 
