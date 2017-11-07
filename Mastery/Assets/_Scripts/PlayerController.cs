@@ -6,17 +6,6 @@ using DG.Tweening;
 
 public class PlayerController : MonoBehaviour
 {
-
-    public enum CharacterState
-    {
-        IDLE,
-        ATTACKING,
-        // KNOCKBACK,
-        GUARDING,
-        VULNERABLE,
-        INVULNERABLE
-    }
-
     // Since you can be both vulnerable and attacking, there's another enum for player actions.
     public enum CharacterAction
     {
@@ -34,7 +23,7 @@ public class PlayerController : MonoBehaviour
         STUN,
     }
 
-    public CharacterState state;
+    //public CharacterState state;
     public CharacterAction action;
     public Animator anim;
 
@@ -87,7 +76,7 @@ public class PlayerController : MonoBehaviour
     // Use this for initialization
     private void Start()
     {
-        state = CharacterState.IDLE;
+        action = CharacterAction.IDLE;
         stock = GameController.stockMax;
         HP = GameController.hpMax;
         isDead = false;
@@ -103,27 +92,25 @@ public class PlayerController : MonoBehaviour
     {
         // Update states based on animations.
         // (I'm hoping there is a better way to do this)
+        // (It's mostly handled in the relevant functions now. Need to keep Idle at least)
+ 
         if (anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
         {
-            state = CharacterState.IDLE;
             action = CharacterAction.IDLE;
         }
 
         if (anim.GetCurrentAnimatorStateInfo(0).IsName("Light Attack (Return)"))
         {
-            state = CharacterState.IDLE;
             action = CharacterAction.DELAY;
         }
 
         if (anim.GetCurrentAnimatorStateInfo(0).IsName("Heavy Attack (Return)"))
         {
-            state = CharacterState.IDLE;
             action = CharacterAction.DELAY;
         }
 
         if (anim.GetCurrentAnimatorStateInfo(0).IsName("Stun"))
         {
-            state = CharacterState.IDLE;
             action = CharacterAction.STUN;
         }
 
@@ -147,7 +134,6 @@ public class PlayerController : MonoBehaviour
     {
         anim.Play("Turn Around");
         transform.localScale = new Vector3(transform.localScale.x * -1, transform.localScale.y, transform.localScale.z);
-        state = CharacterState.IDLE;
         action = CharacterAction.TURNING;
 
         // Set the facing variable after a delay
@@ -162,7 +148,6 @@ public class PlayerController : MonoBehaviour
 
     public void Stun()
     {
-        state = CharacterState.IDLE;
         action = CharacterAction.STUN;
         anim.Play("Stun");
     }
@@ -170,7 +155,6 @@ public class PlayerController : MonoBehaviour
     public void Knockback()
     {
         // Need to knockback player in opposite direction so they rotate away from the collision
-        state = CharacterState.IDLE;
         action = CharacterAction.KNOCKBACK;
         if (facingLeft)
         {
@@ -204,6 +188,28 @@ public class PlayerController : MonoBehaviour
     public void TakeDamage(int dmg)
     {
         HP -= dmg;
+        hpText.text = "HP: " + HP.ToString();
+
+        if (HP == 0)
+        {
+            // TODO: They're "vulnerable." Animate the helmet coming off or something
+        }
+        else if (HP < 0)
+        {
+            IsKilled();
+        }
+    }
+
+    public void TakeNonMortalDamage(int dmg)
+    {
+        // Damage the player shouldn't die from. Sword clashes, etc
+        HP -= dmg;
+
+        if (HP < 0)
+        {
+            HP = 0;
+            // TODO: Set vulnerable
+        }
         hpText.text = "HP: " + HP.ToString();
     }
 
@@ -250,7 +256,7 @@ public class PlayerController : MonoBehaviour
         gameObject.SetActive(true);
         anim.Play("Idle");
         MaxOutHP();
-        state = CharacterState.IDLE;
+        action = CharacterAction.IDLE;
     }
 
     private void _setSwordState()
@@ -267,7 +273,7 @@ public class PlayerController : MonoBehaviour
 
     private void _setShieldState()
     {
-        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Parry") || (anim.GetCurrentAnimatorStateInfo(0).IsName("Guard (On)")))
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Parry") || (anim.GetCurrentAnimatorStateInfo(0).IsName("Guard (On)")))    // TODO: Include Guard (Off)?
         {
             shieldObject.tag = "ShieldActive";
         } else

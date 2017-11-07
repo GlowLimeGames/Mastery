@@ -22,6 +22,13 @@ public class CollisionBehavior : MonoBehaviour
             {
                 return;
             }
+
+            // Also ignore inactive sword
+            if (collision.otherCollider.gameObject.CompareTag("SwordInactive"))
+            {
+                return;
+            }
+
             GameObject attacker = collision.collider.gameObject.transform.parent.gameObject;
             GameObject defender = collision.otherCollider.gameObject.transform.parent.gameObject;
             if (attacker != defender)          // Lots of self collisions happening, ignore those

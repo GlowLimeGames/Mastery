@@ -191,7 +191,7 @@ public class GameController : MonoBehaviour
                                 {
                                     player.action = PlayerController.CharacterAction.MOVING;
                                     player.transform.position += Vector3.right * (_moveSpeed * player.inputHorizontal);
-                                    player.anim.Play("Walking", 1);
+                                    player.anim.Play("Walking", 1);  // walking is in Leg Layer, layer 1
                                 }
                             }
                         }
@@ -258,7 +258,6 @@ public class GameController : MonoBehaviour
                 {
                     if (Time.time >= (player.pressStartTime + _holdTime) && !player.actionThisPress)
                     {
-                        player.state = PlayerController.CharacterState.ATTACKING;
                         player.action = PlayerController.CharacterAction.HEAVY_ATTACKING;
                         player.anim.Play("Heavy Attack (Swing)");
 
@@ -269,7 +268,6 @@ public class GameController : MonoBehaviour
                 {
                     if (Time.time < (player.pressStartTime + _holdTime))
                     {
-                        player.state = PlayerController.CharacterState.ATTACKING;
                         player.action = PlayerController.CharacterAction.LIGHT_ATTACKING;
                         player.anim.Play("Light Attack (Swing)");
 
@@ -297,7 +295,6 @@ public class GameController : MonoBehaviour
                     {
                         if (Time.time >= (player.pressStartTime + _holdTime) && !player.actionThisPress)
                         {
-                            player.state = PlayerController.CharacterState.GUARDING;
                             player.action = PlayerController.CharacterAction.GUARDING;
                             player.anim.Play("Guard (On)");
                         }
@@ -306,13 +303,11 @@ public class GameController : MonoBehaviour
                     {
                         if (Time.time < (player.pressStartTime + _holdTime))
                         {
-                            player.state = PlayerController.CharacterState.GUARDING;
                             player.action = PlayerController.CharacterAction.PARRYING;
                             player.anim.Play("Parry");
                         }
                         else
                         {
-                            player.state = PlayerController.CharacterState.GUARDING;
                             player.action = PlayerController.CharacterAction.GUARDING;
                             player.anim.Play("Guard (Off)");
                         }
@@ -432,11 +427,6 @@ public class GameController : MonoBehaviour
             player.leftWallDeltaX = player.transform.position.x - wallLeft.transform.position.x;
             player.rightWallDeltaX = player.transform.position.x - wallRight.transform.position.x;
 
-            if (player.HP <= 0)
-            {
-                player.state = PlayerController.CharacterState.VULNERABLE;
-            }
-
             if (Time.time >= (player.disarmStartTime + _disarmTime))
             {
                 player.disarmText.text = "";
@@ -527,20 +517,11 @@ public class GameController : MonoBehaviour
                     // Nothing, they're invulnerable
                     break;
                 default:                               // IDLE, MOVING, DELAY, TURNING, KICKING(?), STUN(?), ...
-                    switch (defenderController.state)
-                    {
-                        case PlayerController.CharacterState.VULNERABLE:
-                            // Kills defender
-                            defenderController.IsKilled();
-                            break;
-                        case PlayerController.CharacterState.IDLE:
-                            // Successful hit.
-                            attackerController.anim.Play("Light Attack (Return)");
+                    // Successful hit.
+                    attackerController.anim.Play("Light Attack (Return)");
 
-                            defenderController.anim.Play("Stun");
-                            defenderController.TakeDamage(1);
-                            break;
-                    }
+                    defenderController.anim.Play("Stun");
+                    defenderController.TakeDamage(1);
                     break;
             }
         }
@@ -561,32 +542,23 @@ public class GameController : MonoBehaviour
                     // Heavy overpowers light; heavy attack connects with half damage
                     attackerController.anim.Play("Heavy Attack (Return)");
                     defenderController.anim.Play("Stun");
-                    defenderController.TakeDamage(1);
+                    defenderController.TakeNonMortalDamage(1);
                     break;
                 case PlayerController.CharacterAction.HEAVY_ATTACKING:
                     // Both lose 1HP and are knocked back
                     attackerController.Knockback();
                     defenderController.Knockback();
-                    attackerController.TakeDamage(1);
-                    defenderController.TakeDamage(1);
+                    attackerController.TakeNonMortalDamage(1);
+                    defenderController.TakeNonMortalDamage(1);
                     break;
                 case PlayerController.CharacterAction.ROLLING:
                     // Nothing, they're invulnerable
                     break;
                 default:                                // IDLE, MOVING, DELAY, TURNING, KICKING(?), STUN(?), ...
-                    switch (defenderController.state)
-                    {
-                        case PlayerController.CharacterState.VULNERABLE:
-                            // Kills defender
-                            defenderController.IsKilled();
-                            break;
-                        case PlayerController.CharacterState.IDLE:
-                            // Attack connects fully
-                            attackerController.anim.Play("Heavy Attack (Return)");
-                            defenderController.TakeDamage(2);
-                            defenderController.anim.Play("Stun");
-                            break;
-                    }
+                    // Attack connects fully
+                    attackerController.anim.Play("Heavy Attack (Return)");
+                    defenderController.TakeDamage(2);
+                    defenderController.anim.Play("Stun");
                     break;
             }
         }
