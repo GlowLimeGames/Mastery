@@ -191,7 +191,7 @@ public class GameController : MonoBehaviour
                                 {
                                     player.action = PlayerController.CharacterAction.MOVING;
                                     player.transform.position += Vector3.right * (_moveSpeed * player.inputHorizontal);
-                                    player.anim.Play("Walking");
+                                    player.anim.Play("Walking", 1);
                                 }
                             }
                         }
@@ -204,7 +204,7 @@ public class GameController : MonoBehaviour
                                 {
                                     player.action = PlayerController.CharacterAction.MOVING;
                                     player.transform.position += Vector3.right * (_moveSpeed * player.inputHorizontal);
-                                    player.anim.Play("Walking");
+                                    player.anim.Play("Walking", 1);
                                 }
                             }
                         }
@@ -299,7 +299,7 @@ public class GameController : MonoBehaviour
                         {
                             player.state = PlayerController.CharacterState.GUARDING;
                             player.action = PlayerController.CharacterAction.GUARDING;
-                            player.anim.Play("Guard");
+                            player.anim.Play("Guard (On)");
                         }
                     }
                     if (player.inputDefendUp)
@@ -309,6 +309,12 @@ public class GameController : MonoBehaviour
                             player.state = PlayerController.CharacterState.GUARDING;
                             player.action = PlayerController.CharacterAction.PARRYING;
                             player.anim.Play("Parry");
+                        }
+                        else
+                        {
+                            player.state = PlayerController.CharacterState.GUARDING;
+                            player.action = PlayerController.CharacterAction.GUARDING;
+                            player.anim.Play("Guard (Off)");
                         }
                     }
                 }

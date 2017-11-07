@@ -109,11 +109,11 @@ public class PlayerController : MonoBehaviour
             action = CharacterAction.IDLE;
         }
 
-        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Turn Around"))
-        {
-            state = CharacterState.IDLE;
-            action = CharacterAction.TURNING;
-        }
+        //if (anim.GetCurrentAnimatorStateInfo(0).IsName("Turn Around"))
+        //{
+        //    state = CharacterState.IDLE;
+        //    action = CharacterAction.TURNING;
+        //}
 
         if (anim.GetCurrentAnimatorStateInfo(0).IsName("KnockbackL"))
         {
@@ -128,11 +128,12 @@ public class PlayerController : MonoBehaviour
             action = CharacterAction.KNOCKBACK;
         }
 
-        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Moving"))
-        {
-            state = CharacterState.IDLE;
-            action = CharacterAction.MOVING;
-        }
+        // TODO: Using layer 1 for this one
+        //if (anim.GetCurrentAnimatorStateInfo(1).IsName("Walking"))
+        //{
+        //    state = CharacterState.IDLE;
+        //    action = CharacterAction.MOVING;
+        //}
 
         if (anim.GetCurrentAnimatorStateInfo(0).IsName("Roll"))
         {
@@ -176,7 +177,13 @@ public class PlayerController : MonoBehaviour
             action = CharacterAction.PARRYING;
         }
 
-        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Guard"))
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Guard (On)"))
+        {
+            state = CharacterState.GUARDING;
+            action = CharacterAction.GUARDING;
+        }
+
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Guard (Off)"))
         {
             state = CharacterState.GUARDING;
             action = CharacterAction.GUARDING;
@@ -194,7 +201,7 @@ public class PlayerController : MonoBehaviour
 
     public bool CanAct()
     {
-        if (action == CharacterAction.IDLE || action == CharacterAction.MOVING || action == CharacterAction.TURNING)
+        if (action == CharacterAction.IDLE || action == CharacterAction.MOVING || action == CharacterAction.GUARDING)
         {
             return true;
         }
@@ -208,14 +215,17 @@ public class PlayerController : MonoBehaviour
     {
         anim.Play("Turn Around");
         transform.localScale = new Vector3(transform.localScale.x * -1, transform.localScale.y, transform.localScale.z);
-        if (facingLeft)
-        {
-            facingLeft = false;
-        }
-        else
-        {
-            facingLeft = true;
-        }
+        state = CharacterState.IDLE;
+        action = CharacterAction.TURNING;
+
+        // Set the facing variable after a delay
+        StartCoroutine(SetFacing());
+    }
+
+    private IEnumerator SetFacing()
+    {
+        yield return new WaitForSeconds(0.35f);
+        facingLeft = !facingLeft;
     }
 
     public void Knockback()
@@ -253,6 +263,7 @@ public class PlayerController : MonoBehaviour
     public void IsKilled()
     {
         anim.Play("Die");    // doesn't display, since it doesn't wait to move the character out of the way
+        // TODO: Use a coroutine to play the animation, then do death bookkeeping stuff
         isDead = true;
         
         stock -= 1;
@@ -303,7 +314,7 @@ public class PlayerController : MonoBehaviour
 
     private void _setShieldState()
     {
-        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Parry") || (anim.GetCurrentAnimatorStateInfo(0).IsName("Guard")))
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Parry") || (anim.GetCurrentAnimatorStateInfo(0).IsName("Guard (On)")))
         {
             shieldObject.tag = "ShieldActive";
         } else
