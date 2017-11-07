@@ -23,12 +23,12 @@ public class PlayerController : MonoBehaviour
         STUN,
     }
 
-    //public CharacterState state;
     public CharacterAction action;
     public Animator anim;
 
     public int stock;
     public bool isDead;
+    public bool isInvulnerable;
     public int HP;
     public bool facingLeft;
     public bool rollingLeft;
@@ -60,9 +60,9 @@ public class PlayerController : MonoBehaviour
     public float pressStartTime;
 
     // The time the player was disarmed, shieldbroken, or had movement disabled
-    public float disarmStartTime;
-    public float shieldBreakStartTime;
-    public float disableMovementStartTime;
+    public bool disarmed;
+    public bool shieldBroken;
+    public bool movementDisabled;
 
     public float deathTime;
 
@@ -80,12 +80,12 @@ public class PlayerController : MonoBehaviour
         stock = GameController.stockMax;
         HP = GameController.hpMax;
         isDead = false;
+        isInvulnerable = false;
 
         // Set all event times to a negative, so their relevant conditions don't trigger
-        disarmStartTime = -10.0f;
-        shieldBreakStartTime = -10.0f;
-        disableMovementStartTime = -10.0f;
-        deathTime = -10.0f;
+        disarmed = false;
+        shieldBroken = false;
+        movementDisabled = false;
     }
 
     private void Update()
@@ -132,9 +132,9 @@ public class PlayerController : MonoBehaviour
 
     public void TurnAround()
     {
+        action = CharacterAction.TURNING;
         anim.Play("Turn Around");
         transform.localScale = new Vector3(transform.localScale.x * -1, transform.localScale.y, transform.localScale.z);
-        action = CharacterAction.TURNING;
 
         // Set the facing variable after a delay
         StartCoroutine(SetFacing());
@@ -169,20 +169,23 @@ public class PlayerController : MonoBehaviour
     public void Disarm()
     {
         // TODO: This really needs an animation
-        disarmStartTime = Time.time;
+        disarmed = true;
         disarmText.text = "Disarmed";
+        StartCoroutine(_Rearm());
     }
 
     public void ShieldBreak()
     {
-        shieldBreakStartTime = Time.time;
+        shieldBroken = true;
         shieldBreakText.text = "Shield Broken";
+        StartCoroutine(_RepairShield());
     }
 
     public void DisableMovement()
     {
-        disableMovementStartTime = Time.time;
+        movementDisabled = true;
         disableMovementText.text = "Movement Disabled";
+        StartCoroutine(_ReenableMovement());
     }
 
     public void TakeDamage(int dmg)
@@ -232,31 +235,71 @@ public class PlayerController : MonoBehaviour
         deathTime = Time.time;
 
         // Disarming states shouldn't carry over between stocks
-        disarmStartTime = -10.0f;
-        shieldBreakStartTime = -10.0f;
-        disableMovementStartTime = -10.0f;
+        disarmed = shieldBroken = movementDisabled = false;
+        disarmText.text = shieldBreakText.text = disableMovementText.text = "";
+
+        // Can't check gameOver, since that is set after the death.
+        // It's good enough just to check this player's lives
+        if (stock > 0)
+        {
+            StartCoroutine(_Respawn());
+        }
+        
     }
 
-    public void Respawn()
+    public IEnumerator _Respawn()
     {
         // TODO: Find a safe random position to respawn in
         // Needs to be within the walls, and away from the other player
         // safeXMin and safeXMax give bounds for the walls. How to think about this?
-        
+
         // |-----------X-------------------------|
         // lw          p1                        rw
-        
+
         // p2 should spawn in the larger portion, either in the middle of p1rw or right against rw
 
         // TODO: also set them invulnerable for a time?
+
+        yield return new WaitForSeconds(GameController.respawnTime);
+
         isDead = false;
         float respawnX = Random.Range(GameController.safeXMin, GameController.safeXMax);
-        // float respawnX = 1.0f;
         gameObject.transform.position = new Vector3(respawnX, -2.0f, 0.0f);
-        gameObject.SetActive(true);
         anim.Play("Idle");
+        disarmed = shieldBroken = movementDisabled = false;
+        disarmText.text = shieldBreakText.text = disableMovementText.text = "";
         MaxOutHP();
         action = CharacterAction.IDLE;
+
+        isInvulnerable = true;
+        StartCoroutine(_BecomeVulnerable());
+    }
+
+    private IEnumerator _BecomeVulnerable()
+    {
+        yield return new WaitForSeconds(GameController.respawnInvulnerabilityTime);
+        isInvulnerable = false;
+    }
+
+    private IEnumerator _Rearm()
+    {
+        yield return new WaitForSeconds(GameController.disarmTime);
+        disarmed = false;
+        disarmText.text = "";
+    }
+
+    private IEnumerator _RepairShield()
+    {
+        yield return new WaitForSeconds(GameController.shieldBreakTime);
+        shieldBroken = false;
+        shieldBreakText.text = "";
+    }
+
+    private IEnumerator _ReenableMovement()
+    {
+        yield return new WaitForSeconds(GameController.disableMovementTime);
+        movementDisabled = false;
+        disableMovementText.text = "";
     }
 
     private void _setSwordState()

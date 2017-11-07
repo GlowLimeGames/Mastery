@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
-    public bool gameOver;
+    public static bool gameOver = false;
 
     public PlayerController playerOne;
     public PlayerController playerTwo;
@@ -31,13 +31,14 @@ public class GameController : MonoBehaviour
     private static float _holdTime = 0.15f;
 
     // Length of disarm
-    private static float _disarmTime = 3.0f;
+    public static float disarmTime = 3.0f;
 
-    private static float _disableMovementTime = 3.0f;
+    public static float disableMovementTime = 3.0f;
 
-    private static float _shieldBreakTime = 3.0f;
+    public static float shieldBreakTime = 3.0f;
 
-    private static float _respawnTime = 2.0f;
+    public static float respawnTime = 2.0f;
+    public static float respawnInvulnerabilityTime = 2.0f;
 
     // Distance between players
     private float _playerDeltaX;
@@ -155,7 +156,7 @@ public class GameController : MonoBehaviour
             // Rolling disables pretty much all inputs
             if (player.CanAct())
             {
-                if (Time.time >= (player.disableMovementStartTime + _disableMovementTime))
+                if (!player.movementDisabled)
                 {
                     // Right stick determines the direction you're facing
                     if (player.inputRightHorizontal != 0.0f)
@@ -243,7 +244,7 @@ public class GameController : MonoBehaviour
                 // Attack inputs
                 if (player.inputAttackDown)
                 {
-                    if (Time.time >= (player.disarmStartTime + _disarmTime))
+                    if (!player.disarmed)
                     {
                         player.pressStartTime = Time.time;
                         player.actionThisPress = false;
@@ -284,7 +285,7 @@ public class GameController : MonoBehaviour
 
 
                 // Defend inputs
-                if (Time.time >= (player.shieldBreakStartTime + _shieldBreakTime))
+                if (!player.shieldBroken)
                 {
                     if (player.inputDefendDown)
                     {
@@ -345,18 +346,6 @@ public class GameController : MonoBehaviour
         if (currentScenario == gameScenarios.timeUp)
         {
             //TODO: time runs out scenario
-        }
-
-        foreach(PlayerController player in _players)
-        {
-            if ((player.isDead) && (player.stock > 0))
-            {
-                if (Time.time >= (player.deathTime + _respawnTime))
-                {
-                    player.Respawn();
-                }
-            }
-
         }
 
     }
@@ -427,18 +416,18 @@ public class GameController : MonoBehaviour
             player.leftWallDeltaX = player.transform.position.x - wallLeft.transform.position.x;
             player.rightWallDeltaX = player.transform.position.x - wallRight.transform.position.x;
 
-            if (Time.time >= (player.disarmStartTime + _disarmTime))
-            {
-                player.disarmText.text = "";
-            }
-            if (Time.time >= (player.disableMovementStartTime + _disableMovementTime))
-            {
-                player.disableMovementText.text = "";
-            }
-            if (Time.time >= (player.shieldBreakStartTime + _shieldBreakTime))
-            {
-                player.shieldBreakText.text = "";
-            }
+            //if (Time.time >= (player.disarmStartTime + _disarmTime))
+            //{
+            //    player.disarmText.text = "";
+            //}
+            //if (Time.time >= (player.disableMovementStartTime + _disableMovementTime))
+            //{
+            //    player.disableMovementText.text = "";
+            //}
+            //if (Time.time >= (player.shieldBreakStartTime + _shieldBreakTime))
+            //{
+            //    player.shieldBreakText.text = "";
+            //}
 
             // Walls "push" adjacent players at the same speed they're moving
             if (_timeRemaining <= _beginClosing)
@@ -483,6 +472,11 @@ public class GameController : MonoBehaviour
         {
             attackerController = playerTwo;
             defenderController = playerOne;
+        }
+
+        if (defenderController.isInvulnerable)
+        {
+            return;
         }
 
         // If attacker hits defender from behind, treat defender as idle, ignoring frontal attacks/defends
