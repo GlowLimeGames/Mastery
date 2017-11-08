@@ -11,6 +11,7 @@ TagManager:
   - ShieldInactive
   - SwordActive
   - SwordInactive
+  - DialogueFace
   layers:
   - Default
   - TransparentFX
