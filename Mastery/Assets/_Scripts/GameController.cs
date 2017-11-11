@@ -9,6 +9,8 @@ public class GameController : MonoBehaviour
 {
     public static bool gameOver = false;
 
+    public static bool isStartScreen = true;
+
     public PlayerController playerOne;
     public PlayerController playerTwo;
 
@@ -16,6 +18,8 @@ public class GameController : MonoBehaviour
     public GameObject wallRight;
 
     public Text VictoryOverlay;
+
+    public GameObject startCanvas;
 
     private PlayerController[] _players = new PlayerController[2];
 
@@ -317,6 +321,11 @@ public class GameController : MonoBehaviour
             }
         }
 
+        if (isStartScreen)
+        {
+            return;
+        }
+
         // UI and game loop stuff:
         // continually decreasing time for game timer.
         _timeRemaining -= Time.deltaTime;
@@ -455,6 +464,16 @@ public class GameController : MonoBehaviour
         // Unsubscribe from those events to avoid issues when restarting the match
         CollisionBehavior.AttackResolution -= Attack;
         CollisionBehavior.KickResolution -= Kick;
+    }
+
+    public void DuelBegin()
+    {
+        isStartScreen = false;
+
+        startCanvas.SetActive(false);
+
+        playerOne.MaxOutHP();
+        playerTwo.MaxOutHP();
     }
 
     // TODO: This and Kick probably belong in PlayerController.

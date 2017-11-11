@@ -224,6 +224,11 @@ public class PlayerController : MonoBehaviour
 
     public void IsKilled()
     {
+        if (GameController.isStartScreen)
+        {
+            return;
+        }
+
         anim.Play("Die");    // doesn't display, since it doesn't wait to move the character out of the way
         // TODO: Use a coroutine to play the animation, then do death bookkeeping stuff
         isDead = true;
