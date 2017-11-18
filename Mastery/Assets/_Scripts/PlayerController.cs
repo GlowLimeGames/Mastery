@@ -273,13 +273,11 @@ public class PlayerController : MonoBehaviour
 
         // p2 should spawn in the larger portion, either in the middle of p1rw or right against rw
 
-        // TODO: also set them invulnerable for a time?
-
         yield return new WaitForSeconds(GameController.respawnTime);
 
         isDead = false;
         float respawnX = Random.Range(GameController.safeXMin, GameController.safeXMax);
-        gameObject.transform.position = new Vector3(respawnX, -2.0f, 0.0f);
+        gameObject.transform.position = new Vector3(respawnX, -1.35f, 0.0f);
         anim.Play("Idle");
         disarmed = shieldBroken = movementDisabled = false;
         disarmText.text = shieldBreakText.text = disableMovementText.text = "";

@@ -13,23 +13,27 @@ public class CollisionBehavior : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        print(collision);
         // Two things that can hit: an active sword, and a leg
         if (collision.collider.gameObject.CompareTag("SwordActive"))
         {
-            // If it hit an inactive shield, ignore it
-            if (collision.otherCollider.gameObject.CompareTag("ShieldInactive"))
-            {
-                return;
-            }
+            //// If it hit an inactive shield, ignore it
+            //if (collision.otherCollider.gameObject.CompareTag("ShieldInactive"))
+            //{
+            //    return;
+            //}
 
             // Also ignore inactive sword
-            if (collision.otherCollider.gameObject.CompareTag("SwordInactive"))
-            {
-                return;
-            }
+            // TODO: Testing not doing this, since the swords are positioned differently now
+            //if (collision.otherCollider.gameObject.CompareTag("SwordInactive"))
+            //{
+            //    return;
+            //}
 
-            GameObject attacker = collision.collider.gameObject.transform.parent.gameObject;
-            GameObject defender = collision.otherCollider.gameObject.transform.parent.gameObject;
+            GameObject attacker = collision.collider.transform.root.gameObject;
+            GameObject defender = collision.otherCollider.transform.root.gameObject;
+            print(attacker);
+            print(defender);
             if (attacker != defender)          // Lots of self collisions happening, ignore those
             {
                 AttackResolution(attacker, defender);
