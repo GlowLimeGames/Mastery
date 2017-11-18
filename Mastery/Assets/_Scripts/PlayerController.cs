@@ -63,6 +63,7 @@ public class PlayerController : MonoBehaviour
     public bool disarmed;
     public bool shieldBroken;
     public bool movementDisabled;
+    public bool rollDisabled;
 
     public float deathTime;
 
@@ -86,6 +87,7 @@ public class PlayerController : MonoBehaviour
         disarmed = false;
         shieldBroken = false;
         movementDisabled = false;
+        rollDisabled = false;
     }
 
     private void Update()
@@ -128,6 +130,14 @@ public class PlayerController : MonoBehaviour
         {
             return false;
         }
+    }
+
+    public void Roll()
+    {
+        action = PlayerController.CharacterAction.ROLLING;
+        anim.Play("Roll");
+        rollDisabled = true;
+        StartCoroutine(_ReenableRoll());
     }
 
     public void TurnAround()
@@ -305,6 +315,12 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(GameController.disableMovementTime);
         movementDisabled = false;
         disableMovementText.text = "";
+    }
+
+    private IEnumerator _ReenableRoll()
+    {
+        yield return new WaitForSeconds(GameController.disableRollTime);
+        rollDisabled = false;
     }
 
     private void _setSwordState()

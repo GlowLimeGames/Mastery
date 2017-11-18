@@ -230,6 +230,38 @@ InputManager:
     axis: 0
     joyNum: 0
   - serializedVersion: 3
+    m_Name: P1Fire4
+    descriptiveName: Player 1 kick, keyboard
+    descriptiveNegativeName: 
+    negativeButton: 
+    positiveButton: caps lock
+    altNegativeButton: 
+    altPositiveButton: 
+    gravity: 1000
+    dead: 0.001
+    sensitivity: 1000
+    snap: 0
+    invert: 0
+    type: 0
+    axis: 0
+    joyNum: 0
+  - serializedVersion: 3
+    m_Name: P2Fire4
+    descriptiveName: Player 2 kick, keyboard
+    descriptiveNegativeName: 
+    negativeButton: 
+    positiveButton: return
+    altNegativeButton: 
+    altPositiveButton: 
+    gravity: 1000
+    dead: 0.001
+    sensitivity: 1000
+    snap: 0
+    invert: 0
+    type: 0
+    axis: 0
+    joyNum: 0
+  - serializedVersion: 3
     m_Name: P2Fire3
     descriptiveName: Player 2 roll, keyboard
     descriptiveNegativeName: 

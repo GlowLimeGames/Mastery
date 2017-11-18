@@ -41,6 +41,9 @@ public class GameController : MonoBehaviour
 
     public static float shieldBreakTime = 3.0f;
 
+    // Just slightly longer than the roll's animation time
+    public static float disableRollTime = 0.7f;    
+
     public static float respawnTime = 2.0f;
     public static float respawnInvulnerabilityTime = 2.0f;
 
@@ -218,28 +221,29 @@ public class GameController : MonoBehaviour
                     // Rolling inputs. Disabled when movement disabled
                     if (player.inputRollDown)
                     {
-                        // Roll in the direction you're moving.
-                        // If not moving, roll in the direction you're facing
+                        if (!player.rollDisabled)
+                        {
+                            // Roll in the direction you're moving.
+                            // If not moving, roll in the direction you're facing
 
-                        if (player.inputHorizontal < 0.0f)
-                        {
-                            player.rollingLeft = true;
-                        }
-                        else if (player.inputHorizontal == 0.0f)
-                        {
-                            player.rollingLeft = player.facingLeft;
-                        }
-                        else
-                        {
-                            player.rollingLeft = false;
-                        }
+                            if (player.inputHorizontal < 0.0f)
+                            {
+                                player.rollingLeft = true;
+                            }
+                            else if (player.inputHorizontal == 0.0f)
+                            {
+                                player.rollingLeft = player.facingLeft;
+                            }
+                            else
+                            {
+                                player.rollingLeft = false;
+                            }
 
-                        if ((player.rollingLeft && (player.leftWallDeltaX > 1.75)) || (!player.rollingLeft && (player.rightWallDeltaX < -1.75)))
-                        {
-                            player.action = PlayerController.CharacterAction.ROLLING;
-                            player.anim.Play("Roll");
+                            if ((player.rollingLeft && (player.leftWallDeltaX > 1.75)) || (!player.rollingLeft && (player.rightWallDeltaX < -1.75)))
+                            {
+                                player.Roll();
+                            }
                         }
-
                     }
                 }
 
@@ -425,19 +429,6 @@ public class GameController : MonoBehaviour
             player.leftWallDeltaX = player.transform.position.x - wallLeft.transform.position.x;
             player.rightWallDeltaX = player.transform.position.x - wallRight.transform.position.x;
 
-            //if (Time.time >= (player.disarmStartTime + _disarmTime))
-            //{
-            //    player.disarmText.text = "";
-            //}
-            //if (Time.time >= (player.disableMovementStartTime + _disableMovementTime))
-            //{
-            //    player.disableMovementText.text = "";
-            //}
-            //if (Time.time >= (player.shieldBreakStartTime + _shieldBreakTime))
-            //{
-            //    player.shieldBreakText.text = "";
-            //}
-
             // Walls "push" adjacent players at the same speed they're moving
             if (_timeRemaining <= _beginClosing)
             {
@@ -607,6 +598,9 @@ public class GameController : MonoBehaviour
                     // (Same as above? Not explicit in spec)
                     defenderController.ShieldBreak();
                     attackerController.MaxOutHP();
+                    break;
+                case PlayerController.CharacterAction.ROLLING:
+                    // No effect, don't disable movement
                     break;
                 default:
                     // If no shield up, then disable attacker's movement
