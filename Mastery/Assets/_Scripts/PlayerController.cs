@@ -106,6 +106,16 @@ public class PlayerController : MonoBehaviour
             action = CharacterAction.DELAY;
         }
 
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Heavy Attack (Windup)"))
+        {
+            action = CharacterAction.DELAY;
+        }
+
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Heavy Attack (Swing)"))
+        {
+            action = CharacterAction.HEAVY_ATTACKING;
+        }
+
         if (anim.GetCurrentAnimatorStateInfo(0).IsName("Heavy Attack (Return)"))
         {
             action = CharacterAction.DELAY;
@@ -135,6 +145,7 @@ public class PlayerController : MonoBehaviour
     public void Roll()
     {
         action = PlayerController.CharacterAction.ROLLING;
+        anim.Play("None", 1);         // Disable the leg animation, which messes up the roll
         anim.Play("Roll");
         rollDisabled = true;
         StartCoroutine(_ReenableRoll());
@@ -323,7 +334,7 @@ public class PlayerController : MonoBehaviour
 
     private void _setSwordState()
     {
-        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Light Attack (Swing)") || (anim.GetCurrentAnimatorStateInfo(0).IsName("Heavy Attack (Swing)")))
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Light Attack (Swing)") || (anim.GetCurrentAnimatorStateInfo(0).IsName("Heavy Attack (Swing)")) || (anim.GetCurrentAnimatorStateInfo(0).IsName("Heavy Attack (Return)")))
         {
             swordObject.tag = "SwordActive";
         }

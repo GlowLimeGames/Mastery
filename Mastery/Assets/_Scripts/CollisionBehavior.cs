@@ -13,7 +13,6 @@ public class CollisionBehavior : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        print(collision);
         // Two things that can hit: an active sword, and a leg
         if (collision.collider.gameObject.CompareTag("SwordActive"))
         {
@@ -32,10 +31,11 @@ public class CollisionBehavior : MonoBehaviour
 
             GameObject attacker = collision.collider.transform.root.gameObject;
             GameObject defender = collision.otherCollider.transform.root.gameObject;
-            print(attacker);
-            print(defender);
+
             if (attacker != defender)          // Lots of self collisions happening, ignore those
             {
+                print(attacker);
+                print(defender);
                 AttackResolution(attacker, defender);
             }
         }

@@ -268,7 +268,8 @@ public class GameController : MonoBehaviour
                     if (Time.time >= (player.pressStartTime + _holdTime) && !player.actionThisPress)
                     {
                         player.action = PlayerController.CharacterAction.HEAVY_ATTACKING;
-                        player.anim.Play("Heavy Attack (Swing)");
+                        player.anim.Play("None", 1);
+                        player.anim.Play("Heavy Attack (Windup)");
 
                         player.actionThisPress = true;
                     }
@@ -278,6 +279,7 @@ public class GameController : MonoBehaviour
                     if (Time.time < (player.pressStartTime + _holdTime))
                     {
                         player.action = PlayerController.CharacterAction.LIGHT_ATTACKING;
+                        player.anim.Play("None", 1);
                         player.anim.Play("Light Attack (Swing)");
 
                         player.actionThisPress = true;
@@ -288,6 +290,7 @@ public class GameController : MonoBehaviour
                 if (player.inputKickDown)
                 {
                     player.action = PlayerController.CharacterAction.KICKING;
+                    player.anim.Play("None", 1);
                     player.anim.Play("Kick");
                 }
 
@@ -531,6 +534,7 @@ public class GameController : MonoBehaviour
         }
         if (attackerController.action == PlayerController.CharacterAction.HEAVY_ATTACKING)
         {
+            print(defenderController.action);
             switch (defenderController.action)
             {
                 case PlayerController.CharacterAction.PARRYING:
