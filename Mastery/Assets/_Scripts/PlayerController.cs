@@ -21,13 +21,14 @@ public class PlayerController : MonoBehaviour
         KNOCKBACK,
         DELAY,      // bringing weapon back after swinging it. Need a better name
         STUN,
+        DEAD,
+        RESPAWNING,
     }
 
     public CharacterAction action;
     public Animator anim;
 
     public int stock;
-    public bool isDead;
     public bool isInvulnerable;
     public int HP;
     public bool facingLeft;
@@ -81,7 +82,6 @@ public class PlayerController : MonoBehaviour
         action = CharacterAction.IDLE;
         stock = GameController.stockMax;
         HP = GameController.hpMax;
-        isDead = false;
         isInvulnerable = false;
 
         // Set all event times to a negative, so their relevant conditions don't trigger
@@ -125,6 +125,16 @@ public class PlayerController : MonoBehaviour
         if (anim.GetCurrentAnimatorStateInfo(0).IsName("Stun"))
         {
             action = CharacterAction.STUN;
+        }
+        
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Die"))
+        {
+            action = CharacterAction.DEAD;
+        }
+
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Respawn"))
+        {
+            action = CharacterAction.RESPAWNING;
         }
 
         _setSwordState();
@@ -274,7 +284,7 @@ public class PlayerController : MonoBehaviour
         anim.Play("Die");
         StartCoroutine(_HideBody());
 
-        isDead = true;
+        action = CharacterAction.DEAD;
         
         stock -= 1;
         stockText.text = "Stock: " + stock.ToString();
@@ -309,7 +319,6 @@ public class PlayerController : MonoBehaviour
 
         yield return new WaitForSeconds(GameController.respawnTime);
 
-        isDead = false;
         float respawnX = Random.Range(GameController.safeXMin, GameController.safeXMax);
         gameObject.transform.position = new Vector3(respawnX, -1.35f, 0.0f);
         anim.Play("Respawn");
