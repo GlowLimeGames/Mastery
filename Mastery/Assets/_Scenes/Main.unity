@@ -929,10 +929,6 @@ Prefab:
       propertyPath: m_Name
       value: PlayerTwo
       objectReference: {fileID: 0}
-    - target: {fileID: 4186143924761900, guid: e198af9e9a0cf5e409741bdff9251e77, type: 2}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 114869703084834136, guid: e198af9e9a0cf5e409741bdff9251e77,
         type: 2}
       propertyPath: stockText

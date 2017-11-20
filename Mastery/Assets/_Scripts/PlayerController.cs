@@ -170,6 +170,7 @@ public class PlayerController : MonoBehaviour
     public void Stun()
     {
         action = CharacterAction.STUN;
+        anim.Play("None", 1);
         anim.Play("Stun");
     }
 
@@ -177,28 +178,34 @@ public class PlayerController : MonoBehaviour
     {
         // Need to knockback player in opposite direction so they rotate away from the collision
         action = CharacterAction.KNOCKBACK;
+        anim.Play("Knockback");
+        /*
         if (facingLeft)
         {
             anim.Play("KnockbackR");
         }
         else
         {
-            anim.Play("KnockbackL");
+            anim.Play("Knockback (Left)");
         }
+        */
     }
 
     public void Disarm()
     {
-        // TODO: This really needs an animation
+        anim.Play("Disarmed");  // TODO fix the disarmed animation
         disarmed = true;
         disarmText.text = "Disarmed";
+        StartCoroutine(_HideSword());
         StartCoroutine(_Rearm());
     }
 
     public void ShieldBreak()
     {
+        anim.Play("Shield Broken");
         shieldBroken = true;
         shieldBreakText.text = "Shield Broken";
+        StartCoroutine(_HideShield());
         StartCoroutine(_RepairShield());
     }
 
@@ -251,12 +258,12 @@ public class PlayerController : MonoBehaviour
         }
 
         anim.Play("Die");    // doesn't display, since it doesn't wait to move the character out of the way
-        // TODO: Use a coroutine to play the animation, then do death bookkeeping stuff
+        StartCoroutine(_HideBody());
+
         isDead = true;
         
         stock -= 1;
         stockText.text = "Stock: " + stock.ToString();
-        gameObject.transform.position += Vector3.right * 100.0f;
 
         deathTime = Time.time;
 
@@ -289,7 +296,7 @@ public class PlayerController : MonoBehaviour
         isDead = false;
         float respawnX = Random.Range(GameController.safeXMin, GameController.safeXMax);
         gameObject.transform.position = new Vector3(respawnX, -1.35f, 0.0f);
-        anim.Play("Idle");
+        anim.Play("Respawn");
         disarmed = shieldBroken = movementDisabled = false;
         disarmText.text = shieldBreakText.text = disableMovementText.text = "";
         MaxOutHP();
@@ -305,18 +312,38 @@ public class PlayerController : MonoBehaviour
         isInvulnerable = false;
     }
 
+    private IEnumerator _HideSword()
+    {
+        yield return new WaitForSeconds(1.0f);
+        swordObject.SetActive(false);
+    }
+
     private IEnumerator _Rearm()
     {
         yield return new WaitForSeconds(GameController.disarmTime);
+        swordObject.SetActive(true);
         disarmed = false;
         disarmText.text = "";
+    }
+
+    private IEnumerator _HideShield()
+    {
+        yield return new WaitForSeconds(0.667f);  // length of char_anim_shieldBreak
+        shieldObject.SetActive(false);
     }
 
     private IEnumerator _RepairShield()
     {
         yield return new WaitForSeconds(GameController.shieldBreakTime);
+        shieldObject.SetActive(true);
         shieldBroken = false;
         shieldBreakText.text = "";
+    }
+
+    private IEnumerator _HideBody()
+    {
+        yield return new WaitForSeconds(1.333f);
+        gameObject.transform.position += Vector3.right * 100.0f;
     }
 
     private IEnumerator _ReenableMovement()

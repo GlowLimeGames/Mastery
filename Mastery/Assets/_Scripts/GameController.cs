@@ -44,7 +44,7 @@ public class GameController : MonoBehaviour
     // Just slightly longer than the roll's animation time
     public static float disableRollTime = 0.7f;    
 
-    public static float respawnTime = 2.0f;
+    public static float respawnTime = 3.5f;
     public static float respawnInvulnerabilityTime = 2.0f;
 
     // Distance between players
@@ -210,6 +210,8 @@ public class GameController : MonoBehaviour
                             {
                                 if ((personalDeltaX <= -2.7) || (personalDeltaX >= 2.4))
                                 {
+                                    //print(player.transform.position);
+                                    //print(Vector3.right * (_moveSpeed * player.inputHorizontal));
                                     player.action = PlayerController.CharacterAction.MOVING;
                                     player.transform.position += Vector3.right * (_moveSpeed * player.inputHorizontal);
                                     player.anim.Play("Walking", 1);
