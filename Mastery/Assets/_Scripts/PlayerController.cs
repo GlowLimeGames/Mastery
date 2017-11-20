@@ -147,7 +147,20 @@ public class PlayerController : MonoBehaviour
     {
         action = PlayerController.CharacterAction.ROLLING;
         anim.Play("None", 1);         // Disable the leg animation, which messes up the roll
-        anim.Play("Roll");
+        if (facingLeft == rollingLeft)
+        {
+            anim.SetFloat("RollMultiplier", 1.0f);
+            anim.Play("Roll");
+        } else
+        {
+            anim.SetFloat("RollMultiplier", -1.0f);
+            anim.Play("Roll", 0, 1);  // play from the end
+            // It won't transition if it reaches the beginning of the animation.
+            // Need to reset the speed and bail ourselves out by switching to Idle when the animation's over.
+            StartCoroutine(_ResetRollSpeed());
+        }
+
+        //anim.Play("Roll");
         rollDisabled = true;
         StartCoroutine(_ReenableRoll());
     }
@@ -240,7 +253,7 @@ public class PlayerController : MonoBehaviour
         if (HP < 0)
         {
             HP = 0;
-            // TODO: Set vulnerable
+            // TODO: Set vulnerable, with animations and such
         }
         hpText.text = "HP: " + HP.ToString();
     }
@@ -258,7 +271,7 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        anim.Play("Die");    // doesn't display, since it doesn't wait to move the character out of the way
+        anim.Play("Die");
         StartCoroutine(_HideBody());
 
         isDead = true;
@@ -291,6 +304,8 @@ public class PlayerController : MonoBehaviour
         // lw          p1                        rw
 
         // p2 should spawn in the larger portion, either in the middle of p1rw or right against rw
+
+        // TODO: Should also face the other player by default
 
         yield return new WaitForSeconds(GameController.respawnTime);
 
@@ -358,6 +373,14 @@ public class PlayerController : MonoBehaviour
     {
         yield return new WaitForSeconds(GameController.disableRollTime);
         rollDisabled = false;
+    }
+
+    private IEnumerator _ResetRollSpeed()
+    {
+        yield return new WaitForSeconds(1.3f);
+        anim.SetFloat("RollMultiplier", 1.0f);
+        anim.Play("Idle");
+
     }
 
     private void _setSwordState()

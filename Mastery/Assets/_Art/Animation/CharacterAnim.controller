@@ -7,7 +7,13 @@ AnimatorController:
   m_PrefabInternal: {fileID: 0}
   m_Name: CharacterAnim
   serializedVersion: 5
-  m_AnimatorParameters: []
+  m_AnimatorParameters:
+  - m_Name: RollMultiplier
+    m_Type: 1
+    m_DefaultFloat: 1
+    m_DefaultInt: 0
+    m_DefaultBool: 0
+    m_Controller: {fileID: 0}
   m_AnimatorLayers:
   - serializedVersion: 5
     m_Name: Base Layer
@@ -578,29 +584,6 @@ AnimatorState:
   m_SpeedParameter: 
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
---- !u!1102 &1102417259595259812
-AnimatorState:
-  serializedVersion: 5
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_Name: char_anim_walk
-  m_Speed: 1
-  m_CycleOffset: 0
-  m_Transitions: []
-  m_StateMachineBehaviours: []
-  m_Position: {x: 50, y: 50, z: 0}
-  m_IKOnFeet: 0
-  m_WriteDefaultValues: 1
-  m_Mirror: 0
-  m_SpeedParameterActive: 0
-  m_MirrorParameterActive: 0
-  m_CycleOffsetParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: d248ece3daae29147a09dc6777fb76b5, type: 2}
-  m_Tag: 
-  m_SpeedParameter: 
-  m_MirrorParameter: 
-  m_CycleOffsetParameter: 
 --- !u!1102 &1102477821186498122
 AnimatorState:
   serializedVersion: 5
@@ -855,12 +838,12 @@ AnimatorState:
   m_IKOnFeet: 0
   m_WriteDefaultValues: 1
   m_Mirror: 0
-  m_SpeedParameterActive: 0
+  m_SpeedParameterActive: 1
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_Motion: {fileID: 7400000, guid: cfa4f7fb18ccb6548b5bbc9d10a20ed9, type: 2}
   m_Tag: 
-  m_SpeedParameter: 
+  m_SpeedParameter: RollMultiplier
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
 --- !u!1102 &1102838210036150384
@@ -984,9 +967,6 @@ AnimatorStateMachine:
   - serializedVersion: 1
     m_State: {fileID: 1102822628909974424}
     m_Position: {x: -48, y: 60, z: 0}
-  - serializedVersion: 1
-    m_State: {fileID: 1102417259595259812}
-    m_Position: {x: 583, y: 577, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1102544024461509934}
     m_Position: {x: 504, y: 60, z: 0}
