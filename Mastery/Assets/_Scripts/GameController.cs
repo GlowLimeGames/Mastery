@@ -270,6 +270,7 @@ public class GameController : MonoBehaviour
                     if (Time.time >= (player.pressStartTime + _holdTime) && !player.actionThisPress)
                     {
                         player.action = PlayerController.CharacterAction.HEAVY_ATTACKING;
+                        player.damageThisSwing = false;
                         player.anim.Play("None", 1);
                         player.anim.Play("Heavy Attack (Windup)");
 
@@ -281,6 +282,7 @@ public class GameController : MonoBehaviour
                     if (Time.time < (player.pressStartTime + _holdTime))
                     {
                         player.action = PlayerController.CharacterAction.LIGHT_ATTACKING;
+                        player.damageThisSwing = false;
                         player.anim.Play("None", 1);
                         player.anim.Play("Light Attack (Swing)");
 
@@ -528,15 +530,18 @@ public class GameController : MonoBehaviour
                 default:                               // IDLE, MOVING, DELAY, TURNING, KICKING(?), STUN(?), ...
                     // Successful hit.
                     attackerController.anim.Play("Light Attack (Return)");
+                    attackerController.action = PlayerController.CharacterAction.DELAY;
 
-                    defenderController.anim.Play("Stun");
-                    defenderController.TakeDamage(1);
+                    if (!attackerController.damageThisSwing)
+                    {
+                        defenderController.Stun();
+                        defenderController.TakeDamage(1);
+                    }
                     break;
             }
         }
         if (attackerController.action == PlayerController.CharacterAction.HEAVY_ATTACKING)
         {
-            print(defenderController.action);
             switch (defenderController.action)
             {
                 case PlayerController.CharacterAction.PARRYING:
@@ -567,8 +572,18 @@ public class GameController : MonoBehaviour
                 default:                                // IDLE, MOVING, DELAY, TURNING, KICKING(?), STUN(?), ...
                     // Attack connects fully
                     attackerController.anim.Play("Heavy Attack (Return)");
-                    defenderController.TakeDamage(2);
-                    defenderController.anim.Play("Stun");
+                    //attackerController.action = PlayerController.CharacterAction.DELAY;
+
+                    // Make sure the defender is damaged only once per swing
+                    if (!attackerController.damageThisSwing)
+                    {
+                        defenderController.Stun();
+                        defenderController.TakeDamage(2);
+                        attackerController.damageThisSwing = true;
+                    }
+
+
+                    
                     break;
             }
         }

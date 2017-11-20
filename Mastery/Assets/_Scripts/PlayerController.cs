@@ -69,6 +69,7 @@ public class PlayerController : MonoBehaviour
 
     // Whether an action has been performed with this button press
     public bool actionThisPress;
+    public bool damageThisSwing;
 
     // Need to access sword/shield in order to change its tag to active/inactive.
     public GameObject swordObject;
@@ -361,7 +362,7 @@ public class PlayerController : MonoBehaviour
 
     private void _setSwordState()
     {
-        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Light Attack (Swing)") || (anim.GetCurrentAnimatorStateInfo(0).IsName("Heavy Attack (Swing)")) || (anim.GetCurrentAnimatorStateInfo(0).IsName("Heavy Attack (Return)")))
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Light Attack (Swing)") || (anim.GetCurrentAnimatorStateInfo(0).IsName("Heavy Attack (Swing)")))
         {
             swordObject.tag = "SwordActive";
         }

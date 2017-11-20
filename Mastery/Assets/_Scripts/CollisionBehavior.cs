@@ -34,8 +34,6 @@ public class CollisionBehavior : MonoBehaviour
 
             if (attacker != defender)          // Lots of self collisions happening, ignore those
             {
-                print(attacker);
-                print(defender);
                 AttackResolution(attacker, defender);
             }
         }
