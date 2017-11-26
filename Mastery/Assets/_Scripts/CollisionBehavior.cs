@@ -23,13 +23,15 @@ public class CollisionBehavior : MonoBehaviour
             }
 
             // Also ignore inactive sword
+            // TODO: Testing not doing this, since the swords are positioned differently now
             if (collision.otherCollider.gameObject.CompareTag("SwordInactive"))
             {
                 return;
             }
 
-            GameObject attacker = collision.collider.gameObject.transform.parent.gameObject;
-            GameObject defender = collision.otherCollider.gameObject.transform.parent.gameObject;
+            GameObject attacker = collision.collider.transform.root.gameObject;
+            GameObject defender = collision.otherCollider.transform.root.gameObject;
+
             if (attacker != defender)          // Lots of self collisions happening, ignore those
             {
                 AttackResolution(attacker, defender);
@@ -39,8 +41,8 @@ public class CollisionBehavior : MonoBehaviour
         if (collision.collider.gameObject.CompareTag("Leg"))
         {
             // Still include inactiveshield when it's a leg.
-            GameObject attacker = collision.collider.gameObject.transform.parent.gameObject;
-            GameObject defender = collision.otherCollider.gameObject.transform.parent.gameObject;
+            GameObject attacker = collision.collider.transform.root.gameObject;
+            GameObject defender = collision.otherCollider.transform.root.gameObject;
             if (attacker != defender)          // Lots of self collisions happening, ignore those
             {
                 KickResolution(attacker, defender);

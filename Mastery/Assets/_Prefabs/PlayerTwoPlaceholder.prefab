@@ -94,7 +94,7 @@ GameObject:
   - component: {fileID: 95639027798573938}
   - component: {fileID: 114155416068141266}
   m_Layer: 0
-  m_Name: PlayerTwo
+  m_Name: PlayerTwoPlaceholder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -571,11 +571,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4581bed730e102a4c95cd47d7df225b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  state: 0
   action: 0
   anim: {fileID: 95639027798573938}
   stock: 0
   isDead: 0
+  isInvulnerable: 0
   HP: 0
   facingLeft: 0
   rollingLeft: 0
@@ -597,9 +597,10 @@ MonoBehaviour:
   inputDefendHeld: 0
   inputDefendUp: 0
   pressStartTime: 0
-  disarmStartTime: 0
-  shieldBreakStartTime: 0
-  disableMovementStartTime: 0
+  disarmed: 0
+  shieldBroken: 0
+  movementDisabled: 0
+  rollDisabled: 0
   deathTime: 0
   actionThisPress: 0
   swordObject: {fileID: 1737846912426802}

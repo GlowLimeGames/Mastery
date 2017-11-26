@@ -1,0 +1,442 @@
+fileFormatVersion: 2
+guid: 19cb629c137979347b1be4b9a3bc9353
+timeCreated: 1509132583
+licenseType: Free
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: character_rig_lshoulder
+    21300002: character_rig_lshoulderblade
+    21300004: character_rig_head
+    21300006: character_rig_rshoulderblade
+    21300008: character_rig_rshoulder
+    21300010: character_rig_5
+    21300012: charater_rig_torso
+    21300014: character_rig_backtorso
+    21300016: character_rig_lbiceps
+    21300018: character_rig_rbiceps
+    21300020: character_rig_larm
+    21300022: character_rig_lthigh
+    21300024: character_rig_12
+    21300026: character_rig_abdomen
+    21300028: character_rig_rthigh
+    21300030: character_rig_rarm
+    21300032: character_rig_16
+    21300034: character_rig_lhand
+    21300036: character_rig_lleg
+    21300038: character_rig_lowerabdomen
+    21300040: character_rig_rleg
+    21300042: character_rig_rhand
+    21300044: character_rig_22
+    21300046: character_rig_23
+    21300048: character_rig_lfoot
+    21300050: character_rig_rfoot
+  serializedVersion: 4
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: -1
+    aniso: -1
+    mipBias: -1
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 100
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  platformSettings:
+  - buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+  - buildTarget: Standalone
+    maxTextureSize: 2048
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+  - buildTarget: iPhone
+    maxTextureSize: 2048
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+  - buildTarget: Android
+    maxTextureSize: 2048
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+  - buildTarget: Tizen
+    maxTextureSize: 2048
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+  - buildTarget: Windows Store Apps
+    maxTextureSize: 2048
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+  - buildTarget: WebGL
+    maxTextureSize: 2048
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: character_rig_lshoulder
+      rect:
+        serializedVersion: 2
+        x: 338
+        y: 2350
+        width: 238
+        height: 305
+      alignment: 9
+      pivot: {x: 0.87683207, y: 0.7205398}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: character_rig_lshoulderblade
+      rect:
+        serializedVersion: 2
+        x: 743
+        y: 2303
+        width: 206
+        height: 253
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: character_rig_head
+      rect:
+        serializedVersion: 2
+        x: 1271
+        y: 2394
+        width: 377
+        height: 590
+      alignment: 9
+      pivot: {x: 0.5000003, y: 0.09463925}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: character_rig_rshoulderblade
+      rect:
+        serializedVersion: 2
+        x: 2179
+        y: 2326
+        width: 170
+        height: 307
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: character_rig_rshoulder
+      rect:
+        serializedVersion: 2
+        x: 2390
+        y: 2402
+        width: 247
+        height: 329
+      alignment: 9
+      pivot: {x: 0.18228705, y: 0.636301}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: charater_rig_torso
+      rect:
+        serializedVersion: 2
+        x: 1168
+        y: 1822
+        width: 686
+        height: 552
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: character_rig_backtorso
+      rect:
+        serializedVersion: 2
+        x: 1965
+        y: 2066
+        width: 107
+        height: 307
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: character_rig_lbiceps
+      rect:
+        serializedVersion: 2
+        x: 322
+        y: 1931
+        width: 270
+        height: 390
+      alignment: 9
+      pivot: {x: 0.63840467, y: 0.80661935}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: character_rig_rbiceps
+      rect:
+        serializedVersion: 2
+        x: 2425
+        y: 1911
+        width: 308
+        height: 437
+      alignment: 9
+      pivot: {x: 0.24520914, y: 0.876257}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: character_rig_larm
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 1407
+        width: 256
+        height: 481
+      alignment: 9
+      pivot: {x: 0.660571, y: 0.8263008}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: character_rig_lthigh
+      rect:
+        serializedVersion: 2
+        x: 662
+        y: 1272
+        width: 323
+        height: 601
+      alignment: 9
+      pivot: {x: 0.5462779, y: 0.9165951}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: character_rig_abdomen
+      rect:
+        serializedVersion: 2
+        x: 1257
+        y: 1305
+        width: 540
+        height: 441
+      alignment: 9
+      pivot: {x: 0.4723192, y: 0.720317}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: character_rig_rthigh
+      rect:
+        serializedVersion: 2
+        x: 1992
+        y: 1310
+        width: 333
+        height: 583
+      alignment: 9
+      pivot: {x: 0.37655795, y: 0.89740837}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: character_rig_rarm
+      rect:
+        serializedVersion: 2
+        x: 2511
+        y: 1348
+        width: 222
+        height: 492
+      alignment: 9
+      pivot: {x: 0.41583526, y: 0.85698223}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: character_rig_lhand
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 987
+        width: 218
+        height: 304
+      alignment: 9
+      pivot: {x: 0.55142564, y: 0.8810674}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: character_rig_lleg
+      rect:
+        serializedVersion: 2
+        x: 574
+        y: 541
+        width: 327
+        height: 637
+      alignment: 9
+      pivot: {x: 0.5114281, y: 0.77572256}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: character_rig_lowerabdomen
+      rect:
+        serializedVersion: 2
+        x: 1129
+        y: 742
+        width: 723
+        height: 479
+      alignment: 9
+      pivot: {x: 0.4948315, y: 0.79645705}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: character_rig_rleg
+      rect:
+        serializedVersion: 2
+        x: 2079
+        y: 597
+        width: 271
+        height: 594
+      alignment: 9
+      pivot: {x: 0.513789, y: 0.795682}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: character_rig_rhand
+      rect:
+        serializedVersion: 2
+        x: 2506
+        y: 1002
+        width: 191
+        height: 281
+      alignment: 9
+      pivot: {x: 0.5782592, y: 0.8590631}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: character_rig_lfoot
+      rect:
+        serializedVersion: 2
+        x: 454
+        y: 163
+        width: 433
+        height: 294
+      alignment: 9
+      pivot: {x: 0.75890917, y: 0.62710583}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: character_rig_rfoot
+      rect:
+        serializedVersion: 2
+        x: 2085
+        y: 121
+        width: 256
+        height: 366
+      alignment: 9
+      pivot: {x: 0.63137627, y: 0.8063049}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    outline: []
+    physicsShape: []
+  spritePackingTag: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

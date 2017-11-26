@@ -21,13 +21,14 @@ public class PlayerController : MonoBehaviour
         KNOCKBACK,
         DELAY,      // bringing weapon back after swinging it. Need a better name
         STUN,
+        DEAD,
+        RESPAWNING,
     }
 
     public CharacterAction action;
     public Animator anim;
 
     public int stock;
-    public bool isDead;
     public bool isInvulnerable;
     public int HP;
     public bool facingLeft;
@@ -63,11 +64,13 @@ public class PlayerController : MonoBehaviour
     public bool disarmed;
     public bool shieldBroken;
     public bool movementDisabled;
+    public bool rollDisabled;
 
     public float deathTime;
 
     // Whether an action has been performed with this button press
     public bool actionThisPress;
+    public bool damageThisSwing;
 
     // Need to access sword/shield in order to change its tag to active/inactive.
     public GameObject swordObject;
@@ -79,13 +82,13 @@ public class PlayerController : MonoBehaviour
         action = CharacterAction.IDLE;
         stock = GameController.stockMax;
         HP = GameController.hpMax;
-        isDead = false;
         isInvulnerable = false;
 
         // Set all event times to a negative, so their relevant conditions don't trigger
         disarmed = false;
         shieldBroken = false;
         movementDisabled = false;
+        rollDisabled = false;
     }
 
     private void Update()
@@ -104,6 +107,16 @@ public class PlayerController : MonoBehaviour
             action = CharacterAction.DELAY;
         }
 
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Heavy Attack (Windup)"))
+        {
+            action = CharacterAction.DELAY;
+        }
+
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Heavy Attack (Swing)"))
+        {
+            action = CharacterAction.HEAVY_ATTACKING;
+        }
+
         if (anim.GetCurrentAnimatorStateInfo(0).IsName("Heavy Attack (Return)"))
         {
             action = CharacterAction.DELAY;
@@ -112,6 +125,16 @@ public class PlayerController : MonoBehaviour
         if (anim.GetCurrentAnimatorStateInfo(0).IsName("Stun"))
         {
             action = CharacterAction.STUN;
+        }
+        
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Die"))
+        {
+            action = CharacterAction.DEAD;
+        }
+
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Respawn"))
+        {
+            action = CharacterAction.RESPAWNING;
         }
 
         _setSwordState();
@@ -128,6 +151,28 @@ public class PlayerController : MonoBehaviour
         {
             return false;
         }
+    }
+
+    public void Roll()
+    {
+        action = PlayerController.CharacterAction.ROLLING;
+        anim.Play("None", 1);         // Disable the leg animation, which messes up the roll
+        if (facingLeft == rollingLeft)
+        {
+            anim.SetFloat("RollMultiplier", 1.0f);
+            anim.Play("Roll");
+        } else
+        {
+            anim.SetFloat("RollMultiplier", -1.0f);
+            anim.Play("Roll", 0, 1);  // play from the end
+            // It won't transition if it reaches the beginning of the animation.
+            // Need to reset the speed and bail ourselves out by switching to Idle when the animation's over.
+            StartCoroutine(_ResetRollSpeed());
+        }
+
+        //anim.Play("Roll");
+        rollDisabled = true;
+        StartCoroutine(_ReenableRoll());
     }
 
     public void TurnAround()
@@ -149,6 +194,7 @@ public class PlayerController : MonoBehaviour
     public void Stun()
     {
         action = CharacterAction.STUN;
+        anim.Play("None", 1);
         anim.Play("Stun");
     }
 
@@ -156,28 +202,34 @@ public class PlayerController : MonoBehaviour
     {
         // Need to knockback player in opposite direction so they rotate away from the collision
         action = CharacterAction.KNOCKBACK;
+        anim.Play("Knockback");
+        /*
         if (facingLeft)
         {
             anim.Play("KnockbackR");
         }
         else
         {
-            anim.Play("KnockbackL");
+            anim.Play("Knockback (Left)");
         }
+        */
     }
 
     public void Disarm()
     {
-        // TODO: This really needs an animation
+        anim.Play("Disarmed");  // TODO fix the disarmed animation
         disarmed = true;
         disarmText.text = "Disarmed";
+        StartCoroutine(_HideSword());
         StartCoroutine(_Rearm());
     }
 
     public void ShieldBreak()
     {
+        anim.Play("Shield Broken");
         shieldBroken = true;
         shieldBreakText.text = "Shield Broken";
+        StartCoroutine(_HideShield());
         StartCoroutine(_RepairShield());
     }
 
@@ -211,7 +263,7 @@ public class PlayerController : MonoBehaviour
         if (HP < 0)
         {
             HP = 0;
-            // TODO: Set vulnerable
+            // TODO: Set vulnerable, with animations and such
         }
         hpText.text = "HP: " + HP.ToString();
     }
@@ -229,13 +281,13 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        anim.Play("Die");    // doesn't display, since it doesn't wait to move the character out of the way
-        // TODO: Use a coroutine to play the animation, then do death bookkeeping stuff
-        isDead = true;
+        anim.Play("Die");
+        StartCoroutine(_HideBody());
+
+        action = CharacterAction.DEAD;
         
         stock -= 1;
         stockText.text = "Stock: " + stock.ToString();
-        gameObject.transform.position += Vector3.right * 100.0f;
 
         deathTime = Time.time;
 
@@ -263,14 +315,13 @@ public class PlayerController : MonoBehaviour
 
         // p2 should spawn in the larger portion, either in the middle of p1rw or right against rw
 
-        // TODO: also set them invulnerable for a time?
+        // TODO: Should also face the other player by default
 
         yield return new WaitForSeconds(GameController.respawnTime);
 
-        isDead = false;
         float respawnX = Random.Range(GameController.safeXMin, GameController.safeXMax);
-        gameObject.transform.position = new Vector3(respawnX, -2.0f, 0.0f);
-        anim.Play("Idle");
+        gameObject.transform.position = new Vector3(respawnX, -1.35f, 0.0f);
+        anim.Play("Respawn");
         disarmed = shieldBroken = movementDisabled = false;
         disarmText.text = shieldBreakText.text = disableMovementText.text = "";
         MaxOutHP();
@@ -286,18 +337,38 @@ public class PlayerController : MonoBehaviour
         isInvulnerable = false;
     }
 
+    private IEnumerator _HideSword()
+    {
+        yield return new WaitForSeconds(1.0f);
+        swordObject.SetActive(false);
+    }
+
     private IEnumerator _Rearm()
     {
         yield return new WaitForSeconds(GameController.disarmTime);
+        swordObject.SetActive(true);
         disarmed = false;
         disarmText.text = "";
+    }
+
+    private IEnumerator _HideShield()
+    {
+        yield return new WaitForSeconds(0.667f);  // length of char_anim_shieldBreak
+        shieldObject.SetActive(false);
     }
 
     private IEnumerator _RepairShield()
     {
         yield return new WaitForSeconds(GameController.shieldBreakTime);
+        shieldObject.SetActive(true);
         shieldBroken = false;
         shieldBreakText.text = "";
+    }
+
+    private IEnumerator _HideBody()
+    {
+        yield return new WaitForSeconds(1.333f);
+        gameObject.transform.position += Vector3.right * 100.0f;
     }
 
     private IEnumerator _ReenableMovement()
@@ -305,6 +376,20 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(GameController.disableMovementTime);
         movementDisabled = false;
         disableMovementText.text = "";
+    }
+
+    private IEnumerator _ReenableRoll()
+    {
+        yield return new WaitForSeconds(GameController.disableRollTime);
+        rollDisabled = false;
+    }
+
+    private IEnumerator _ResetRollSpeed()
+    {
+        yield return new WaitForSeconds(1.3f);
+        anim.SetFloat("RollMultiplier", 1.0f);
+        anim.Play("Idle");
+
     }
 
     private void _setSwordState()

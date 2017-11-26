@@ -41,7 +41,10 @@ public class GameController : MonoBehaviour
 
     public static float shieldBreakTime = 3.0f;
 
-    public static float respawnTime = 2.0f;
+    // Just slightly longer than the roll's animation time
+    public static float disableRollTime = 0.7f;    
+
+    public static float respawnTime = 3.5f;
     public static float respawnInvulnerabilityTime = 2.0f;
 
     // Distance between players
@@ -207,6 +210,8 @@ public class GameController : MonoBehaviour
                             {
                                 if ((personalDeltaX <= -2.7) || (personalDeltaX >= 2.4))
                                 {
+                                    //print(player.transform.position);
+                                    //print(Vector3.right * (_moveSpeed * player.inputHorizontal));
                                     player.action = PlayerController.CharacterAction.MOVING;
                                     player.transform.position += Vector3.right * (_moveSpeed * player.inputHorizontal);
                                     player.anim.Play("Walking", 1);
@@ -218,28 +223,29 @@ public class GameController : MonoBehaviour
                     // Rolling inputs. Disabled when movement disabled
                     if (player.inputRollDown)
                     {
-                        // Roll in the direction you're moving.
-                        // If not moving, roll in the direction you're facing
+                        if (!player.rollDisabled)
+                        {
+                            // Roll in the direction you're moving.
+                            // If not moving, roll in the direction you're facing
 
-                        if (player.inputHorizontal < 0.0f)
-                        {
-                            player.rollingLeft = true;
-                        }
-                        else if (player.inputHorizontal == 0.0f)
-                        {
-                            player.rollingLeft = player.facingLeft;
-                        }
-                        else
-                        {
-                            player.rollingLeft = false;
-                        }
+                            if (player.inputHorizontal < 0.0f)
+                            {
+                                player.rollingLeft = true;
+                            }
+                            else if (player.inputHorizontal == 0.0f)
+                            {
+                                player.rollingLeft = player.facingLeft;
+                            }
+                            else
+                            {
+                                player.rollingLeft = false;
+                            }
 
-                        if ((player.rollingLeft && (player.leftWallDeltaX > 1.75)) || (!player.rollingLeft && (player.rightWallDeltaX < -1.75)))
-                        {
-                            player.action = PlayerController.CharacterAction.ROLLING;
-                            player.anim.Play("Roll");
+                            if ((player.rollingLeft && (player.leftWallDeltaX > 1.75)) || (!player.rollingLeft && (player.rightWallDeltaX < -1.75)))
+                            {
+                                player.Roll();
+                            }
                         }
-
                     }
                 }
 
@@ -264,7 +270,9 @@ public class GameController : MonoBehaviour
                     if (Time.time >= (player.pressStartTime + _holdTime) && !player.actionThisPress)
                     {
                         player.action = PlayerController.CharacterAction.HEAVY_ATTACKING;
-                        player.anim.Play("Heavy Attack (Swing)");
+                        player.damageThisSwing = false;
+                        player.anim.Play("None", 1);
+                        player.anim.Play("Heavy Attack (Windup)");
 
                         player.actionThisPress = true;
                     }
@@ -274,6 +282,8 @@ public class GameController : MonoBehaviour
                     if (Time.time < (player.pressStartTime + _holdTime))
                     {
                         player.action = PlayerController.CharacterAction.LIGHT_ATTACKING;
+                        player.damageThisSwing = false;
+                        player.anim.Play("None", 1);
                         player.anim.Play("Light Attack (Swing)");
 
                         player.actionThisPress = true;
@@ -284,6 +294,7 @@ public class GameController : MonoBehaviour
                 if (player.inputKickDown)
                 {
                     player.action = PlayerController.CharacterAction.KICKING;
+                    player.anim.Play("None", 1);
                     player.anim.Play("Kick");
                 }
 
@@ -425,19 +436,6 @@ public class GameController : MonoBehaviour
             player.leftWallDeltaX = player.transform.position.x - wallLeft.transform.position.x;
             player.rightWallDeltaX = player.transform.position.x - wallRight.transform.position.x;
 
-            //if (Time.time >= (player.disarmStartTime + _disarmTime))
-            //{
-            //    player.disarmText.text = "";
-            //}
-            //if (Time.time >= (player.disableMovementStartTime + _disableMovementTime))
-            //{
-            //    player.disableMovementText.text = "";
-            //}
-            //if (Time.time >= (player.shieldBreakStartTime + _shieldBreakTime))
-            //{
-            //    player.shieldBreakText.text = "";
-            //}
-
             // Walls "push" adjacent players at the same speed they're moving
             if (_timeRemaining <= _beginClosing)
             {
@@ -532,9 +530,13 @@ public class GameController : MonoBehaviour
                 default:                               // IDLE, MOVING, DELAY, TURNING, KICKING(?), STUN(?), ...
                     // Successful hit.
                     attackerController.anim.Play("Light Attack (Return)");
+                    attackerController.action = PlayerController.CharacterAction.DELAY;
 
-                    defenderController.anim.Play("Stun");
-                    defenderController.TakeDamage(1);
+                    if (!attackerController.damageThisSwing)
+                    {
+                        defenderController.Stun();
+                        defenderController.TakeDamage(1);
+                    }
                     break;
             }
         }
@@ -570,8 +572,18 @@ public class GameController : MonoBehaviour
                 default:                                // IDLE, MOVING, DELAY, TURNING, KICKING(?), STUN(?), ...
                     // Attack connects fully
                     attackerController.anim.Play("Heavy Attack (Return)");
-                    defenderController.TakeDamage(2);
-                    defenderController.anim.Play("Stun");
+                    //attackerController.action = PlayerController.CharacterAction.DELAY;
+
+                    // Make sure the defender is damaged only once per swing
+                    if (!attackerController.damageThisSwing)
+                    {
+                        defenderController.Stun();
+                        defenderController.TakeDamage(2);
+                        attackerController.damageThisSwing = true;
+                    }
+
+
+                    
                     break;
             }
         }
@@ -607,6 +619,9 @@ public class GameController : MonoBehaviour
                     // (Same as above? Not explicit in spec)
                     defenderController.ShieldBreak();
                     attackerController.MaxOutHP();
+                    break;
+                case PlayerController.CharacterAction.ROLLING:
+                    // No effect, don't disable movement
                     break;
                 default:
                     // If no shield up, then disable attacker's movement
