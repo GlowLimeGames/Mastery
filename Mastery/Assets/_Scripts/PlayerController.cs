@@ -156,6 +156,7 @@ public class PlayerController : MonoBehaviour
     public void Roll()
     {
         action = PlayerController.CharacterAction.ROLLING;
+        anim.SetBool("Walking", false);
         anim.Play("None", 1);         // Disable the leg animation, which messes up the roll
         if (facingLeft == rollingLeft)
         {
@@ -175,14 +176,21 @@ public class PlayerController : MonoBehaviour
         StartCoroutine(_ReenableRoll());
     }
 
-    public void TurnAround()
+    public void TurnAround(bool hit)
     {
         action = CharacterAction.TURNING;
         anim.Play("Turn Around");
         transform.localScale = new Vector3(transform.localScale.x * -1, transform.localScale.y, transform.localScale.z);
 
         // Set the facing variable after a delay
-        StartCoroutine(SetFacing());
+        if (hit)
+        {
+            StartCoroutine(SetFacing());
+        }
+        else
+        {
+            facingLeft = !facingLeft;
+        }
     }
 
     private IEnumerator SetFacing()
@@ -194,6 +202,7 @@ public class PlayerController : MonoBehaviour
     public void Stun()
     {
         action = CharacterAction.STUN;
+        anim.SetBool("Walking", false);
         anim.Play("None", 1);
         anim.Play("Stun");
     }
@@ -320,7 +329,7 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(GameController.respawnTime);
 
         float respawnX = Random.Range(GameController.safeXMin, GameController.safeXMax);
-        gameObject.transform.position = new Vector3(respawnX, -1.35f, 0.0f);
+        gameObject.transform.position = new Vector3(respawnX, -2.7f, 0.0f);
         anim.Play("Respawn");
         disarmed = shieldBroken = movementDisabled = false;
         disarmText.text = shieldBreakText.text = disableMovementText.text = "";

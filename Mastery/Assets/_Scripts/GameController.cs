@@ -170,16 +170,16 @@ public class GameController : MonoBehaviour
                     {
                         if (player.inputRightHorizontal < 0.0f && !player.facingLeft)
                         {
-                            player.TurnAround();
+                            player.TurnAround(false);
                         }
                         else if (player.inputRightHorizontal > 0.0f && player.facingLeft)
                         {
-                            player.TurnAround();
+                            player.TurnAround(false);
                         }
                     }
 
                     // Left stick determines motion
-                    if (player.inputHorizontal != 0.0f && player.action != PlayerController.CharacterAction.TURNING)
+                    if (player.inputHorizontal != 0.0f && player.action != PlayerController.CharacterAction.GUARDING && player.action != PlayerController.CharacterAction.PARRYING)
                     {
                         PlayerController otherPlayer = _otherPlayer(player);
 
@@ -199,7 +199,7 @@ public class GameController : MonoBehaviour
                                 {
                                     player.action = PlayerController.CharacterAction.MOVING;
                                     player.transform.position += Vector3.right * (_moveSpeed * player.inputHorizontal);
-                                    player.anim.Play("Walking", 1);  // walking is in Leg Layer, layer 1
+                                    player.anim.SetBool("Walking", true);  // walking is in Leg Layer, layer 1
                                 }
                             }
                         }
@@ -214,10 +214,15 @@ public class GameController : MonoBehaviour
                                     //print(Vector3.right * (_moveSpeed * player.inputHorizontal));
                                     player.action = PlayerController.CharacterAction.MOVING;
                                     player.transform.position += Vector3.right * (_moveSpeed * player.inputHorizontal);
-                                    player.anim.Play("Walking", 1);
+                                    player.anim.SetBool("Walking", true);
                                 }
                             }
                         }
+                    }
+
+                    if (player.inputHorizontal == 0)
+                    {
+                        player.anim.SetBool("Walking", false);
                     }
 
                     // Rolling inputs. Disabled when movement disabled
@@ -271,6 +276,7 @@ public class GameController : MonoBehaviour
                     {
                         player.action = PlayerController.CharacterAction.HEAVY_ATTACKING;
                         player.damageThisSwing = false;
+                        player.anim.SetBool("Walking", false);
                         player.anim.Play("None", 1);
                         player.anim.Play("Heavy Attack (Windup)");
 
@@ -283,6 +289,7 @@ public class GameController : MonoBehaviour
                     {
                         player.action = PlayerController.CharacterAction.LIGHT_ATTACKING;
                         player.damageThisSwing = false;
+                        player.anim.SetBool("Walking", false);
                         player.anim.Play("None", 1);
                         player.anim.Play("Light Attack (Swing)");
 
@@ -294,6 +301,7 @@ public class GameController : MonoBehaviour
                 if (player.inputKickDown)
                 {
                     player.action = PlayerController.CharacterAction.KICKING;
+                    player.anim.SetBool("Walking", false);
                     player.anim.Play("None", 1);
                     player.anim.Play("Kick");
                 }
@@ -302,6 +310,7 @@ public class GameController : MonoBehaviour
                 // Defend inputs
                 if (!player.shieldBroken)
                 {
+
                     if (player.inputDefendDown)
                     {
                         player.pressStartTime = Time.time;
@@ -311,6 +320,12 @@ public class GameController : MonoBehaviour
                     {
                         if (Time.time >= (player.pressStartTime + _holdTime) && !player.actionThisPress)
                         {
+                            if (player.action == PlayerController.CharacterAction.MOVING)
+                            {
+                                player.anim.SetBool("Walking", false);
+                                player.anim.Play("None", 1);
+                            }
+
                             player.action = PlayerController.CharacterAction.GUARDING;
                             player.anim.Play("Guard (On)");
                         }
@@ -319,6 +334,12 @@ public class GameController : MonoBehaviour
                     {
                         if (Time.time < (player.pressStartTime + _holdTime))
                         {
+                            if (player.action == PlayerController.CharacterAction.MOVING)
+                            {
+                                player.anim.SetBool("Walking", false);
+                                player.anim.Play("None", 1);
+                            }
+
                             player.action = PlayerController.CharacterAction.PARRYING;
                             player.anim.Play("Parry");
                         }
@@ -509,7 +530,7 @@ public class GameController : MonoBehaviour
             {
                 case PlayerController.CharacterAction.PARRYING:
                     // Attacker gets turned around
-                    attackerController.TurnAround();
+                    attackerController.TurnAround(true);
                     break;
                 case PlayerController.CharacterAction.GUARDING:
                     // Attacker gets knocked back
@@ -523,6 +544,7 @@ public class GameController : MonoBehaviour
                 case PlayerController.CharacterAction.HEAVY_ATTACKING:
                     // Disables attacker's attack button for X seconds
                     attackerController.Disarm();
+                    defenderController.MaxOutHP();
                     break;
                 case PlayerController.CharacterAction.ROLLING:
                     // Nothing, they're invulnerable
@@ -547,6 +569,7 @@ public class GameController : MonoBehaviour
                 case PlayerController.CharacterAction.PARRYING:
                     // Disables attacker's attack button for X seconds
                     attackerController.Disarm();
+                    defenderController.MaxOutHP();
                     break;
                 case PlayerController.CharacterAction.GUARDING:
                     // Defender gets knocked back
@@ -622,6 +645,19 @@ public class GameController : MonoBehaviour
                     break;
                 case PlayerController.CharacterAction.ROLLING:
                     // No effect, don't disable movement
+                    defenderController.Stun();
+                    break;
+                case PlayerController.CharacterAction.IDLE:
+                    //No effect
+                    break;
+                case PlayerController.CharacterAction.MOVING:
+                    //No effect
+                    break;
+                case PlayerController.CharacterAction.STUN:
+                    //No effect
+                    break;
+                case PlayerController.CharacterAction.TURNING:
+                    //Nothing
                     break;
                 default:
                     // If no shield up, then disable attacker's movement
