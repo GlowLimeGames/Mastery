@@ -62,6 +62,7 @@ public class GameController : MonoBehaviour
     private float _wallStopX = 4.0f;
 
     private float _wallSpeed = 0.001f;
+    private float _wallWidth = 3.75f;
 
     public static float safeXMin = -7.0f;
     public static float safeXMax = 7.0f;
@@ -191,7 +192,7 @@ public class GameController : MonoBehaviour
                         if (player.inputHorizontal < 0.0f)
                         {
                             // Make sure they're not against the left wall
-                            if (player.leftWallDeltaX > 1.75)
+                            if (player.leftWallDeltaX > _wallWidth)
                             {
                                 // Make sure the other player is not left-adjacent to this one
                                 // (Numbers must be different to avoid trapping the player on contact)
@@ -206,7 +207,7 @@ public class GameController : MonoBehaviour
                         // Moving right
                         else if (player.inputHorizontal > 0.0f)
                         {
-                            if (player.rightWallDeltaX < -1.75)
+                            if (player.rightWallDeltaX < -_wallWidth)
                             {
                                 if ((personalDeltaX <= -2.7) || (personalDeltaX >= 2.4))
                                 {
@@ -246,7 +247,7 @@ public class GameController : MonoBehaviour
                                 player.rollingLeft = false;
                             }
 
-                            if ((player.rollingLeft && (player.leftWallDeltaX > 1.75)) || (!player.rollingLeft && (player.rightWallDeltaX < -1.75)))
+                            if ((player.rollingLeft && (player.leftWallDeltaX > _wallWidth)) || (!player.rollingLeft && (player.rightWallDeltaX < -_wallWidth)))
                             {
                                 player.Roll();
                             }
@@ -401,14 +402,14 @@ public class GameController : MonoBehaviour
             {
                 if (player.rollingLeft)
                 {
-                    if (player.leftWallDeltaX > 1.75)
+                    if (player.leftWallDeltaX > _wallWidth)
                     {
                         player.transform.position += Vector3.left * _rollSpeed;
                     }
                 }
                 else
                 {
-                    if (player.rightWallDeltaX < -1.75)
+                    if (player.rightWallDeltaX < -_wallWidth)
                     {
                         player.transform.position += Vector3.right * _rollSpeed;
                     }
@@ -420,14 +421,14 @@ public class GameController : MonoBehaviour
             {
                 if (player.facingLeft)
                 {
-                    if (player.rightWallDeltaX < -1.75)
+                    if (player.rightWallDeltaX < -_wallWidth)
                     {
                         player.transform.position += Vector3.right * _knockbackSpeed;
                     }
                 }
                 else
                 {
-                    if (player.leftWallDeltaX > 1.75)
+                    if (player.leftWallDeltaX > _wallWidth)
                     {
                         player.transform.position += Vector3.left * _knockbackSpeed;
                     }
@@ -460,12 +461,12 @@ public class GameController : MonoBehaviour
             // Walls "push" adjacent players at the same speed they're moving
             if (_timeRemaining <= _beginClosing)
             {
-                if (Math.Abs(player.leftWallDeltaX) < 1.75)
+                if (Math.Abs(player.leftWallDeltaX) < _wallWidth)
                 {
                     player.transform.position += Vector3.right * _wallSpeed;
                 }
 
-                if (Math.Abs(player.rightWallDeltaX) < 1.75)
+                if (Math.Abs(player.rightWallDeltaX) < _wallWidth)
                 {
                     player.transform.position += Vector3.left * _wallSpeed;
                 }
@@ -705,11 +706,11 @@ public class GameController : MonoBehaviour
         }
 
         // If one player is against a moving wall, push the other player only
-        if (Math.Abs(leftPlayer.leftWallDeltaX) < 1.75)
+        if (Math.Abs(leftPlayer.leftWallDeltaX) < _wallWidth)
         {
             rightPlayer.gameObject.transform.position += Vector3.right * 0.1f;
         }
-        else if (Math.Abs(rightPlayer.rightWallDeltaX) < 1.75)
+        else if (Math.Abs(rightPlayer.rightWallDeltaX) < _wallWidth)
         {
             leftPlayer.gameObject.transform.position += Vector3.left * 0.1f;
         }

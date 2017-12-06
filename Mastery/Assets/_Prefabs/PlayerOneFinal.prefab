@@ -1132,7 +1132,6 @@ MonoBehaviour:
   action: 0
   anim: {fileID: 95722084679294872}
   stock: 0
-  isDead: 0
   isInvulnerable: 0
   HP: 0
   facingLeft: 0
@@ -1161,6 +1160,7 @@ MonoBehaviour:
   rollDisabled: 0
   deathTime: 0
   actionThisPress: 0
+  damageThisSwing: 0
   swordObject: {fileID: 1619283103260450}
   shieldObject: {fileID: 1563637213702546}
 --- !u!212 &212006659546733948
