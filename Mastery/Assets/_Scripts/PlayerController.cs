@@ -100,10 +100,13 @@ public class PlayerController : MonoBehaviour
         // Update states based on animations.
         // (I'm hoping there is a better way to do this)
         // (It's mostly handled in the relevant functions now. Need to keep Idle at least)
- 
-        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
+
+        if (!anim.GetBool("Walking"))
         {
-            action = CharacterAction.IDLE;
+            if (anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
+            {
+                action = CharacterAction.IDLE;
+            }
         }
 
         if (anim.GetCurrentAnimatorStateInfo(0).IsName("Light Attack (Return)"))
@@ -199,6 +202,7 @@ public class PlayerController : MonoBehaviour
 
     private IEnumerator SetFacing()
     {
+        // TODO: Does this need to wait at all, now that there's no turning animation?
         yield return new WaitForSeconds(0.35f);
         facingLeft = !facingLeft;
     }
@@ -213,24 +217,13 @@ public class PlayerController : MonoBehaviour
 
     public void Knockback()
     {
-        // Need to knockback player in opposite direction so they rotate away from the collision
         action = CharacterAction.KNOCKBACK;
         anim.Play("Knockback");
-        /*
-        if (facingLeft)
-        {
-            anim.Play("KnockbackR");
-        }
-        else
-        {
-            anim.Play("Knockback (Left)");
-        }
-        */
     }
 
     public void Disarm()
     {
-        anim.Play("Disarmed");  // TODO fix the disarmed animation
+        anim.Play("Disarmed");
         disarmed = true;
         disarmText.text = "Disarmed";
         StartCoroutine(_HideSword());
@@ -414,7 +407,7 @@ public class PlayerController : MonoBehaviour
 
     private IEnumerator _ResetRollSpeed()
     {
-        yield return new WaitForSeconds(1.3f);
+        yield return new WaitForSeconds(0.95f);
         anim.SetFloat("RollMultiplier", 1.0f);
         anim.Play("Idle");
 

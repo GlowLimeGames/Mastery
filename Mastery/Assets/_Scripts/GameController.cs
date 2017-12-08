@@ -522,7 +522,7 @@ public class GameController : MonoBehaviour
         // If attacker hits defender from behind, treat defender as idle, ignoring frontal attacks/defends
         if (attackerController.facingLeft == defenderController.facingLeft)
         {
-            defenderController.anim.Play("Idle");
+            defenderController.anim.Play("Stun");
             defenderController.action = PlayerController.CharacterAction.IDLE;
         }
 
@@ -629,6 +629,12 @@ public class GameController : MonoBehaviour
         {
             attackerController = playerTwo;
             defenderController = playerOne;
+        }
+
+        // Can't break someone's shield from behind
+        if (attackerController.facingLeft == defenderController.facingLeft)
+        {
+            return;
         }
 
         if (attackerController.action == PlayerController.CharacterAction.KICKING)
