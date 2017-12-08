@@ -513,7 +513,8 @@ public class GameController : MonoBehaviour
             defenderController = playerOne;
         }
 
-        if (defenderController.isInvulnerable)
+        // Invulnerable players are ghosts, and can't attack or defend
+        if (defenderController.isInvulnerable || attackerController.isInvulnerable)
         {
             return;
         }

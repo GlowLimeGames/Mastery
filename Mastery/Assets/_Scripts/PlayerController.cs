@@ -75,7 +75,9 @@ public class PlayerController : MonoBehaviour
     // Need to access sword/shield in order to change its tag to active/inactive.
     public GameObject swordObject;
     public GameObject shieldObject;
- 
+
+    private SpriteRenderer[] _sprites;
+
     // Use this for initialization
     private void Start()
     {
@@ -89,6 +91,8 @@ public class PlayerController : MonoBehaviour
         shieldBroken = false;
         movementDisabled = false;
         rollDisabled = false;
+
+        _sprites = GetComponentsInChildren<SpriteRenderer>();
     }
 
     private void Update()
@@ -337,13 +341,28 @@ public class PlayerController : MonoBehaviour
         action = CharacterAction.IDLE;
 
         isInvulnerable = true;
-        StartCoroutine(_BecomeVulnerable());
+
+        int children = transform.childCount;
+
+        // Set all child sprites (body parts) transparent
+        for (int i = 0; i < _sprites.Length; i++)
+        {
+            _sprites[i].color = new Color(1f, 1f, 1f, .5f);
+        }
+
+            StartCoroutine(_BecomeVulnerable());
     }
 
     private IEnumerator _BecomeVulnerable()
     {
         yield return new WaitForSeconds(GameController.respawnInvulnerabilityTime);
         isInvulnerable = false;
+
+        // Set all child sprites non-transparent
+        for (int i = 0; i < _sprites.Length; i++)
+        {
+            _sprites[i].color = new Color(1f, 1f, 1f, 1f);
+        }
     }
 
     private IEnumerator _HideSword()
