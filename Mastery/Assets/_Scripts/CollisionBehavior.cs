@@ -23,8 +23,13 @@ public class CollisionBehavior : MonoBehaviour
             }
 
             // Also ignore inactive sword
-            // TODO: Testing not doing this, since the swords are positioned differently now
             if (collision.otherCollider.gameObject.CompareTag("SwordInactive"))
+            {
+                return;
+            }
+
+            // Ignore legs too. They just can't win against a sword
+            if (collision.otherCollider.gameObject.CompareTag("Leg"))
             {
                 return;
             }

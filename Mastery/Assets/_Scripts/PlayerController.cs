@@ -75,7 +75,9 @@ public class PlayerController : MonoBehaviour
     // Need to access sword/shield in order to change its tag to active/inactive.
     public GameObject swordObject;
     public GameObject shieldObject;
- 
+
+    private SpriteRenderer[] _sprites;
+
     // Use this for initialization
     private void Start()
     {
@@ -89,6 +91,8 @@ public class PlayerController : MonoBehaviour
         shieldBroken = false;
         movementDisabled = false;
         rollDisabled = false;
+
+        _sprites = GetComponentsInChildren<SpriteRenderer>();
     }
 
     private void Update()
@@ -96,10 +100,13 @@ public class PlayerController : MonoBehaviour
         // Update states based on animations.
         // (I'm hoping there is a better way to do this)
         // (It's mostly handled in the relevant functions now. Need to keep Idle at least)
- 
-        if (anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
+
+        if (!anim.GetBool("Walking"))
         {
-            action = CharacterAction.IDLE;
+            if (anim.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
+            {
+                action = CharacterAction.IDLE;
+            }
         }
 
         if (anim.GetCurrentAnimatorStateInfo(0).IsName("Light Attack (Return)"))
@@ -195,6 +202,7 @@ public class PlayerController : MonoBehaviour
 
     private IEnumerator SetFacing()
     {
+        // TODO: Does this need to wait at all, now that there's no turning animation?
         yield return new WaitForSeconds(0.35f);
         facingLeft = !facingLeft;
     }
@@ -209,24 +217,13 @@ public class PlayerController : MonoBehaviour
 
     public void Knockback()
     {
-        // Need to knockback player in opposite direction so they rotate away from the collision
         action = CharacterAction.KNOCKBACK;
         anim.Play("Knockback");
-        /*
-        if (facingLeft)
-        {
-            anim.Play("KnockbackR");
-        }
-        else
-        {
-            anim.Play("Knockback (Left)");
-        }
-        */
     }
 
     public void Disarm()
     {
-        anim.Play("Disarmed");  // TODO fix the disarmed animation
+        anim.Play("Disarmed");
         disarmed = true;
         disarmText.text = "Disarmed";
         StartCoroutine(_HideSword());
@@ -337,13 +334,28 @@ public class PlayerController : MonoBehaviour
         action = CharacterAction.IDLE;
 
         isInvulnerable = true;
-        StartCoroutine(_BecomeVulnerable());
+
+        int children = transform.childCount;
+
+        // Set all child sprites (body parts) transparent
+        for (int i = 0; i < _sprites.Length; i++)
+        {
+            _sprites[i].color = new Color(1f, 1f, 1f, .5f);
+        }
+
+            StartCoroutine(_BecomeVulnerable());
     }
 
     private IEnumerator _BecomeVulnerable()
     {
         yield return new WaitForSeconds(GameController.respawnInvulnerabilityTime);
         isInvulnerable = false;
+
+        // Set all child sprites non-transparent
+        for (int i = 0; i < _sprites.Length; i++)
+        {
+            _sprites[i].color = new Color(1f, 1f, 1f, 1f);
+        }
     }
 
     private IEnumerator _HideSword()
@@ -395,7 +407,7 @@ public class PlayerController : MonoBehaviour
 
     private IEnumerator _ResetRollSpeed()
     {
-        yield return new WaitForSeconds(1.3f);
+        yield return new WaitForSeconds(0.95f);
         anim.SetFloat("RollMultiplier", 1.0f);
         anim.Play("Idle");
 
